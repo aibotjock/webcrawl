@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="20">
+<title>WEBCRAWL — Gauntlet Live Progress</title>
+<style>
+  :root{
+    --bg:#05070d; --panel:#0b101c; --panel2:#0e1524; --line:#1c2740;
+    --txt:#d7e3f4; --dim:#5c6f8f; --cyan:#38e1ff; --green:#3dffa8; --amber:#ffc555; --red:#ff5c7a; --violet:#9d7bff;
+    --mono:'SF Mono','Cascadia Code',ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(1200px 600px at 80% -10%,#101b33 0%,var(--bg) 55%);color:var(--txt);font:15px/1.55 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;min-height:100vh;padding:38px 5vw}
+  a{color:var(--cyan);text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-family:var(--mono);font-size:clamp(22px,3.4vw,34px);letter-spacing:.14em;font-weight:700}
+  h1 .x{color:var(--cyan);text-shadow:0 0 18px rgba(56,225,255,.55)}
+  .sub{color:var(--dim);font-family:var(--mono);font-size:12.5px;margin-top:6px;letter-spacing:.06em}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:18px}
+  .score{font-family:var(--mono);text-align:right}
+  .score .n{font-size:30px;color:var(--green);text-shadow:0 0 14px rgba(61,255,168,.4)}
+  .score .l{font-size:11px;color:var(--dim);letter-spacing:.2em}
+  h2{font-family:var(--mono);font-size:12px;letter-spacing:.28em;color:var(--dim);margin:34px 0 12px;text-transform:uppercase}
+  .card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px;display:grid;grid-template-columns:minmax(180px,260px) 90px 110px 1fr;gap:12px;align-items:center}
+  .card .name{font-weight:600}
+  .card .name small{display:block;color:var(--dim);font-weight:400;font-size:12px}
+  .pill{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;padding:4px 10px;border-radius:99px;text-align:center;white-space:nowrap}
+  .p-run{background:rgba(56,225,255,.12);color:var(--cyan);border:1px solid rgba(56,225,255,.45);animation:pulse 1.6s infinite}
+  .p-won{background:rgba(61,255,168,.12);color:var(--green);border:1px solid rgba(61,255,168,.5)}
+  .p-lost{background:rgba(255,92,122,.1);color:var(--red);border:1px solid rgba(255,92,122,.5)}
+  .p-wait{background:rgba(92,111,143,.12);color:var(--dim);border:1px solid var(--line)}
+  @keyframes pulse{50%{opacity:.55}}
+  .rounds{font-family:var(--mono);color:var(--violet);font-size:12px;text-align:center}
+  .note{color:var(--dim);font-size:13px}
+  .bar{margin-top:6px;background:rgba(255,197,85,.08);border:1px solid rgba(255,197,85,.3);border-radius:10px;padding:12px 14px;font-size:13.5px}
+  .bar b{color:var(--amber)}
+  .log{font-family:var(--mono);font-size:12.5px;background:#070b14;border:1px solid var(--line);border-radius:10px;padding:14px 16px;line-height:1.7;max-height:340px;overflow:auto}
+  .log .t{color:var(--dim)} .log .ok{color:var(--green)} .log .bad{color:var(--red)} .log .info{color:var(--cyan)}
+  footer{margin-top:40px;color:var(--dim);font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-align:center}
+</style>
+</head>
+<body><div class="wrap">
+  <div class="head">
+    <div>
+      <h1>WEBCRAWL <span class="x">×</span> GAUNTLET</h1>
+      <div class="sub">self-hosted firecrawl alternative · mcp + http + webui · bar = real firecrawl (cloud keyless + source)</div>
+    </div>
+    <div class="score"><div class="n">0 / 10</div><div class="l">PIECES WON BLIND</div></div>
+  </div>
+
+  <div class="bar"><b>THE BAR</b> — real Firecrawl cloud output (keyless firecrawl-mcp, rate-limited per IP), captured <b>once</b> into <code>bar_cache/</code>; UI bar = firecrawl.dev/playground screenshots @1440×900 + 390×844; crawl/map ground truth = sitemap.xml + link graph; source heuristics studied clean-room from /data/aibotjock/firecrawl (AGPL — no code copied).</div>
+
+  <h2>Pieces</h2>
+  <div id="pieces">
+    <div class="card"><div class="name">bar capture<small>scrape×12 · search×3 · map×3 · crawl×1 → bar_cache/</small></div><div class="pill p-run">RUNNING</div><div class="rounds">R0</div><div class="note">keyless cloud capture in flight</div></div>
+    <div class="card"><div class="name">source digest<small>clean-room heuristics spec from firecrawl source</small></div><div class="pill p-run">RUNNING</div><div class="rounds">R0</div><div class="note">reading AGPL source → behavioral spec, no code copy</div></div>
+    <div class="card"><div class="name">scrape · markdown fidelity<small>10-URL set: docs, SPA, news, ecommerce, wiki, HN</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: blind side-by-side vs bar markdown + token count</div></div>
+    <div class="card"><div class="name">screenshot + JS render<small>headless chromium, SPA pages</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: rendered completeness vs bar screenshot format</div></div>
+    <div class="card"><div class="name">map<small>domain URL discovery, no sitemap</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: coverage vs sitemap+linkgraph truth & cloud map, latency</div></div>
+    <div class="card"><div class="name">crawl<small>recursive site walk, limit-bounded</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: valid-page coverage, markdown quality, speed</div></div>
+    <div class="card"><div class="name">search<small>keyless live web (DDG)</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: result relevance vs cloud firecrawl_search</div></div>
+    <div class="card"><div class="name">extract<small>schema → strict typed JSON, local LLM</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: schema conformance + accuracy on fixed pages</div></div>
+    <div class="card"><div class="name">http api<small>firecrawl-parity REST</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: live curl conformance, error paths</div></div>
+    <div class="card"><div class="name">mcp server<small>claude code + lm studio + hermes</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: real handshake in all three hosts</div></div>
+    <div class="card"><div class="name">webui<small>single-file dark futuristic UI</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: blind screenshots vs playground @2 viewports</div></div>
+  </div>
+
+  <h2>Live log</h2>
+  <div class="log">
+    <div><span class="t">[t0]</span> <span class="info">gauntlet start</span> — repo init @ /data/aibotjock/webcrawl, remote aibotjock/webcrawl.git</div>
+    <div><span class="t">[t0]</span> <span class="ok">bar verified</span> — firecrawl-mcp 3.24.0 keyless: scrape/map/search/crawl/extract all exposed; example.com scrape returned real cloud markdown (cacheState: hit)</div>
+    <div><span class="t">[t0]</span> <span class="info">chromium installed</span> — playwright 1.56</div>
+    <div><span class="t">[t0]</span> <span class="info">capturing</span> — bar outputs + playground screenshots + source digest, in parallel</div>
+  </div>
+
+  <footer>auto-refresh 20s · gauntlet loop: builder → blind critic → repeat until ours wins</footer>
+</div></body>
+</html>

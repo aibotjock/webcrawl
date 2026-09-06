@@ -1,0 +1,28 @@
+{
+  "tool": "firecrawl_scrape",
+  "args": {
+    "url": "https://quotes.toscrape.com/js/",
+    "formats": [
+      "screenshot"
+    ]
+  },
+  "latencyMs": 1898,
+  "result": {
+    "screenshot": "https://storage.googleapis.com/firecrawl-scrape-media/screenshot-458582fe-470f-488f-b661-8c04fbc1b567.png?GoogleAccessId=scrape-bucket-accessor%40firecrawl.iam.gserviceaccount.com&Expires=1789264265&Signature=OhVfzmebN68jbv5QezrrBmVHBGuqDhJI%2F2casjKhloNM8g8zKCPDP86pixeCR%2FA7%2BDHejdAgGGeBekqs%2F0Zk9gVlxkcA1mDZj%2BBsD4ehygCMiqCdmi2yK7P2TeCem71pTK9eYRhaQ0W4JPgqI%2B%2F%2Fh1wD6H8qQN7ogSVHv3PJNh1L%2FkQKTBQ%2BP0OXiLxuoPqZiyo%2B2pOX4qMug7d8aLSd6Bdshg3vrWhXbLvGbOzA0jT9RDV%2B3mYNHCaZsLnkXJfuglB9R%2BnZQUyISdcI3ksiLD%2BO3Je27id2fptrW0zFGZxiJpcFnSBr6eePRKp7Fksda%2Bd2OBXRO2T9mZF9WedWsg%3D%3D",
+    "metadata": {
+      "language": "en",
+      "title": "Quotes to Scrape",
+      "scrapeId": "01a07469-7507-73df-884f-86973428b8e8",
+      "sourceURL": "https://quotes.toscrape.com/js/",
+      "url": "https://quotes.toscrape.com/js/",
+      "statusCode": 200,
+      "contentType": "text/html; charset=utf-8",
+      "timezone": "America/New_York",
+      "proxyUsed": "basic",
+      "cacheState": "miss",
+      "indexId": "38cc18a1-5d87-46da-9a1f-e7b9c27b9590",
+      "creditsUsed": 1,
+      "concurrencyLimited": false
+    }
+  }
+}

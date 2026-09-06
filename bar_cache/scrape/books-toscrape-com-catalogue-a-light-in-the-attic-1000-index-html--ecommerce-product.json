@@ -1,0 +1,32 @@
+{
+  "tool": "firecrawl_scrape",
+  "args": {
+    "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+    "formats": [
+      "markdown"
+    ]
+  },
+  "latencyMs": 221,
+  "result": {
+    "markdown": "- [Home](https://books.toscrape.com/index.html)\n- [Books](https://books.toscrape.com/catalogue/category/books_1/index.html)\n- [Poetry](https://books.toscrape.com/catalogue/category/books/poetry_23/index.html)\n- A Light in the Attic\n\n![A Light in the Attic](https://books.toscrape.com/media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg)\n\n# A Light in the Attic\n\n£51.77\n\n\nIn stock (22 available)\n\n\n* * *\n\n**Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.\n\n## Product Description\n\nIt's hard to imagine a world without A Light in the Attic. This now-classic collection of poetry and drawings from Shel Silverstein celebrates its 20th anniversary with this special edition. Silverstein's humorous and creative verse can amuse the dowdiest of readers. Lemon-faced adults and fidgety kids sit still and read these rhythmic words and laugh and smile and love th It's hard to imagine a world without A Light in the Attic. This now-classic collection of poetry and drawings from Shel Silverstein celebrates its 20th anniversary with this special edition. Silverstein's humorous and creative verse can amuse the dowdiest of readers. Lemon-faced adults and fidgety kids sit still and read these rhythmic words and laugh and smile and love that Silverstein. Need proof of his genius? RockabyeRockabye baby, in the treetopDon't you know a treetopIs no safe place to rock?And who put you up there,And your cradle, too?Baby, I think someone down here'sGot it in for you. Shel, you never sounded so good. ...more\n\n## Product Information\n\n| UPC | a897fe39b1053632 |\n| Product Type | Books |\n| Price (excl. tax) | £51.77 |\n| Price (incl. tax) | £51.77 |\n| Tax | £0.00 |\n| Availability | In stock (22 available) |\n| Number of reviews | 0 |",
+    "metadata": {
+      "viewport": "width=device-width",
+      "title": "\n    A Light in the Attic | Books to Scrape - Sandbox\n",
+      "created": "24th Jun 2016 09:29",
+      "robots": "NOARCHIVE,NOCACHE",
+      "language": "en-us",
+      "description": "\n    It's hard to imagine a world without A Light in the Attic. This now-classic collection of poetry and drawings from Shel Silverstein celebrates its 20th anniversary with this special edition. Silverstein's humorous and creative verse can amuse the dowdiest of readers. Lemon-faced adults and fidgety kids sit still and read these rhythmic words and laugh and smile and love th It's hard to imagine a world without A Light in the Attic. This now-classic collection of poetry and drawings from Shel Silverstein celebrates its 20th anniversary with this special edition. Silverstein's humorous and creative verse can amuse the dowdiest of readers. Lemon-faced adults and fidgety kids sit still and read these rhythmic words and laugh and smile and love that Silverstein. Need proof of his genius? RockabyeRockabye baby, in the treetopDon't you know a treetopIs no safe place to rock?And who put you up there,And your cradle, too?Baby, I think someone down here'sGot it in for you. Shel, you never sounded so good. ...more\n",
+      "favicon": "https://books.toscrape.com/static/oscar/favicon.ico",
+      "scrapeId": "01a07469-5435-746a-8e07-ca348e9e4169",
+      "sourceURL": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "statusCode": 200,
+      "contentType": "text/html",
+      "proxyUsed": "basic",
+      "cacheState": "hit",
+      "cachedAt": "2026-09-06T01:07:22.970Z",
+      "creditsUsed": 1,
+      "concurrencyLimited": false
+    }
+  }
+}

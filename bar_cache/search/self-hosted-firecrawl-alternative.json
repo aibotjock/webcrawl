@@ -1,0 +1,65 @@
+{
+  "tool": "firecrawl_search",
+  "args": {
+    "query": "self-hosted firecrawl alternative",
+    "limit": 8
+  },
+  "latencyMs": 1117,
+  "result": {
+    "success": true,
+    "data": {
+      "web": [
+        {
+          "url": "https://www.reddit.com/r/LocalLLaMA/comments/1qmzz8e/lowcost_alternatives_to_firecrawl/",
+          "title": "Low-cost alternatives to Firecrawl? : r/LocalLLaMA - Reddit",
+          "description": "# Comments Section\n[Self-hosted firecrawl](https://www.reddit.com/search/?q=self-hosted+firecrawl+alternatives&cId=5129d573-4362-4c06-9564-6ddc2e5a1469&iId=ecc94786-8713-4ac1-9ab6-b5d719fb81dc) does a fantastic job unless you need very specific use cases like sandboxed browser agent etc.\n\nThe only issue was self hosted firecrawl has literally zero visibility, so I built a transparent proxy + dashboard which gives me excellent visibility into the usage, and also if any scrape/crawl fail for any reason.",
+          "position": 1
+        },
+        {
+          "url": "https://www.nimbleway.com/blog/7-firecrawl-alternatives-by-use-case",
+          "title": "7 Firecrawl Alternatives by Use Case - Nimble Way",
+          "description": "# 7 Firecrawl Alternatives by Use Case\n## **Top Firecrawl Alternatives by Use Case**\n- **Recommended for self-hosted, LLM-optimized crawling with full pipeline control: Crawl4AI**\n\n## **7 Firecrawl Alternatives by Use Case**\n### **4.** [**Crawl4AI**](https://github.com/unclecode/crawl4ai) **– Recommended for self-hosted, LLM-optimized crawling with full pipeline control**\n#### **Why Choose It Over Firecrawl**\nChoose Crawl4AI when you want to avoid per-page managed API costs and keep more control over the extraction workflow. Firecrawl is optimized for quick, easy extraction, but it lacks the deep customization available in a self-hosted Python framework.\n\n#### **Pricing**\nCrawl4AI is an open-source, free-to-use Python library under the Apache 2.0 license. While the software is free, users must cover their own infrastructure costs",
+          "position": 2
+        },
+        {
+          "url": "https://webcrawlerapi.com/blog/best-firecrawl-alternatives",
+          "title": "Top 5 Best Firecrawl Alternatives | WebcrawlerAPI Blog",
+          "description": "# Top 5 Best Firecrawl Alternatives\nLooking for free, self-hostable options instead?",
+          "position": 3
+        },
+        {
+          "url": "https://fastcrw.com/blog/best-self-hosted-scrapers",
+          "title": "Best Self-Hosted Web Scraping Tools for AI Agents and RAG (2026)",
+          "description": "## Scaling Each Tool\n### Firecrawl — Redis Queue, More Moving Parts\nFor most teams, a managed Redis (ElastiCache, Upstash) is the right call rather than self-hosting Redis as well.",
+          "position": 4
+        },
+        {
+          "url": "https://github.com/topics/firecrawl-alternative?o=desc&s=updated",
+          "title": "firecrawl-alternative · GitHub Topics",
+          "description": "# firecrawl-alternative\n## Here are  52 public repositories  matching this topic...\n### [us](https://github.com/us) /  [crw](https://github.com/us/crw)\nSelf-host or use managed cloud.\n\n[docker](https://github.com/topics/docker) [markdown](https://github.com/topics/markdown) [rust](https://github.com/topics/rust) [crawler](https://github.com/topics/crawler) [ai](https://github.com/topics/ai) [mcp](https://github.com/topics/mcp) [html-to-markdown](https://github.com/topics/html-to-markdown) [web-crawler](https://github.com/topics/web-crawler) [web-scraper](https://github.com/topics/web-scraper) [self-hosted](https://github.com/topics/self-hosted) [web-scraping](https://github.com/topics/web-scraping) [data-extraction](https://github.com/topics/data-extraction) [ai-agents](https://github.com/topics/ai-agents) [scraping-api](https://github.com/topics/scraping-api) [llm](https://github.com/topics/llm) [web-search-api](https://github.com/topics/web-search-api) [mcp-server](https://github.com/topics/mcp-server) [firecrawl-alternative](https://github.com/topics/firecrawl-alternative) [tavily-alternative](https://github.com/topics/tavily-alternative)\n\n### [0xchasercat](https://github.com/0xchasercat) /  [draco](https://github.com/0xchasercat/draco)\nDraco is a faster, cheaper and lighter firecrawl drop-in replacement that you own entirely, running on your machine, with a built in MCP, free websearch, and browserless JavaScript console.",
+          "position": 5,
+          "category": "github"
+        },
+        {
+          "url": "https://www.firecrawl.dev/blog/best-open-source-web-scraping-libraries",
+          "title": "Best Open-Source Web Scraping Libraries in 2026 - Firecrawl",
+          "description": ": self hosted firecrawl alternative title: Best Open-Source Web Scraping Libraries in 2026 - Firecrawl. Scrapy is a powerful open-source web ...",
+          "position": 6
+        },
+        {
+          "url": "https://thunderbit.com/blog/firecrawl-review-and-alternatives",
+          "title": "Firecrawl Review: Costs, Limits, and What I'd Use Instead - Thunderbit",
+          "description": "What's the best Firecrawl alternative for non-technical users? Thunderbit is a no-code option for business users who need structured website ...",
+          "position": 7
+        },
+        {
+          "url": "https://brightdata.com/blog/ai/firecrawl-alternatives",
+          "title": "The 10 Best Firecrawl Alternatives for AI Web Scraping in 2026 - Bright Data",
+          "description": "# The 10 Best Firecrawl Alternatives for AI Web Scraping in 2026\n## The 10 Best Firecrawl Alternatives in 2026\n### 3. Crawl4AI\n- **Best for:** developers who want a free, self-hosted crawler.\n- **Pricing:** $0 self-hosted; you pay only your own infrastructure.\n\n- Self-hosted, so you own setup and maintenance.\n\n## Conclusion\nFor a free, self-hosted option, Crawl4AI is excellent.",
+          "position": 8
+        }
+      ]
+    },
+    "creditsUsed": 2
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "tool": "firecrawl_scrape",
+  "args": {
+    "url": "https://react.dev/learn",
+    "formats": [
+      "screenshot"
+    ]
+  },
+  "latencyMs": 2329,
+  "result": {
+    "screenshot": "https://storage.googleapis.com/firecrawl-scrape-media/screenshot-51a694c0-1de2-4da8-81c4-427b3f060f29.png?GoogleAccessId=scrape-bucket-accessor%40firecrawl.iam.gserviceaccount.com&Expires=1789264268&Signature=TpIMQQBAU7VoUAvMT4nl4bA6hiPzPMtR3UudQfRfx7MFjvfHhN%2FNYGP%2BmI31SQZxXgIGI03WumGQ7Kpf0tyxJnc4nNT%2FCG%2BlQs0xjP1k%2B7d7vYzMku77V2czUKTRHl2OafxCa0rhy8cNUl9KfadhzfUDJOzFuY7Gm1knF5BJaJDyqlVywm7X1cMxIZWrWQjOgP5U0MHdt11%2F6vFDH90e%2F%2BMYWZn63%2FwGWdMOp5UvR%2BQgse8UbbS1tFXRNao7vpHMsS%2FM8%2FqV0BK7zw3O6RlyWE0txMEfu6YzYO5Rs6FjkKDRx88UD5csJ5k0kiJbixvfQVCNmyHR09WJMJSlruXSIQ%3D%3D",
+    "metadata": {
+      "og:image": "https://react.dev/images/og/learn.png",
+      "ogImage": "https://react.dev/images/og/learn.png",
+      "ogDescription": "The library for web and native user interfaces",
+      "og:type": "website",
+      "twitter:site": "@reactjs",
+      "twitter:title": "Quick Start – React",
+      "twitter:image": "https://react.dev/images/og/learn.png",
+      "algolia-search-order": "3",
+      "twitter:card": "summary_large_image",
+      "google-site-verification": "sIlAGs48RulR4DdP95YSWNKZIEtCqQmRjzn-Zq-CcD0",
+      "msapplication-TileColor": "#2b5797",
+      "theme-color": "#23272f",
+      "viewport": [
+        "width=device-width, initial-scale=1",
+        "width=device-width, initial-scale=1.0"
+      ],
+      "og:url": "https://react.dev/learn",
+      "og:description": "The library for web and native user interfaces",
+      "ogUrl": "https://react.dev/learn",
+      "og:title": "Quick Start – React",
+      "ogTitle": "Quick Start – React",
+      "twitter:description": "The library for web and native user interfaces",
+      "twitter:creator": "@reactjs",
+      "fb:app_id": "623268441017527",
+      "language": "en",
+      "title": "Quick Start – React",
+      "favicon": "https://react.dev/favicon-32x32.png",
+      "scrapeId": "01a07469-8291-75de-a990-e61e3e794410",
+      "sourceURL": "https://react.dev/learn",
+      "url": "https://react.dev/learn",
+      "statusCode": 200,
+      "contentType": "text/html; charset=utf-8",
+      "timezone": "America/New_York",
+      "proxyUsed": "basic",
+      "cacheState": "miss",
+      "indexId": "445232bf-2f53-49f5-b361-6883c52d805e",
+      "creditsUsed": 1,
+      "concurrencyLimited": false
+    }
+  }
+}

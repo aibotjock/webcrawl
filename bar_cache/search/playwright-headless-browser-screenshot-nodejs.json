@@ -1,0 +1,64 @@
+{
+  "tool": "firecrawl_search",
+  "args": {
+    "query": "playwright headless browser screenshot nodejs",
+    "limit": 8
+  },
+  "latencyMs": 762,
+  "result": {
+    "success": true,
+    "data": {
+      "web": [
+        {
+          "url": "https://playwright.dev/docs/screenshots",
+          "title": "Screenshots | Playwright",
+          "description": "## Introduction [​](https://playwright.dev/docs/screenshots#introduction)\n```js\nawait page.screenshot({ path: 'screenshot.png' });\n```\n\n## Full page screenshots [​](https://playwright.dev/docs/screenshots#full-page-screenshots)\n```js\nawait page.screenshot({ path: 'screenshot.png', fullPage: true });\n```\n\n## Capture into buffer [​](https://playwright.dev/docs/screenshots#capture-into-buffer)\n```js\nconst buffer = await page.screenshot();\n\nconsole.log(buffer.toString('base64'));\n```\n\n## Element screenshot [​](https://playwright.dev/docs/screenshots#element-screenshot)\n```js\nawait page.locator('.header').screenshot({ path: 'screenshot.png' });\n```",
+          "position": 1
+        },
+        {
+          "url": "https://iproyal.com/blog/playwright-screenshot/",
+          "title": "Taking Screenshots with Playwright: A Beginner's Guide - IPRoyal.com",
+          "description": "# Taking Screenshots With Playwright: A Beginner’s Guide\n## Setting Up Playwright\n```javascript\nnode -v\nnpm -v\n```\n\n```javascript\nnpm init -y\n```\n\n```javascript\nnpm install playwright\n```\n\n## Full Page Screenshot Example\n```javascript\nconst { chromium } = require('playwright');\n\n(async () => {\n  const browser = await chromium.launch();\n  const page = await browser.newPage();\n\n  await page.goto('https://iproyal.com/');\n\n  // Capture the entire page\n  await page.screenshot({\n    path: 'full-page.png',\n    fullPage: true\n  });\n\n  await browser.close();\n})();\n```\n\n```javascript\nawait page.screenshot({\n  path: 'screenshot.jpg',\n  fullPage: true,\n  quality: 80  // 80% quality\n});\n```\n\n## Capturing a Specific Element\n```javascript\nawait page.locator('#hero-header-block').screenshot({\n  path: 'hero-header-block.jpg',\n  quality: 85\n});\n```\n\n## Screenshots in Playwright Reports\n```javascript\nmodule.exports = {\n  use: {\n    // Options: 'on', 'off', 'only-on-failure'\n    screenshot: 'only-on-failure',\n  },\n};\n```",
+          "position": 2
+        },
+        {
+          "url": "https://scrapfly.io/blog/answers/how-to-take-screenshots-nodejs",
+          "title": "How to take screenshots in NodeJS? - Scrapfly",
+          "description": "In this guide, we'll explore using Playwright and Puppeteer to screenshot in NodeJS. We'll start by covering installation, core concepts, and ...The Basics · Waits and Timeouts",
+          "position": 3
+        },
+        {
+          "url": "https://dev.to/dennis-ddev/taking-screenshots-in-nodejs-puppeteer-playwright-and-api-methods-34hh",
+          "title": "Taking Screenshots in Node.js: Puppeteer, Playwright, and API ...",
+          "description": "## Method 2: Playwright\n### Basic Screenshot\n```\nconst { chromium } = require('playwright');\n\nasync function takeScreenshot(url, outputPath) {\n  const browser = await chromium.launch();\n  const page = await browser.newPage();\n  await page.goto(url, { waitUntil: 'networkidle' });\n  await page.screenshot({ path: outputPath });\n  await browser.close();\n}\n\ntakeScreenshot('https://example.com', 'screenshot.png');\n```\n\n### Cross-Browser Screenshots\n```\nconst { chromium, firefox, webkit } = require('playwright');\n\nasync function crossBrowserScreenshots(url) {\n  for (const browserType of [chromium, firefox, webkit]) {\n    const browser = await browserType.launch();\n    const page = await browser.newPage();\n    await page.goto(url, { waitUntil: 'networkidle' });\n    await page.screenshot({\n      path: `screenshot-${browserType.name()}.png`\n    });\n    await browser.close();\n  }\n}\n\ncrossBrowserScreenshots('https://example.com');\n```\n\n### Device Emulation\n```\nconst { chromium, devices } = require('playwright');\n\nconst iPhone = devices['iPhone 14'];\n\nasync function mobileScreenshot(url) {\n  const browser = await chromium.launch();\n  const context = await browser.newContext({ ...iPhone });\n  const page = await context.newPage();\n  await page.goto(url, { waitUntil: 'networkidle' });\n  await page.screenshot({ path: 'mobile.png' });\n  await browser.close();\n}\n```",
+          "position": 4
+        },
+        {
+          "url": "https://stackoverflow.com/questions/73549417/playwright-tests-failing-50-of-time-on-screenshot-compare-in-headless-mode",
+          "title": "Playwright tests failing 50% of time on screenshot compare in headless ...",
+          "description": "Playwright tests failing 50% of time on screenshot compare in headless mode. Yes you can set all those parameters in playwright.config.js. I ...",
+          "position": 5
+        },
+        {
+          "url": "https://www.twilio.com/en-us/blog/developers/tutorials/building-blocks/automated-headless-browser-scripting-in-node-js-with-playwright",
+          "title": "Automated Headless Browser scripting in Node.js with Playwright",
+          "description": "Let's get started by just launching Playwright, navigating to a web page, and taking a screenshot of the page. Let's use Chromium for the ...Setting up dependencies · Launching Playwright and...",
+          "position": 6
+        },
+        {
+          "url": "https://www.customjs.space/blog/screenshot-api-comparison",
+          "title": "Screenshot API Comparison: Puppeteer vs Playwright vs ...",
+          "description": "# Screenshot API Comparison: Puppeteer vs Playwright vs CustomJS (2026)\n## Puppeteer: screenshot example\n### Node.js (Puppeteer)\n```javascript\nconst puppeteer = require('puppeteer');\n\nasync function screenshotWithPuppeteer(url) {\n  const browser = await puppeteer.launch({\n    headless: 'new'\n  });\n\n  try {\n    const page = await browser.newPage();\n\n    await page.setViewport({ width: 1280, height: 720 });\n    await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });\n\n    // Example: click cookie banner (update selector for your site)\n    // await page.click('#accept-cookies');\n\n    await page.waitForTimeout(500);\n\n    await page.screenshot({ path: 'screenshot.png', fullPage: true });\n  } finally {\n    await browser.close();\n  }\n}\n\nscreenshotWithPuppeteer('https://example.com');\n```\n\n## Playwright: screenshot example\n### Node.js (Playwright)\n```javascript\nconst { chromium } = require('playwright');\n\nasync function screenshotWithPlaywright(url) {\n  const browser = await chromium.launch();\n\n  try {\n    const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });\n    await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });\n\n    // Example: wait for a selector to appear\n    // await page.waitForSelector('main');\n\n    await page.screenshot({ path: 'screenshot.png', fullPage: true });\n  } finally {\n    await browser.close();\n  }\n}\n\nscreenshotWithPlaywright('https://example.com');\n```",
+          "position": 7
+        },
+        {
+          "url": "https://playwright.dev/docs/test-snapshots",
+          "title": "Visual comparisons - Playwright",
+          "description": "## Introduction [​](https://playwright.dev/docs/test-snapshots#introduction)\n```js\nimport { test, expect } from '@playwright/test';\n\ntest('example test', async ({ page }) => {\n\n  await page.goto('https://playwright.dev');\n\n  await expect(page).toHaveScreenshot();\n\n});\n```\n\n## Generating screenshots [​](https://playwright.dev/docs/test-snapshots#generating-screenshots)\n```js\nawait expect(page).toHaveScreenshot('landing.webp');\n```\n\n## Updating screenshots [​](https://playwright.dev/docs/test-snapshots#updating-screenshots)\n```bash\nnpx playwright test --update-snapshots\n```\n\n## Options [​](https://playwright.dev/docs/test-snapshots#options)\n### stylePath [​](https://playwright.dev/docs/test-snapshots#stylepath)\n```js\nimport { test, expect } from '@playwright/test';\n\ntest('example test', async ({ page }) => {\n\n  await page.goto('https://playwright.dev');\n\n  await expect(page).toHaveScreenshot({ stylePath: path.join(__dirname, 'screenshot.css') });\n\n});\n```",
+          "position": 8
+        }
+      ]
+    },
+    "creditsUsed": 2
+  }
+}

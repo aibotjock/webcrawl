@@ -1,0 +1,29 @@
+{
+  "tool": "firecrawl_scrape",
+  "args": {
+    "url": "https://example.com",
+    "formats": [
+      "markdown"
+    ]
+  },
+  "latencyMs": 194,
+  "result": {
+    "markdown": "# Example Domain\n\nThis domain is for use in documentation examples without needing permission. Avoid use in operations.\n\n[Learn more](https://iana.org/domains/example)",
+    "metadata": {
+      "viewport": "width=device-width, initial-scale=1",
+      "title": "Example Domain",
+      "language": "en",
+      "favicon": "data:,",
+      "scrapeId": "01a07469-25a5-71cd-9919-e188da480266",
+      "sourceURL": "https://example.com",
+      "url": "https://example.com/",
+      "statusCode": 200,
+      "contentType": "text/html",
+      "proxyUsed": "basic",
+      "cacheState": "hit",
+      "cachedAt": "2026-09-06T01:46:35.134Z",
+      "creditsUsed": 1,
+      "concurrencyLimited": false
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "scrape": [
+    { "url": "https://example.com", "kind": "control" },
+    { "url": "https://docs.python.org/3/library/asyncio.html", "kind": "docs" },
+    { "url": "https://react.dev/learn", "kind": "js-spa-docs" },
+    { "url": "https://news.ycombinator.com/", "kind": "plain-list" },
+    { "url": "https://en.wikipedia.org/wiki/Web_scraping", "kind": "longform" },
+    { "url": "https://books.toscrape.com/", "kind": "ecommerce-catalog" },
+    { "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html", "kind": "ecommerce-product" },
+    { "url": "https://quotes.toscrape.com/js/", "kind": "js-spa" },
+    { "url": "https://github.com/mendableai/firecrawl", "kind": "js-heavy" },
+    { "url": "https://www.bbc.com/news", "kind": "news" }
+  ],
+  "screenshot": [
+    "https://quotes.toscrape.com/js/",
+    "https://react.dev/learn"
+  ],
+  "map": [
+    { "url": "https://books.toscrape.com", "limit": 1500 },
+    { "url": "https://docs.python.org/3/", "limit": 3000 },
+    { "url": "https://react.dev", "limit": 3000 }
+  ],
+  "search": [
+    "self-hosted firecrawl alternative",
+    "playwright headless browser screenshot nodejs",
+    "LTX 2.5 open weights video model"
+  ],
+  "crawl": [
+    { "url": "https://books.toscrape.com", "limit": 30 }
+  ]
+}

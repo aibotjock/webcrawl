@@ -1,0 +1,23 @@
+{
+  "name": "webcrawl",
+  "version": "0.1.0",
+  "description": "Free self-hosted Firecrawl alternative: scrape/crawl/map/search/extract with HTTP API, MCP server, and WebUI",
+  "type": "module",
+  "bin": { "webcrawl-mcp": "src/mcp.js" },
+  "scripts": {
+    "start": "node src/server.js",
+    "mcp": "node src/mcp.js",
+    "test": "node --test test/",
+    "bench": "node scripts/bench.js",
+    "capture:bar": "node scripts/bar-capture.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@mozilla/readability": "^0.6.0",
+    "express": "^5.0.0",
+    "playwright": "^1.56.0",
+    "turndown": "^7.0.0"
+  },
+  "engines": { "node": ">=20" },
+  "license": "MIT"
+}
