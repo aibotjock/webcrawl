@@ -1,0 +1,74 @@
+[
+  {
+    "url": "https://books.toscrape.com",
+    "limit": 1500,
+    "ours": {
+      "count": 2329,
+      "latencyMs": 9015,
+      "source": {
+        "sitemap": 0,
+        "links": 2329
+      }
+    },
+    "truth": {
+      "sitemap": 0,
+      "walked": 2727,
+      "union": 2727,
+      "walkPages": 2500
+    },
+    "metrics": {
+      "inTruth": 2325,
+      "precision": 0.998,
+      "recall": 0.853,
+      "beyondSitemap": 2329
+    }
+  },
+  {
+    "url": "https://docs.python.org/3/",
+    "limit": 3000,
+    "ours": {
+      "count": 10751,
+      "latencyMs": 15010,
+      "source": {
+        "sitemap": 8,
+        "links": 10751
+      }
+    },
+    "truth": {
+      "sitemap": 8,
+      "walked": 5465,
+      "union": 5465,
+      "walkPages": 2097
+    },
+    "metrics": {
+      "inTruth": 3288,
+      "precision": 0.306,
+      "recall": 0.602,
+      "beyondSitemap": 10743
+    }
+  },
+  {
+    "url": "https://react.dev",
+    "limit": 3000,
+    "ours": {
+      "count": 333,
+      "latencyMs": 2902,
+      "source": {
+        "sitemap": 0,
+        "links": 333
+      }
+    },
+    "truth": {
+      "sitemap": 0,
+      "walked": 265,
+      "union": 265,
+      "walkPages": 265
+    },
+    "metrics": {
+      "inTruth": 232,
+      "precision": 0.697,
+      "recall": 0.875,
+      "beyondSitemap": 333
+    }
+  }
+]

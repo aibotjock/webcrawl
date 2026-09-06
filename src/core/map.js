@@ -26,16 +26,27 @@ async function sitemapStrategy(origin, deadline, found) {
   for (const m of robots.matchAll(/^\s*sitemap:\s*(\S+)/gim)) queue.push(m[1]);
   const seen = new Set();
   while (queue.length && Date.now() < deadline && found.size < 20000) {
-    const sm = normalizeUrl(queue.shift(), origin);
-    if (!sm || seen.has(sm)) continue;
-    seen.add(sm);
-    const r = await fetchPage(sm, { timeoutMs: Math.min(10000, deadline - Date.now()) });
-    if (r.error || !r.html) continue;
-    const locs = [...r.html.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map(m => m[1]);
-    if (/<sitemapindex/i.test(r.html)) queue.push(...locs);
-    else for (const l of locs) {
-      const u = normalizeUrl(l, sm);
-      if (u && isSame(u, origin)) found.add(u);
+    const batch = [];
+    for (const raw of queue.splice(0, config.concurrency)) {
+      const sm = normalizeUrl(raw, origin);
+      if (sm && !seen.has(sm)) {
+        seen.add(sm);
+        batch.push(sm);
+      }
+    }
+    const results = await Promise.all(
+      batch.map(async sm => {
+        const r = await fetchPage(sm, { timeoutMs: Math.min(10000, deadline - Date.now()) });
+        if (r.error || !r.html) return null;
+        return { index: /<sitemapindex/i.test(r.html), locs: [...r.html.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map(m => m[1]) };
+      })
+    );
+    for (const res of results.filter(Boolean)) {
+      if (res.index) queue.push(...res.locs);
+      else for (const l of res.locs) {
+        const u = normalizeUrl(l, origin);
+        if (u && isSame(u, origin)) found.add(u);
+      }
     }
   }
 }
@@ -46,8 +57,9 @@ async function linkStrategy(start, origin, deadline, limit, found) {
   let active = 0;
   let fetched = 0;
   await new Promise(resolve => {
+    const done = () => !active && (!queue.length || fetched >= limit || Date.now() >= deadline);
     const tick = () => {
-      if (!active && (!queue.length || fetched >= limit || Date.now() >= deadline)) return resolve();
+      if (done()) return resolve();
       while (queue.length && active < config.concurrency && fetched < limit && Date.now() < deadline) {
         const u = queue.shift();
         active++;
@@ -57,8 +69,8 @@ async function linkStrategy(start, origin, deadline, limit, found) {
             if (!r.error && r.html)
               for (const h of extractHrefs(r.html)) {
                 const v = normalizeUrl(h, r.finalUrl || u);
-                if (!v) continue;
-                if (isSame(v, origin)) found.add(v); // collect even unexpanded URLs
+                if (!v || !isSame(v, origin)) continue;
+                found.add(v); // collect even unexpanded URLs
                 if (!queued.has(v) && queued.size < 20000) {
                   queued.add(v);
                   queue.push(v);
@@ -71,6 +83,7 @@ async function linkStrategy(start, origin, deadline, limit, found) {
             tick();
           });
       }
+      if (done()) resolve();
     };
     tick();
   });
@@ -98,6 +111,7 @@ export async function mapSite(url, { limit = 200, timeout = 15000 } = {}) {
         sitemap: urls.filter(u => sm.has(u)).length,
         links: urls.filter(u => lk.has(u)).length,
       },
+      ...(urls.length ? {} : { error: 'no urls discovered' }),
     };
   } catch (e) {
     return { urls: [], count: 0, latencyMs: Date.now() - t0, error: String(e?.message || e) };

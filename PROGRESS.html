@@ -58,13 +58,13 @@
     <div class="card"><div class="name">source digest<small>clean-room heuristics spec from firecrawl source</small></div><div class="pill p-won">DONE</div><div class="rounds">R0</div><div class="note">374-line behavioral spec w/ file:line provenance → notes/heuristics.md · LM Studio live (qwen3.8-moe) for extract</div></div>
     <div class="card"><div class="name">scrape · markdown fidelity<small>10-URL set: docs, SPA, news, ecommerce, wiki, HN</small></div><div class="pill p-run">BUILDING</div><div class="rounds">R1</div><div class="note">builder iterating vs bar markdown per-URL · judge: blind side-by-side + token count</div></div>
     <div class="card"><div class="name">screenshot + JS render<small>headless chromium, SPA pages</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: rendered completeness vs bar screenshot format</div></div>
-    <div class="card"><div class="name">map<small>domain URL discovery, no sitemap</small></div><div class="pill p-run">BUILDING</div><div class="rounds">R1</div><div class="note">builder agent live · judge: coverage vs sitemap+linkgraph truth, latency</div></div>
-    <div class="card"><div class="name">crawl<small>recursive site walk, limit-bounded</small></div><div class="pill p-run">BUILDING</div><div class="rounds">R1</div><div class="note">builder agent live · judge: valid-page coverage, markdown quality, speed</div></div>
+    <div class="card"><div class="name">map<small>domain URL discovery, no sitemap</small></div><div class="pill p-run">BUILT R1</div><div class="rounds">R1</div><div class="note">books 2329 urls / 99.8% in-truth / 9.0s · react.dev 333 / 2.9s · pydocs 10,751 / 15.0s (deadline overrun — fix candidate)</div></div>
+    <div class="card"><div class="name">crawl<small>recursive site walk, limit-bounded</small></div><div class="pill p-wait">BUILDING</div><div class="rounds">R1</div><div class="note">core built, bench waits on scrape.js · judge: valid-page coverage, markdown quality, speed</div></div>
     <div class="card"><div class="name">search<small>keyless live web (DDG)</small></div><div class="pill p-run">BUILDING</div><div class="rounds">R1</div><div class="note">builder agent live · judge: relevance vs cached cloud search</div></div>
     <div class="card"><div class="name">extract<small>schema → strict typed JSON, local LLM</small></div><div class="pill p-run">BUILDING</div><div class="rounds">R1</div><div class="note">builder agent live · LM Studio spinning up w/ qwen3.8-moe for LLM mode</div></div>
-    <div class="card"><div class="name">http api<small>firecrawl-parity REST</small></div><div class="pill p-run">BUILDING</div><div class="rounds">R1</div><div class="note">builder agent live · judge: live curl conformance, error paths</div></div>
-    <div class="card"><div class="name">mcp server<small>claude code + lm studio + hermes</small></div><div class="pill p-run">BUILDING</div><div class="rounds">R1</div><div class="note">builder agent live · judge: real handshake in all three hosts</div></div>
-    <div class="card"><div class="name">webui<small>single-file dark futuristic UI</small></div><div class="pill p-run">BUILDING</div><div class="rounds">R1</div><div class="note">builder agent live · judge: blind screenshots vs playground @2 viewports</div></div>
+    <div class="card"><div class="name">http api<small>firecrawl-parity REST</small></div><div class="pill p-run">BUILT R1</div><div class="rounds">R1</div><div class="note">7 routes + jobs + clean errors, self-verified live · awaits critic</div></div>
+    <div class="card"><div class="name">mcp server<small>claude code + lm studio + hermes</small></div><div class="pill p-run">BUILT R1</div><div class="rounds">R1</div><div class="note">6 tools, clean stdio handshake verified · 3-host integration next</div></div>
+    <div class="card"><div class="name">webui<small>single-file dark futuristic UI</small></div><div class="pill p-run">REFINING</div><div class="rounds">R1</div><div class="note">824-line single file built; refinement pass vs real playground shots in flight</div></div>
   </div>
 
   <h2>Live log</h2>
@@ -73,6 +73,9 @@
     <div><span class="t">[t0]</span> <span class="ok">bar verified</span> — firecrawl-mcp 3.24.0 keyless: scrape/map/search/crawl/extract all exposed; example.com scrape returned real cloud markdown (cacheState: hit)</div>
     <div><span class="t">[t0]</span> <span class="info">chromium installed</span> — playwright 1.56</div>
     <div><span class="t">[t0]</span> <span class="info">capturing</span> — bar outputs + playground screenshots + source digest, in parallel</div>
+    <div><span class="t">[R1]</span> <span class="ok">api+mcp built</span> — 7 routes, 6 MCP tools, clean error shapes, self-verified live</div>
+    <div><span class="t">[R1]</span> <span class="ok">map built</span> — sitemap+linkgraph race; books 2329 urls 99.8% in-truth 9.0s; nodejs.org 2519 (1723 via sitemap) 2.1s</div>
+    <div><span class="t">[R1]</span> <span class="info">llm live</span> — LM Studio qwen3.8-moe (21.5GB) serving extract on :1234</div>
   </div>
 
   <footer>auto-refresh 20s · gauntlet loop: builder → blind critic → repeat until ours wins</footer>

@@ -5,6 +5,7 @@ import { config } from './config.js';
 import { normalizeUrl } from './fetch.js';
 
 const globRe = g => new RegExp('^' + g.replace(/[.+^${}()|[\]\\?]/g, c => '\\' + c).replace(/\*/g, '.*') + '$');
+const assetRe = /\.(css|js|mjs|json|xml|rss|atom|png|jpe?g|gif|svg|ico|webp|avif|bmp|woff2?|ttf|otf|eot|pdf|zip|gz|tar|mp[34]|webm|wav)(\?|#|$)/i;
 
 // Harvest hrefs from whatever the page function returned: markdown link syntax,
 // html/rawHtml href attributes, or an explicit links array.
@@ -40,8 +41,9 @@ export async function crawlSite(
     let active = 0;
     let stop = false;
     await new Promise(resolve => {
+      const done = () => !active && (stop || !queue.length || pages.length >= limit);
       const tick = () => {
-        if (!active && (stop || !queue.length || pages.length >= limit)) return resolve();
+        if (done()) return resolve();
         while (!stop && queue.length && active < concurrency && pages.length + active < limit) {
           const [u, depth] = queue.shift();
           if (!visitable(u)) continue;
@@ -54,7 +56,7 @@ export async function crawlSite(
               if (depth < maxDepth)
                 for (const raw of hrefsOf(r)) {
                   const v = normalizeUrl(raw, u);
-                  if (v && same(v) && !seen.has(v)) {
+                  if (v && same(v) && !seen.has(v) && !assetRe.test(v)) {
                     seen.add(v);
                     queue.push([v, depth + 1]);
                   }
@@ -67,6 +69,7 @@ export async function crawlSite(
               tick();
             });
         }
+        if (done()) resolve();
       };
       tick();
     });
