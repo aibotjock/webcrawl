@@ -1,0 +1,39 @@
+[
+  {
+    "url": "https://books.toscrape.com",
+    "limit": 30,
+    "ours": {
+      "pages": 30,
+      "latencyMs": 904,
+      "msPerPage": 30,
+      "validPages": 30,
+      "inTruth": 30,
+      "avgTokens": 1311
+    },
+    "bar": {
+      "note": "keyless cloud crawl returned 401 Unauthorized — judged against truth + parity of scrape quality"
+    },
+    "sample": [
+      {
+        "url": "https://books.toscrape.com/",
+        "chars": 8341
+      },
+      {
+        "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+        "chars": 1636
+      },
+      {
+        "url": "https://books.toscrape.com/catalogue/soumission_998/index.html",
+        "chars": 2131
+      },
+      {
+        "url": "https://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html",
+        "chars": 1752
+      },
+      {
+        "url": "https://books.toscrape.com/catalogue/the-requiem-red_995/index.html",
+        "chars": 3055
+      }
+    ]
+  }
+]

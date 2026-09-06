@@ -1,6 +1,6 @@
 {
   "scrape/control": {
-    "ours": "A"
+    "ours": "B"
   },
   "scrape/docs": {
     "ours": "A"
@@ -9,24 +9,24 @@
     "ours": "B"
   },
   "scrape/plain-list": {
-    "ours": "A"
+    "ours": "B"
   },
   "scrape/longform": {
-    "ours": "B"
-  },
-  "scrape/ecommerce-catalog": {
     "ours": "A"
   },
-  "scrape/ecommerce-product": {
+  "scrape/ecommerce-catalog": {
     "ours": "B"
   },
+  "scrape/ecommerce-product": {
+    "ours": "A"
+  },
   "scrape/js-spa": {
-    "ours": "B"
+    "ours": "A"
   },
   "scrape/js-heavy": {
     "ours": "A"
   },
   "scrape/news": {
-    "ours": "A"
+    "ours": "B"
   }
 }

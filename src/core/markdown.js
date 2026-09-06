@@ -26,7 +26,7 @@ import { URL as U } from 'node:url';
 }
 
 const BOILER = new Set(
-  'cookie cookies consent banner sidebar breadcrumb breadcrumbs social-share social social-media social-links modal popup overlay newsletter footer nav navbar navigation menu masthead toolbar widget header hidden share ad ads advert lang-selector language-selector'.split(
+  'cookie cookies consent banner sidebar breadcrumb breadcrumbs social-share social social-media social-links modal popup overlay newsletter footer nav navbar navigation menu masthead toolbar widget header hidden share ad ads advert lang-selector language-selector toc recommended comments comment'.split(
     ' '
   )
 );
@@ -65,6 +65,14 @@ function clean(root, baseUrl, mainOnly) {
     }
   }
   for (const img of [...root.querySelectorAll('img')]) {
+    // Ad/tracking pixels: tiny dimensions or known ad-tech hosts (blockAds parity).
+    const w = parseFloat(img.getAttribute('width') || '') || 0;
+    const h = parseFloat(img.getAttribute('height') || '') || 0;
+    const src0 = img.getAttribute('src') || '';
+    if ((w > 0 && w <= 50) || (h > 0 && h <= 50) || /doubleclick|googlesyndication|scorecardresearch|adsystem|adservice|analytics|beacon|pixel|bbcdotcom|2x2|1x1/i.test(src0)) {
+      if (img.parentNode) img.remove();
+      continue;
+    }
     const best = largestSrcset(img.getAttribute('srcset'));
     if (best) img.setAttribute('src', best);
     const src = img.getAttribute('src') || '';
@@ -80,6 +88,25 @@ const TD = new TurndownService({ gfm: true, headingStyle: 'atx', bulletListMarke
 TD.addRule('blankLink', {
   filter: (n) => n.nodeName === 'A' && !(n.textContent || '').trim() && !n.querySelector('img'),
   replacement: () => '',
+});
+// Card links (<a> wrapping block content — news front pages): flatten instead
+// of emitting "[## Heading\n\nsummary](url)" pseudo-links. Heading text becomes
+// the link; the rest renders as plain content.
+TD.addRule('blockLink', {
+  filter: (n) =>
+    n.nodeName === 'A' && !!(n.querySelector && n.querySelector('p,div,h1,h2,h3,h4,h5,h6,ul,ol,table,figure,section,article')),
+  replacement: (content, node) => {
+    const href = node.getAttribute('href') || '';
+    const link = (t) => (href ? `[${t}](${href})` : t);
+    const m = content.match(/^#{1,6} .+$/m);
+    if (m) {
+      const head = m[0].replace(/^(#{1,6}) (.*)$/s, (_, hs, rest) => `${hs} ${link(rest.trim())}`);
+      const body = (content.slice(0, m.index) + '\n' + content.slice(m.index + m[0].length)).trim();
+      return `\n\n${head}\n\n${body}\n\n`;
+    }
+    const t = (node.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 120);
+    return t ? `\n\n${link(t)}\n\n` : '';
+  },
 });
 TD.addRule('fencedCodeBlock', {
   filter: (n) => n.nodeName === 'PRE',
@@ -143,14 +170,31 @@ function transformTables(root) {
 }
 
 
-// Main-content HTML: Readability article when it yields enough, else cleaned full body.
+// Main-content HTML: Readability article when it captures most of the cleaned
+// body (>= 2/3 — on sectioned reference/index pages Readability truncates hard),
+// else the cleaned full body.
 export function extractMain(html, baseUrl, { mainOnly = true } = {}) {
   const doc = parse(html, baseUrl);
   const docTitle = (doc.title || '').trim();
   const origH1 = doc.querySelector('h1'); // grab before Readability mutates the doc
+  const full = parse(html, baseUrl);
+  clean(full, baseUrl, mainOnly);
+  const bodyText = txt(full.body?.textContent);
+  const bodyLinks = full.body?.querySelectorAll('a[href]').length || 0;
+  const bodyHeads = full.body?.querySelectorAll('h2,h3').length || 0;
   let r = null;
   if (mainOnly) { try { r = new Readability(doc).parse(); } catch {} }
-  if (r?.content && txt(r.textContent) >= 200) {
+  // Reject Readability when it truncates text (sectioned reference pages),
+  // strips most links (card/list pages whose links ARE the content), or
+  // drops section headings (modern wikipedia wraps h2 in divs Readability eats).
+  let rLinks = 0;
+  let rHeads = 0;
+  if (r?.content) {
+    const host = parse(r.content, baseUrl);
+    rLinks = host.querySelectorAll('a[href]').length;
+    rHeads = host.querySelectorAll('h2,h3').length;
+  }
+  if (r?.content && txt(r.textContent) >= 200 && txt(r.textContent) >= bodyText * (2 / 3) && rLinks >= bodyLinks * 0.5 && rHeads >= bodyHeads * 0.7) {
     const host = doc.createElement('div');
     host.innerHTML = r.content;
     if (!host.querySelector('h1')) {
@@ -168,8 +212,6 @@ export function extractMain(html, baseUrl, { mainOnly = true } = {}) {
     transformTables(host);
     return { contentHtml: host.innerHTML, title: r.title || docTitle };
   }
-  const full = parse(html, baseUrl);
-  clean(full, baseUrl, mainOnly);
   transformTables(full);
   return { contentHtml: full.body?.innerHTML || '', title: docTitle };
 }

@@ -1,0 +1,68 @@
+[
+  {
+    "query": "self-hosted firecrawl alternative",
+    "ours": {
+      "count": 8,
+      "latencyMs": 711,
+      "top3": [
+        "https://roundproxies.com/blog/best-firecrawl-alternatives",
+        "https://spider.cloud/blog/best-firecrawl-alternatives",
+        "https://www.eesel.ai/blog/firecrawl-alternatives"
+      ]
+    },
+    "bar": {
+      "count": 8,
+      "latencyMs": 1117,
+      "top3": [
+        "https://www.reddit.com/r/LocalLLaMA/comments/1qmzz8e/lowcost_alternatives_to_firecrawl/",
+        "https://www.nimbleway.com/blog/7-firecrawl-alternatives-by-use-case",
+        "https://webcrawlerapi.com/blog/best-firecrawl-alternatives"
+      ]
+    },
+    "domainOverlapTop8": 3
+  },
+  {
+    "query": "playwright headless browser screenshot nodejs",
+    "ours": {
+      "count": 8,
+      "latencyMs": 588,
+      "top3": [
+        "https://iproyal.com/blog/playwright-screenshot",
+        "https://dev.to/dennis-ddev/taking-screenshots-in-nodejs-puppeteer-playwright-and-api-methods-34hh",
+        "https://playwright.dev/docs/screenshots"
+      ]
+    },
+    "bar": {
+      "count": 8,
+      "latencyMs": 762,
+      "top3": [
+        "https://playwright.dev/docs/screenshots",
+        "https://iproyal.com/blog/playwright-screenshot/",
+        "https://scrapfly.io/blog/answers/how-to-take-screenshots-nodejs"
+      ]
+    },
+    "domainOverlapTop8": 5
+  },
+  {
+    "query": "LTX 2.5 open weights video model",
+    "ours": {
+      "count": 8,
+      "latencyMs": 718,
+      "top3": [
+        "https://ltx.io/model/ltx-2-5",
+        "https://huggingface.co/Lightricks/LTX-2.5",
+        "https://ltx.io/model/open-source"
+      ]
+    },
+    "bar": {
+      "count": 8,
+      "latencyMs": 857,
+      "top3": [
+        "https://ltx.io/model/ltx-2-5",
+        "https://huggingface.co/Lightricks/LTX-2.5",
+        "https://www.youtube.com/watch?v=sIOC9pzHzjs"
+      ]
+    },
+    "domainOverlapTop8": 4
+  }
+]

@@ -61,6 +61,16 @@ export async function withPage(url, fn, { timeoutMs = config.timeoutMs, waitUnti
 
 async function settle(page, waitFor, timeoutMs) {
   await page.waitForLoadState('networkidle', { timeout: Math.min(3000, timeoutMs) }).catch(() => {});
+  // DOM stabilization: XHR-rendered text can land right after networkidle —
+  // poll until body text length is unchanged across two samples.
+  const deadline = Date.now() + Math.min(4000, timeoutMs);
+  let prev = -1;
+  while (Date.now() < deadline) {
+    const len = await page.evaluate(() => document.body?.innerText?.length ?? 0).catch(() => 0);
+    if (len === prev && len > 0) break;
+    prev = len;
+    await page.waitForTimeout(250);
+  }
   if (waitFor) await page.waitForTimeout(Math.min(waitFor, 60_000));
 }
 
@@ -98,7 +108,8 @@ export async function screenshotPage(url, { fullPage = false, viewport, timeoutM
           latencyMs: Date.now() - t0,
         };
       },
-      { timeoutMs, viewport }
+      // Firecrawl parity: screenshot default viewport 1920x1080 unless mobile.
+      { timeoutMs, viewport: viewport || { width: 1920, height: 1080 } }
     );
   } catch (e) {
     return { status: 0, finalUrl: url, latencyMs: Date.now() - t0, error: String(e?.message || e) };

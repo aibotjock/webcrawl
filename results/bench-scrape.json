@@ -3,7 +3,7 @@
     "url": "https://example.com",
     "kind": "control",
     "ours": {
-      "latencyMs": 928,
+      "latencyMs": 1158,
       "tokens": 42,
       "chars": 167
     },
@@ -18,9 +18,9 @@
     "url": "https://docs.python.org/3/library/asyncio.html",
     "kind": "docs",
     "ours": {
-      "latencyMs": 254,
-      "tokens": 856,
-      "chars": 3422
+      "latencyMs": 252,
+      "tokens": 1869,
+      "chars": 7474
     },
     "bar": {
       "latencyMs": 148,
@@ -33,7 +33,7 @@
     "url": "https://react.dev/learn",
     "kind": "js-spa-docs",
     "ours": {
-      "latencyMs": 299,
+      "latencyMs": 346,
       "tokens": 4023,
       "chars": 16092
     },
@@ -48,9 +48,9 @@
     "url": "https://news.ycombinator.com/",
     "kind": "plain-list",
     "ours": {
-      "latencyMs": 369,
-      "tokens": 3910,
-      "chars": 15638
+      "latencyMs": 503,
+      "tokens": 3864,
+      "chars": 15454
     },
     "bar": {
       "latencyMs": 197,
@@ -63,9 +63,9 @@
     "url": "https://en.wikipedia.org/wiki/Web_scraping",
     "kind": "longform",
     "ours": {
-      "latencyMs": 272,
-      "tokens": 12345,
-      "chars": 49380
+      "latencyMs": 301,
+      "tokens": 14287,
+      "chars": 57146
     },
     "bar": {
       "latencyMs": 262,
@@ -78,7 +78,7 @@
     "url": "https://books.toscrape.com/",
     "kind": "ecommerce-catalog",
     "ours": {
-      "latencyMs": 250,
+      "latencyMs": 266,
       "tokens": 2086,
       "chars": 8341
     },
@@ -93,9 +93,9 @@
     "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
     "kind": "ecommerce-product",
     "ours": {
-      "latencyMs": 62,
-      "tokens": 409,
-      "chars": 1636
+      "latencyMs": 59,
+      "tokens": 397,
+      "chars": 1588
     },
     "bar": {
       "latencyMs": 221,
@@ -108,9 +108,9 @@
     "url": "https://quotes.toscrape.com/js/",
     "kind": "js-spa",
     "ours": {
-      "latencyMs": 1255,
-      "tokens": 279,
-      "chars": 1116
+      "latencyMs": 1425,
+      "tokens": 382,
+      "chars": 1525
     },
     "bar": {
       "latencyMs": 207,
@@ -123,9 +123,9 @@
     "url": "https://github.com/mendableai/firecrawl",
     "kind": "js-heavy",
     "ours": {
-      "latencyMs": 916,
-      "tokens": 6655,
-      "chars": 26618
+      "latencyMs": 1218,
+      "tokens": 8375,
+      "chars": 33499
     },
     "bar": {
       "latencyMs": 320,
@@ -138,9 +138,9 @@
     "url": "https://www.bbc.com/news",
     "kind": "news",
     "ours": {
-      "latencyMs": 414,
-      "tokens": 4531,
-      "chars": 18121
+      "latencyMs": 283,
+      "tokens": 3606,
+      "chars": 14424
     },
     "bar": {
       "latencyMs": 208,
