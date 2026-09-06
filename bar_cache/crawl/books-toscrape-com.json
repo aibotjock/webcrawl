@@ -1,0 +1,16 @@
+{
+  "tool": "firecrawl_crawl",
+  "args": {
+    "url": "https://books.toscrape.com",
+    "limit": 30,
+    "scrapeOptions": {
+      "formats": [
+        "markdown"
+      ]
+    }
+  },
+  "latencyMs": 6,
+  "result": {
+    "raw": "Tool 'firecrawl_crawl' execution failed: Unauthorized: API key is required when not using a self-hosted instance"
+  }
+}

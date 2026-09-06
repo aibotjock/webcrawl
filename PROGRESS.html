@@ -54,17 +54,17 @@
 
   <h2>Pieces</h2>
   <div id="pieces">
-    <div class="card"><div class="name">bar capture<small>scrape×12 · search×3 · map×3 · crawl×1 → bar_cache/</small></div><div class="pill p-run">RUNNING</div><div class="rounds">R0</div><div class="note">keyless cloud capture in flight</div></div>
+    <div class="card"><div class="name">bar capture<small>scrape×12 · search×3 · map×3 · crawl×1 → bar_cache/</small></div><div class="pill p-won">DONE</div><div class="rounds">R0</div><div class="note">12 real cloud scrapes (md 167–52k chars) + 3 searches + 2 screenshot outputs + playground UI @2 viewports frozen. map/crawl keyless=401 → truth = sitemap+linkgraph (harvesting)</div></div>
     <div class="card"><div class="name">source digest<small>clean-room heuristics spec from firecrawl source</small></div><div class="pill p-run">RUNNING</div><div class="rounds">R0</div><div class="note">reading AGPL source → behavioral spec, no code copy</div></div>
-    <div class="card"><div class="name">scrape · markdown fidelity<small>10-URL set: docs, SPA, news, ecommerce, wiki, HN</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: blind side-by-side vs bar markdown + token count</div></div>
+    <div class="card"><div class="name">scrape · markdown fidelity<small>10-URL set: docs, SPA, news, ecommerce, wiki, HN</small></div><div class="pill p-wait">BUILDING</div><div class="rounds">R1</div><div class="note">builder: core fetch/render/markdown after digest lands</div></div>
     <div class="card"><div class="name">screenshot + JS render<small>headless chromium, SPA pages</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: rendered completeness vs bar screenshot format</div></div>
-    <div class="card"><div class="name">map<small>domain URL discovery, no sitemap</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: coverage vs sitemap+linkgraph truth & cloud map, latency</div></div>
-    <div class="card"><div class="name">crawl<small>recursive site walk, limit-bounded</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: valid-page coverage, markdown quality, speed</div></div>
-    <div class="card"><div class="name">search<small>keyless live web (DDG)</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: result relevance vs cloud firecrawl_search</div></div>
-    <div class="card"><div class="name">extract<small>schema → strict typed JSON, local LLM</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: schema conformance + accuracy on fixed pages</div></div>
-    <div class="card"><div class="name">http api<small>firecrawl-parity REST</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: live curl conformance, error paths</div></div>
-    <div class="card"><div class="name">mcp server<small>claude code + lm studio + hermes</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: real handshake in all three hosts</div></div>
-    <div class="card"><div class="name">webui<small>single-file dark futuristic UI</small></div><div class="pill p-wait">PENDING</div><div class="rounds">R0</div><div class="note">judge: blind screenshots vs playground @2 viewports</div></div>
+    <div class="card"><div class="name">map<small>domain URL discovery, no sitemap</small></div><div class="pill p-run">BUILDING</div><div class="rounds">R1</div><div class="note">builder agent live · judge: coverage vs sitemap+linkgraph truth, latency</div></div>
+    <div class="card"><div class="name">crawl<small>recursive site walk, limit-bounded</small></div><div class="pill p-run">BUILDING</div><div class="rounds">R1</div><div class="note">builder agent live · judge: valid-page coverage, markdown quality, speed</div></div>
+    <div class="card"><div class="name">search<small>keyless live web (DDG)</small></div><div class="pill p-run">BUILDING</div><div class="rounds">R1</div><div class="note">builder agent live · judge: relevance vs cached cloud search</div></div>
+    <div class="card"><div class="name">extract<small>schema → strict typed JSON, local LLM</small></div><div class="pill p-run">BUILDING</div><div class="rounds">R1</div><div class="note">builder agent live · LM Studio spinning up w/ qwen3.8-moe for LLM mode</div></div>
+    <div class="card"><div class="name">http api<small>firecrawl-parity REST</small></div><div class="pill p-run">BUILDING</div><div class="rounds">R1</div><div class="note">builder agent live · judge: live curl conformance, error paths</div></div>
+    <div class="card"><div class="name">mcp server<small>claude code + lm studio + hermes</small></div><div class="pill p-run">BUILDING</div><div class="rounds">R1</div><div class="note">builder agent live · judge: real handshake in all three hosts</div></div>
+    <div class="card"><div class="name">webui<small>single-file dark futuristic UI</small></div><div class="pill p-run">BUILDING</div><div class="rounds">R1</div><div class="note">builder agent live · judge: blind screenshots vs playground @2 viewports</div></div>
   </div>
 
   <h2>Live log</h2>
