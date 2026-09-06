@@ -67,7 +67,7 @@ for (const domain of ['https://books.toscrape.com', 'https://docs.python.org/3/'
   const union = new Set([...sitemap, ...w.urls]);
   const out = {
     domain, sitemap: sitemap.sort(), walked: w.urls.sort(), walkedPages: w.fetched, walkElapsedMs: w.elapsedMs,
-    union: [...union].sort(), sitemapCount: sitemap.length, walkedCount: w.urls.length, unionCount: union.length,
+    union: [...union].sort(), sitemapCount: sitemap.length, walkedCount: w.urls.length, unionCount: union.size,
     elapsedMs: Date.now() - t0,
   };
   const name = domain.replace(/^https?:\/\//, '').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '');
