@@ -6,6 +6,7 @@ const ROOT = new URL('..', import.meta.url).pathname;
 const read = (p) => JSON.parse(readFileSync(ROOT + p, 'utf8'));
 const write = (p, o) => writeFileSync(ROOT + p, JSON.stringify(o, null, 2));
 mkdirSync(ROOT + 'results', { recursive: true });
+mkdirSync(ROOT + 'results/ours-scrape', { recursive: true });
 const testset = read('testset.json');
 const tokens = (s) => (s ? Math.ceil(s.length / 4) : 0);
 const slug = (s) => s.replace(/^https?:\/\//, '').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').slice(0, 90);

@@ -1,0 +1,11 @@
+{
+  "url": "https://example.com",
+  "markdown": "# Example Domain\n\nThis domain is for use in documentation examples without needing permission. Avoid use in operations.\n\n[Learn more](https://iana.org/domains/example)",
+  "latencyMs": 928,
+  "metadata": {
+    "title": "Example Domain",
+    "description": "",
+    "statusCode": 200,
+    "url": "https://example.com/"
+  }
+}

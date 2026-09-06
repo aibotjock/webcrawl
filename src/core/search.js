@@ -71,9 +71,15 @@ async function tryHttp(kind, url, q) {
 }
 async function tryRender(q) {
   const { renderPage } = await import('./browser.js');
-  const r = await renderPage(`https://duckduckgo.com/?q=${encodeURIComponent(q)}`, { timeoutMs: 20000 });
-  if (r?.error) throw new Error('render: ' + r.error);
-  return parseRendered(r?.html || '');
+  const enc = encodeURIComponent(q);
+  for (const [u, parse] of [[`https://duckduckgo.com/?q=${enc}`, parseRendered], [`https://html.duckduckgo.com/html/?q=${enc}`, parseHtml], [`https://lite.duckduckgo.com/lite/?q=${enc}`, parseLite]]) {
+    const r = await renderPage(u, { timeoutMs: 20000 });
+    if (!r?.error && r?.html) {
+      const rows = parse(r.html);
+      if (rows.length) return rows;
+    }
+  }
+  throw new Error('rendered SERP yielded no results');
 }
 
 export async function webSearch(query, { limit = 8 } = {}) {

@@ -1,0 +1,152 @@
+[
+  {
+    "url": "https://example.com",
+    "kind": "control",
+    "ours": {
+      "latencyMs": 928,
+      "tokens": 42,
+      "chars": 167
+    },
+    "bar": {
+      "latencyMs": 194,
+      "tokens": 42,
+      "chars": 167,
+      "cacheState": "hit"
+    }
+  },
+  {
+    "url": "https://docs.python.org/3/library/asyncio.html",
+    "kind": "docs",
+    "ours": {
+      "latencyMs": 254,
+      "tokens": 856,
+      "chars": 3422
+    },
+    "bar": {
+      "latencyMs": 148,
+      "tokens": 2089,
+      "chars": 8354,
+      "cacheState": "hit"
+    }
+  },
+  {
+    "url": "https://react.dev/learn",
+    "kind": "js-spa-docs",
+    "ours": {
+      "latencyMs": 299,
+      "tokens": 4023,
+      "chars": 16092
+    },
+    "bar": {
+      "latencyMs": 254,
+      "tokens": 4747,
+      "chars": 18988,
+      "cacheState": "hit"
+    }
+  },
+  {
+    "url": "https://news.ycombinator.com/",
+    "kind": "plain-list",
+    "ours": {
+      "latencyMs": 369,
+      "tokens": 3910,
+      "chars": 15638
+    },
+    "bar": {
+      "latencyMs": 197,
+      "tokens": 3847,
+      "chars": 15386,
+      "cacheState": "hit"
+    }
+  },
+  {
+    "url": "https://en.wikipedia.org/wiki/Web_scraping",
+    "kind": "longform",
+    "ours": {
+      "latencyMs": 272,
+      "tokens": 12345,
+      "chars": 49380
+    },
+    "bar": {
+      "latencyMs": 262,
+      "tokens": 13114,
+      "chars": 52456,
+      "cacheState": "hit"
+    }
+  },
+  {
+    "url": "https://books.toscrape.com/",
+    "kind": "ecommerce-catalog",
+    "ours": {
+      "latencyMs": 250,
+      "tokens": 2086,
+      "chars": 8341
+    },
+    "bar": {
+      "latencyMs": 146,
+      "tokens": 2279,
+      "chars": 9116,
+      "cacheState": "hit"
+    }
+  },
+  {
+    "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+    "kind": "ecommerce-product",
+    "ours": {
+      "latencyMs": 62,
+      "tokens": 409,
+      "chars": 1636
+    },
+    "bar": {
+      "latencyMs": 221,
+      "tokens": 453,
+      "chars": 1809,
+      "cacheState": "hit"
+    }
+  },
+  {
+    "url": "https://quotes.toscrape.com/js/",
+    "kind": "js-spa",
+    "ours": {
+      "latencyMs": 1255,
+      "tokens": 279,
+      "chars": 1116
+    },
+    "bar": {
+      "latencyMs": 207,
+      "tokens": 377,
+      "chars": 1505,
+      "cacheState": "hit"
+    }
+  },
+  {
+    "url": "https://github.com/mendableai/firecrawl",
+    "kind": "js-heavy",
+    "ours": {
+      "latencyMs": 916,
+      "tokens": 6655,
+      "chars": 26618
+    },
+    "bar": {
+      "latencyMs": 320,
+      "tokens": 9325,
+      "chars": 37298,
+      "cacheState": "hit"
+    }
+  },
+  {
+    "url": "https://www.bbc.com/news",
+    "kind": "news",
+    "ours": {
+      "latencyMs": 414,
+      "tokens": 4531,
+      "chars": 18121
+    },
+    "bar": {
+      "latencyMs": 208,
+      "tokens": 4088,
+      "chars": 16349,
+      "cacheState": "hit"
+    }
+  }
+]

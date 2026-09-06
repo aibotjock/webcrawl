@@ -1,0 +1,32 @@
+{
+  "scrape/control": {
+    "ours": "A"
+  },
+  "scrape/docs": {
+    "ours": "A"
+  },
+  "scrape/js-spa-docs": {
+    "ours": "B"
+  },
+  "scrape/plain-list": {
+    "ours": "A"
+  },
+  "scrape/longform": {
+    "ours": "B"
+  },
+  "scrape/ecommerce-catalog": {
+    "ours": "A"
+  },
+  "scrape/ecommerce-product": {
+    "ours": "B"
+  },
+  "scrape/js-spa": {
+    "ours": "B"
+  },
+  "scrape/js-heavy": {
+    "ours": "A"
+  },
+  "scrape/news": {
+    "ours": "A"
+  }
+}

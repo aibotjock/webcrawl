@@ -19,7 +19,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{height:100%}
-body{min-height:100dvh;background:var(--bg0);color:var(--txt);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;min-height:100dvh;background:var(--bg0);color:var(--txt);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 input,textarea{font:inherit;color:var(--txt)}
 a{color:var(--cyan)}
@@ -52,7 +52,6 @@ button:focus-visible,a:focus-visible,summary:focus-visible,.filterbox:focus-visi
 .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.14em;font-size:14px}
 .brand .logo{width:26px;height:26px;flex:none}
 .brand b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-.brand .sub{color:var(--dim);font-weight:400;letter-spacing:.18em;font-size:11px;margin-left:2px}
 .top-right{display:flex;align-items:center;gap:10px}
 .tbtn{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:10px;
   border:1px solid var(--line2);background:rgba(12,16,29,.6);color:var(--mut);font-size:12.5px;
@@ -82,31 +81,42 @@ button:focus-visible,a:focus-visible,summary:focus-visible,.filterbox:focus-visi
 .st-row.bad i{background:var(--red)}
 .st-row .st-v{margin-left:auto;color:var(--dim);font-size:10px}
 
+/* ---- page hero + grouped segmented control (bar: instant-read hierarchy) ---- */
+.pagehead{flex:none;text-align:center;padding:22px 16px 2px}
+.pagehead h1{font-size:27px;font-weight:800;letter-spacing:.26em;background:var(--grad);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.pagehead p{color:var(--mut);font-size:13px;margin-top:4px}
+.segband{flex:none;display:flex;justify-content:center;padding:14px 14px 2px}
+.seg{display:flex;align-items:flex-end;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg-g{display:flex;flex-direction:column;gap:5px;flex:none}
+.seg-g+.seg-g{border-left:1px solid var(--line);margin-left:14px;padding-left:14px}
+.seg-lab{font:600 9px var(--mono);letter-spacing:.26em;color:var(--dim);text-align:center}
+.seg-row{display:flex;gap:4px;padding:4px;border-radius:13px;background:rgba(8,11,20,.55);
+  border:1px solid var(--line);box-shadow:inset 0 2px 8px rgba(0,0,0,.35)}
+.segtab{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:9px;
+  color:var(--mut);font-size:11px;font-weight:650;letter-spacing:.1em;border:1px solid transparent;
+  transition:color .18s,background .18s,border-color .18s,box-shadow .18s}
+.segtab svg{width:15px;height:15px}
+.segtab:hover{color:var(--txt);background:rgba(120,160,255,.08)}
+.segtab.on{color:#eafcff;background:linear-gradient(180deg,rgba(40,54,92,.92),rgba(21,29,53,.92));
+  border-color:rgba(57,216,245,.5);box-shadow:0 6px 18px rgba(0,0,0,.38),0 0 18px rgba(34,211,238,.15)}
+.segtab.on svg{color:var(--cyan);filter:drop-shadow(0 0 6px rgba(57,216,245,.6))}
+
 /* ---- shell ---- */
-.shell{display:grid;grid-template-columns:74px 352px 1fr;gap:14px;padding:14px;height:calc(100dvh - 58px)}
+.shell{flex:1;min-height:0;display:grid;grid-template-columns:396px 1fr;gap:14px;padding:14px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   box-shadow:0 18px 50px rgba(0,0,0,.42),inset 0 1px 0 rgba(180,200,255,.06)}
 
-/* ---- tab rail ---- */
-.rail{display:flex;flex-direction:column;gap:6px;padding:10px 8px;align-items:stretch}
-.rtab{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:13px 2px 11px;
-  border-radius:12px;color:var(--mut);border:1px solid transparent;transition:color .18s,background .18s,border-color .18s}
-.rtab svg{width:20px;height:20px}
-.rtab span{font-size:9px;letter-spacing:.16em;font-weight:600}
-.rtab:hover{color:var(--txt);background:rgba(120,160,255,.06)}
-.rtab.on{color:var(--txt);background:rgba(57,120,255,.1);border-color:rgba(124,156,255,.28)}
-.rtab.on svg{color:var(--cyan);filter:drop-shadow(0 0 7px rgba(57,216,245,.55))}
-.rtab.on::before{content:"";position:absolute;left:-8px;top:14px;bottom:14px;width:3px;border-radius:3px;
-  background:var(--grad);box-shadow:0 0 12px rgba(87,160,255,.8)}
-
 /* ---- form column ---- */
 .formpanel{display:flex;flex-direction:column;padding:18px;overflow-y:auto;min-height:0}
 .form-head{margin-bottom:14px}
-.form-head h2{font-size:17px;letter-spacing:.1em}
-.form-head h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-.form-head p{color:var(--mut);font-size:12.5px;margin-top:3px;line-height:1.45}
-.opform{display:none;flex-direction:column;gap:13px}
+.fh-kick{display:block;font:600 9px var(--mono);letter-spacing:.26em;color:var(--dim);margin-bottom:5px}
+.form-head h2{display:flex;align-items:center;gap:9px;font-size:17px;letter-spacing:.12em}
+.form-head h2 svg{width:18px;height:18px;color:var(--cyan);filter:drop-shadow(0 0 6px rgba(57,216,245,.5))}
+.form-head p{color:var(--mut);font-size:12.5px;margin-top:4px;line-height:1.45}
+.opform{display:none;flex-direction:column;gap:13px;flex:1 0 auto}
 .opform.on{display:flex}
 .field{display:flex;flex-direction:column;gap:6px;min-width:0}
 .fl{font-size:10px;letter-spacing:.16em;color:var(--dim);font-weight:600;font-family:var(--mono)}
@@ -136,11 +146,21 @@ button:focus-visible,a:focus-visible,summary:focus-visible,.filterbox:focus-visi
   background:#7284ad;transition:all .2s}
 .switch input:checked+i{background:rgba(34,211,238,.22);border-color:rgba(57,216,245,.6)}
 .switch input:checked+i::after{left:22px;background:var(--cyan);box-shadow:0 0 10px rgba(57,216,245,.8)}
-.runrow{margin-top:16px}
-.run{position:relative;overflow:hidden;width:100%;height:48px;border-radius:13px;font-weight:700;
-  letter-spacing:.14em;font-size:13px;color:#eafcff;background:linear-gradient(135deg,#0891b2,#2563eb 55%,#7c3aed);
-  box-shadow:0 8px 26px rgba(56,110,255,.32),inset 0 1px 0 rgba(255,255,255,.22);
+.runrow{position:sticky;bottom:0;z-index:6;margin:16px -18px -18px;padding:12px 18px 15px;
+  background:rgba(9,12,22,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);border-radius:0 0 var(--r) var(--r)}
+.runrow-in{display:flex;gap:9px}
+.run{position:relative;overflow:hidden;flex:1;display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  height:52px;border-radius:13px;font-weight:700;letter-spacing:.14em;font-size:13.5px;color:#eafcff;
+  background:linear-gradient(135deg,#0891b2,#2563eb 55%,#7c3aed);
+  box-shadow:0 10px 30px rgba(56,110,255,.4),0 0 24px rgba(34,211,238,.14),inset 0 1px 0 rgba(255,255,255,.22);
   transition:transform .12s,box-shadow .2s,filter .2s}
+.run svg{width:16px;height:16px}
+.run-sec{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:52px;padding:0 16px;
+  border-radius:13px;border:1px solid var(--line2);background:rgba(12,16,29,.6);color:var(--mut);
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;transition:all .18s;flex:none}
+.run-sec:hover{color:var(--txt);border-color:rgba(139,168,255,.45);box-shadow:0 0 16px rgba(90,140,255,.14)}
+.run-sec svg{width:13px;height:13px}
 .run:hover{box-shadow:0 10px 34px rgba(80,130,255,.45),inset 0 1px 0 rgba(255,255,255,.28);filter:brightness(1.08)}
 .run:active{transform:scale(.98)}
 .run:disabled{cursor:wait;filter:saturate(.55) brightness(.8)}
@@ -175,10 +195,12 @@ button:focus-visible,a:focus-visible,summary:focus-visible,.filterbox:focus-visi
 .hero>p{color:var(--mut);font-size:13px;max-width:420px}
 .hero-ops{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;width:100%;max-width:820px;margin-top:22px}
 .hop{display:flex;align-items:center;gap:12px;text-align:left;padding:13px 15px;border-radius:13px;
-  border:1px solid var(--line);background:rgba(14,18,32,.5);transition:all .2s}
+  border:1px solid var(--line);background:rgba(14,18,32,.5);transition:all .2s;cursor:pointer}
 .hop:hover{border-color:rgba(57,216,245,.4);background:rgba(24,32,56,.65);transform:translateY(-2px);
   box-shadow:0 10px 26px rgba(0,0,0,.35)}
 .hop svg{width:19px;height:19px;flex:none}
+.hop-tag{display:inline-block;font:600 8.5px var(--mono);letter-spacing:.22em;color:var(--dim);
+  border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-bottom:4px}
 .hop b{display:block;font-size:12px;letter-spacing:.14em}
 .hop small{display:block;color:var(--mut);font-size:11.5px;margin-top:2px;line-height:1.4}
 .hop.scrape svg{color:var(--cyan)}.hop.crawl svg{color:var(--violet)}.hop.map svg{color:var(--grn)}
@@ -327,19 +349,23 @@ details.page[open] summary::before{transform:rotate(90deg)}
 
 /* ---- responsive ---- */
 @media (max-width:960px){
-  .shell{display:flex;flex-direction:column;height:auto;min-height:calc(100dvh - 58px)}
-  .rail{flex-direction:row;overflow-x:auto;gap:5px;padding:8px 10px;flex:none;
-    scrollbar-width:none}
-  .rail::-webkit-scrollbar{display:none}
-  .rtab{flex-direction:row;gap:8px;padding:10px 15px;flex:none}
-  .rtab span{font-size:10px}
-  .rtab.on::before{left:10px;right:10px;top:auto;bottom:2px;width:auto;height:3px}
-  .formpanel{overflow:visible}
-  .resultpanel{min-height:78vh}
-  .hero h1{font-size:21px}
+  body{display:block}
   .topbar{padding:0 12px}
   .tbtn .tl{display:none}
   .tbtn{padding:0 11px}
+  .pagehead{padding:14px 14px 0}
+  .pagehead h1{font-size:19px}
+  .pagehead p{font-size:12px}
+  .segband{justify-content:flex-start;padding:10px 12px 0}
+  .seg-g+.seg-g{margin-left:10px;padding-left:10px}
+  .segtab{padding:0 12px}
+  .shell{display:flex;flex-direction:column;height:auto}
+  .formpanel{overflow:visible;padding:16px}
+  .runrow{margin:14px -16px -16px}
+  .resultpanel{min-height:78vh}
+  .hero{padding:36px 6px}
+  .hero h1{font-size:20px}
+  .hero-ops{grid-template-columns:1fr}
   .frow{grid-template-columns:1fr 1fr}
   .drawer{width:min(392px,92vw)}
 }
@@ -359,7 +385,7 @@ details.page[open] summary::before{transform:rotate(90deg)}
       <circle cx="12" cy="12" r="3.1" fill="url(#lg)" stroke="none"/>
       <path d="M12 8.9V5.4M14.7 13.6l3 1.7M9.3 13.6l-3 1.7"/>
     </svg>
-    <span><b>WEBCRAWL</b><span class="sub">PLAYGROUND</span></span>
+    <span><b>WEBCRAWL</b></span>
   </div>
   <div class="top-right">
     <button id="histBtn" class="tbtn" title="History (last 20 runs)">
@@ -373,11 +399,26 @@ details.page[open] summary::before{transform:rotate(90deg)}
   </div>
 </header>
 
-<div class="shell">
-  <nav class="rail panel" id="rail" aria-label="Operations"></nav>
+<div class="pagehead">
+  <h1>PLAYGROUND</h1>
+  <p>Scrape, crawl, map, search and extract — self-hosted, no API keys.</p>
+</div>
+<div class="segband">
+  <div class="seg" id="seg" aria-label="Operations">
+    <div class="seg-g"><span class="seg-lab">DISCOVER</span><div class="seg-row">
+      <button class="segtab" data-op="search" type="button">SEARCH</button>
+      <button class="segtab" data-op="map" type="button">MAP</button></div></div>
+    <div class="seg-g"><span class="seg-lab">EXTRACT</span><div class="seg-row">
+      <button class="segtab on" data-op="scrape" type="button">SCRAPE</button>
+      <button class="segtab" data-op="extract" type="button">EXTRACT</button></div></div>
+    <div class="seg-g"><span class="seg-lab">CRAWL</span><div class="seg-row">
+      <button class="segtab" data-op="crawl" type="button">CRAWL</button></div></div>
+  </div>
+</div>
 
+<div class="shell">
   <section class="formpanel panel" aria-label="Operation form">
-    <div class="form-head"><h2 id="formTitle"></h2><p id="formDesc"></p></div>
+    <div class="form-head"><span class="fh-kick">OPERATION</span><h2 id="formTitle"></h2><p id="formDesc"></p></div>
 
     <div class="opform" id="f-scrape">
       <label class="field"><span class="fl">URL</span>
@@ -434,8 +475,10 @@ details.page[open] summary::before{transform:rotate(90deg)}
         <input name="prompt" type="text" placeholder="Extract the product details." autocomplete="off"></label>
     </div>
 
-    <div class="runrow">
-      <button id="runBtn" class="run">RUN SCRAPE</button>
+    <div class="runrow"><div class="runrow-in">
+        <button id="curlBtn" class="run-sec" type="button" title="Copy the equivalent cURL command">CURL</button>
+        <button id="runBtn" class="run" type="button">RUN SCRAPE</button>
+      </div>
       <p class="hint"><b>⌘/Ctrl</b> + <b>↵</b> to run</p>
     </div>
   </section>
@@ -469,11 +512,11 @@ details.page[open] summary::before{transform:rotate(90deg)}
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const API=location.origin, HKEY="webcrawl.hist.v1";
 const OPS={
-  scrape:{t:"SCRAPE",d:"One URL in, clean Markdown, HTML, links or a full-page screenshot out. JS pages render in headless chromium.",one:"One URL → clean Markdown, HTML, links or screenshot"},
-  crawl:{t:"CRAWL",d:"Walk an entire site same-origin, breadth-first, depth by depth. Every page comes back as Markdown.",one:"Recursive same-origin site walk, page by page"},
-  map:{t:"MAP",d:"Every URL on a domain in milliseconds — sitemap.xml and link-graph discovery, no scraping required.",one:"Every URL on a domain, sitemap + link graph"},
-  search:{t:"SEARCH",d:"Keyless live web search. Straight results with titles, URLs and descriptions.",one:"Keyless live web search, no API key"},
-  extract:{t:"EXTRACT",d:"Any page to strict typed JSON from a schema you define. Local LLM with heuristic fallback.",one:"Page → strict typed JSON from a schema"}
+  scrape:{t:"SCRAPE",g:"EXTRACT",d:"One URL in, clean Markdown, HTML, links or a full-page screenshot out. JS pages render in headless chromium.",one:"One URL → clean Markdown, HTML, links or screenshot"},
+  crawl:{t:"CRAWL",g:"CRAWL",d:"Walk an entire site same-origin, breadth-first, depth by depth. Every page comes back as Markdown.",one:"Recursive same-origin site walk, page by page"},
+  map:{t:"MAP",g:"DISCOVER",d:"Every URL on a domain in milliseconds — sitemap.xml and link-graph discovery, no scraping required.",one:"Every URL on a domain, sitemap + link graph"},
+  search:{t:"SEARCH",g:"DISCOVER",d:"Keyless live web search. Straight results with titles, URLs and descriptions.",one:"Keyless live web search, no API key"},
+  extract:{t:"EXTRACT",g:"EXTRACT",d:"Any page to strict typed JSON from a schema you define. Local LLM with heuristic fallback.",one:"Page → strict typed JSON from a schema"}
 };
 const OPCOLOR={scrape:"cy",crawl:"vi",map:"gr",search:"am",extract:"rd"};
 const OPVAR={cy:"cyan",vi:"violet",gr:"grn",am:"amber",rd:"red"};
@@ -556,17 +599,13 @@ const abtn=(label,ic,data="",cls="")=>`<button class="abtn ${cls}" ${data}>${ic?
 function sec(title,chips,actions,body){return `<section class="rsec"><div class="rsec-h"><h3>${title}</h3><div class="rsec-chips">${chips}</div><div class="rsec-actions">${actions}</div></div><div class="rsec-b">${body}</div></section>`}
 
 /* ---------- tabs ---------- */
-function buildRail(){
-  $("#rail").innerHTML=Object.keys(OPS).map(op=>
-    `<button class="rtab ${op===cur?"on":""}" data-op="${op}">${svg(op,20)}<span>${OPS[op].t}</span></button>`).join("");
-}
 function switchOp(op){
   cur=op;
-  $$(".rtab").forEach(b=>b.classList.toggle("on",b.dataset.op===op));
+  $$(".segtab").forEach(b=>b.classList.toggle("on",b.dataset.op===op));
   $$(".opform").forEach(f=>f.classList.toggle("on",f.id==="f-"+op));
-  $("#formTitle").innerHTML=`<em>${OPS[op].t}</em>`;
+  $("#formTitle").innerHTML=svg(op,18)+OPS[op].t;
   $("#formDesc").textContent=OPS[op].d;
-  $("#runBtn").textContent="RUN "+OPS[op].t;
+  $("#runBtn").innerHTML=svg(op,16)+`<span id="runLbl">RUN ${OPS[op].t}</span>`;
 }
 
 /* ---------- payload <-> form ---------- */
@@ -596,7 +635,7 @@ function fillForm(op,p){
 /* ---------- run ---------- */
 function setLoading(on){
   busy=on;const b=$("#runBtn");b.disabled=on;b.classList.toggle("busy",on);
-  b.textContent=on?"RUNNING…":"RUN "+OPS[cur].t;
+  const l=$("#runLbl");if(l)l.textContent=on?"RUNNING…":"RUN "+OPS[cur].t;
   if(on)$("#resultBody").innerHTML=`<div class="loading">
     <div class="sk" style="width:58%"></div><div class="sk" style="width:92%"></div><div class="sk" style="width:76%"></div>
     <div class="sk" style="width:84%"></div><div class="sk" style="width:40%"></div>
@@ -783,7 +822,11 @@ const openDrawer=()=>{$("#drawer").classList.add("on");$("#scrim").classList.add
 const closeDrawer=()=>{$("#drawer").classList.remove("on");$("#scrim").classList.remove("on")};
 
 /* ---------- wire up ---------- */
-$("#rail").addEventListener("click",e=>{const b=e.target.closest(".rtab");if(b)switchOp(b.dataset.op)});
+$("#seg").addEventListener("click",e=>{const b=e.target.closest(".segtab");if(b)switchOp(b.dataset.op)});
+$("#curlBtn").addEventListener("click",()=>{
+  try{const p=payloadOf(cur);copy(`curl -X POST ${API}/v1/${cur} \\\n  -H 'content-type: application/json' \\\n  -d '${JSON.stringify(p)}'`,"cURL copied")}
+  catch(e){toast(e.message)}
+});
 $("#resultBody").addEventListener("click",e=>{
   const hop=e.target.closest(".hop");
   if(hop){switchOp(hop.dataset.op);return}
@@ -807,14 +850,16 @@ $("#statusChip").addEventListener("click",e=>{e.stopPropagation();const p=$("#st
 document.addEventListener("click",e=>{if(!e.target.closest(".status-wrap"))$("#statusPop").hidden=true});
 
 function heroHtml(){
-  return `<div class="hero"><h1>WEBCRAWL PLAYGROUND</h1>
-    <p>Self-hosted web extraction. Pick an operation, point it at a URL, hit run.</p>
-    <div class="hero-ops">${Object.keys(OPS).map(op=>
-      `<button class="hop ${op}" data-op="${op}">${svg(op,19)}<span><b>${OPS[op].t}</b><small>${OPS[op].one}</small></span></button>`).join("")}</div></div>`;
+  const order=["search","map","scrape","extract","crawl"];
+  return `<div class="hero"><span class="hop-tag">OUTPUT</span><h1>Awaiting first run</h1>
+    <p>Configure an operation on the left and hit RUN — Markdown, JSON, screenshots and link maps render here.</p>
+    <div class="hero-ops">${order.map(op=>
+      `<button class="hop ${op}" data-op="${op}">${svg(op,19)}<span><span class="hop-tag">${OPS[op].g}</span><b>${OPS[op].t}</b><small>${OPS[op].one}</small></span></button>`).join("")}</div></div>`;
 }
 
 /* ---------- init ---------- */
-buildRail();
+$$(".segtab").forEach(b=>b.insertAdjacentHTML("afterbegin",svg(b.dataset.op,15)));
+$("#curlBtn").insertAdjacentHTML("afterbegin",svg("copy",13));
 switchOp("scrape");
 $("#resultBody").innerHTML=heroHtml();
 loadHist();renderHist();
