@@ -10,6 +10,10 @@ import { config } from './core/config.js';
 import { llm, llmPublic, llmNote, setLlm, llmReachable, llmModels } from './core/llm.js';
 import { runResearch, generateSchema } from './core/research.js';
 import { saveSession, listSessions, getSession, compareSessions } from './core/sessions.js';
+import {
+  HOSTS, HOST_IDS, SERVER_PATH, toolsWithState, saveMcpSettings, setToolEnabled,
+  buildConfig, defaultEnv, sanitizeEnv, SECRET_PLACEHOLDER,
+} from './core/mcp-config.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const { version } = JSON.parse(await readFile(path.join(here, '../package.json'), 'utf8'));
@@ -253,6 +257,70 @@ app.post('/v1/sessions/:id/rerun', async (req, res) => {
     job.done = true; job.ts = Date.now();
   })();
   res.json({ success: true, id: job.id, rerunOf: prev.id });
+});
+
+// --- MCP management (in-WebUI panel for the stdio MCP server) ---
+// GET  /v1/mcp             -> bootstrap: tools+state, hosts, serverPath, defaultCommand, defaultEnv (secrets masked)
+// GET  /v1/mcp/tools       -> [{ name, description, enabled }]
+// POST /v1/mcp/tools       -> toggle: { name, enabled } (single) or { disabled: [...] } (bulk) -> updated list
+// GET  /v1/mcp/config      -> generate a host config: ?host=&command=&serverPath=&provider=&baseUrl=&model=&apiKey=
+// The enable/disable state is persisted server-side and honored by src/mcp.js at startup.
+// Generated configs NEVER echo the server's real API key — a placeholder is emitted instead.
+app.get('/v1/mcp', async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      tools: await toolsWithState(),
+      hosts: HOSTS.map((h) => ({ id: h.id, label: h.label, filename: h.filename, hint: h.hint })),
+      serverPath: SERVER_PATH,
+      defaultCommand: 'node',
+      defaultEnv: defaultEnv({ maskSecrets: true }),
+    });
+  } catch (e) { fail(res, e, 'mcp bootstrap failed'); }
+});
+
+app.get('/v1/mcp/tools', async (req, res) => {
+  try { res.json({ success: true, tools: await toolsWithState() }); }
+  catch (e) { fail(res, e, 'could not read mcp tools'); }
+});
+
+app.post('/v1/mcp/tools', async (req, res) => {
+  const b = req.body || {};
+  try {
+    if (typeof b.name === 'string') {
+      await setToolEnabled(b.name, b.enabled !== false);
+    } else if (Array.isArray(b.disabled)) {
+      await saveMcpSettings({ disabled: b.disabled });
+    } else {
+      return bad(res, 400, 'provide { name, enabled } or { disabled: [...] }');
+    }
+    res.json({ success: true, tools: await toolsWithState() });
+  } catch (e) { bad(res, 400, e?.message || String(e)); }
+});
+
+app.get('/v1/mcp/config', (req, res) => {
+  const q = req.query || {};
+  const host = String(q.host || 'claude');
+  if (!HOST_IDS.includes(host)) return bad(res, 400, `unknown host "${host}" (one of: ${HOST_IDS.join(', ')})`);
+  const command = q.command ? String(q.command).slice(0, 300) : 'node';
+  const serverPath = q.serverPath ? String(q.serverPath).slice(0, 500) : SERVER_PATH;
+  // env from explicit params (client-controlled); secrets are the user's own input,
+  // and when omitted the builder falls back to a placeholder — never the server's key.
+  const provider = String(q.provider || '');
+  const keyName = provider === 'anthropic' ? 'ANTHROPIC_API_KEY' : 'WEBCRAWL_LLM_API_KEY';
+  const env = sanitizeEnv({
+    WEBCRAWL_LLM_PROVIDER: q.provider,
+    WEBCRAWL_LLM_BASE_URL: q.baseUrl,
+    WEBCRAWL_LLM_MODEL: q.model,
+    [keyName]: q.apiKey,
+  });
+  // Keyed providers (anything but local lmstudio/ollama/llamacpp) get a placeholder key
+  // line when the user left the field blank, so the emitted JSON shows where to put it.
+  const keyless = ['lmstudio', 'ollama', 'llamacpp'].includes(provider);
+  if (provider && !keyless && !env[keyName]) env[keyName] = SECRET_PLACEHOLDER;
+  const useEnv = Object.keys(env).length ? env : defaultEnv({ maskSecrets: true });
+  const built = buildConfig(host, { command, serverPath, env: useEnv });
+  res.json({ success: true, ...built });
 });
 
 // --- LLM model settings (local or cloud, runtime-switchable) ---

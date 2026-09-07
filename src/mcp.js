@@ -5,6 +5,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { readFile } from 'node:fs/promises';
 import { z } from 'zod'; // transitively available via @modelcontextprotocol/sdk
+import { DESCRIPTIONS, enabledToolNames } from './core/mcp-config.js';
 
 const { version } = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
 
@@ -69,8 +70,15 @@ const clip = (v) => Array.isArray(v) ? v.map(clip)
     : v;
 
 const server = new McpServer({ name: 'webcrawl', version }, { capabilities: { tools: {} } });
+// Honor the WebUI's enable/disable selection (persisted via src/core/mcp-config.js).
+// Only enabled tools are registered, so a disabled tool is never exposed to hosts.
+// If the settings file is missing/unreadable, every tool stays enabled (safe default).
+const enabled = new Set(await enabledToolNames());
+let registered = 0;
 for (const [name, t] of Object.entries(tools)) {
-  server.registerTool(name, { title: name, description: t.description, inputSchema: t.schema }, async (args) => {
+  if (!enabled.has(name)) continue;
+  registered++;
+  server.registerTool(name, { title: name, description: DESCRIPTIONS[name] || t.description, inputSchema: t.schema }, async (args) => {
     try {
       const result = await t.run(args);
       return { content: [{ type: 'text', text: JSON.stringify(clip(result), null, 2) }] };
@@ -81,4 +89,4 @@ for (const [name, t] of Object.entries(tools)) {
 }
 
 await server.connect(new StdioServerTransport());
-console.error(`webcrawl mcp v${version} ready on stdio (${Object.keys(tools).length} tools)`);
+console.error(`webcrawl mcp v${version} ready on stdio (${registered} tools)`);

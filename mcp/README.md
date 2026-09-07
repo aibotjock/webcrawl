@@ -19,6 +19,32 @@ so any MCP host can call webcrawl's tools directly from the terminal or an edito
 > six tools above. Compose them yourself from an MCP host, or call the HTTP `/v1/research` route
 > for the one-shot planned pipeline.
 
+## Manage it from the WebUI (no files to hand-edit)
+
+The WebUI has an **MCP** panel (top bar, next to *Sessions*) that does everything below
+from the browser:
+
+- **Enable/disable tools** with a toggle per tool. The choice is **persisted server-side**
+  (in `data/mcp-settings.json`, git-ignored) and is **honored by `src/mcp.js` at startup** —
+  a disabled tool is simply not registered, so the next time a host launches the server it
+  won't advertise it. The top-bar badge shows how many of the six tools are exposed.
+- **Generate a client config** for Claude Desktop / Cursor / Windsurf / VS Code / Continue:
+  pick a host and the JSON is built live with **this checkout's absolute `src/mcp.js` path**
+  already filled in. You can customise the **node command/binary path**, the **server script
+  path**, and the **LLM env** (provider / base URL / model / API key). **Copy** to the
+  clipboard or **Download** the file.
+- API keys are never round-tripped: the generated JSON shows a `sk-ant-...` **placeholder**
+  for keyed providers (you fill in your own), and local providers (LM Studio / Ollama /
+  llama.cpp) get no key line at all.
+
+The same data is available over HTTP if you'd rather script it:
+`GET /v1/mcp` (tools + hosts + defaults), `GET /v1/mcp/tools`,
+`POST /v1/mcp/tools` (`{name,enabled}` or `{disabled:[...]}`),
+`GET /v1/mcp/config?host=&command=&serverPath=&provider=&baseUrl=&model=&apiKey=`.
+
+The CLI generator below is still available and shares the exact same config-building logic
+(`src/core/mcp-config.js`) as the WebUI, so both produce identical output.
+
 `webcrawl_extract` uses the same runtime-switchable LLM as the WebUI (see the root
 [README](../README.md#ai-model-local-or-cloud)). The default provider is **Anthropic
 Claude** (native `/v1/messages` API) — just set `ANTHROPIC_API_KEY` in the `env` block. You can

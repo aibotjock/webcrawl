@@ -377,6 +377,25 @@ details.page[open] summary::before{transform:rotate(90deg)}
 .prim-btn:hover{box-shadow:0 0 18px rgba(34,211,238,.24)}
 .badge.cloud{background:rgba(167,139,250,.16);color:#c9b8ff}
 .badge.local{background:rgba(52,227,161,.14);color:var(--grn)}
+/* --- MCP management panel --- */
+.modal.wide{width:min(620px,100%)}
+.mcp-sec{display:flex;flex-direction:column;gap:9px}
+.mcp-sec>h4{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--dim);margin:4px 0 1px;text-transform:uppercase}
+.mcp-tool{display:flex;align-items:flex-start;gap:11px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:rgba(8,11,20,.5)}
+.mcp-tool .tinfo{flex:1;min-width:0}
+.mcp-tool .tname{font-family:var(--mono);font-size:12px;color:var(--txt)}
+.mcp-tool .tdesc{font-size:11.5px;color:var(--mut);line-height:1.45;margin-top:2px}
+.mcp-tool.off{opacity:.5}
+.switch{position:relative;width:38px;height:21px;flex:0 0 auto;cursor:pointer;margin-top:1px}
+.switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+.switch .sl{position:absolute;inset:0;border-radius:999px;background:rgba(80,90,120,.4);transition:background .18s}
+.switch .sl::before{content:"";position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#dfe6ff;transition:transform .18s}
+.switch input:checked+.sl{background:linear-gradient(180deg,rgba(34,211,238,.9),rgba(34,211,238,.5))}
+.switch input:checked+.sl::before{transform:translateX(17px)}
+.mcp-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.mcp-json{font-family:var(--mono);font-size:11px;line-height:1.5;white-space:pre;overflow:auto;max-height:220px;margin:0;
+  padding:11px;border-radius:10px;border:1px solid var(--line2);background:rgba(4,6,12,.85);color:#bfe6ff}
+.mcp-hint{font-size:11px;color:var(--mut);line-height:1.45}
 
 /* ---- responsive ---- */
 @media (max-width:960px){
@@ -521,6 +540,10 @@ details.page[open] summary::before{transform:rotate(90deg)}
     <button id="sessBtn" class="tbtn" title="Saved research sessions">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C4 4.7 4.7 4 5.5 4h9L20 9.5V18.5c0 .8-.7 1.5-1.5 1.5h-13C4.7 20 4 19.3 4 18.5z"/><path d="M14 4v6h6M8 13h8M8 16.5h5"/></svg>
       <span class="tl">Sessions</span><span id="sessCount" class="badge">0</span>
+    </button>
+    <button id="mcpBtn" class="tbtn" title="MCP — tools &amp; client configs">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M12 12 3 7M12 12v10M12 12l9-5"/></svg>
+      <span class="tl">MCP</span><span id="mcpCount" class="badge">…</span>
     </button>
     <button id="histBtn" class="tbtn" title="History (last 20 tool runs)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.2v5l3.2 2"/></svg>
@@ -741,6 +764,74 @@ details.page[open] summary::before{transform:rotate(90deg)}
     </div>
   </div>
 </div>
+
+<div class="modal-scrim" id="mcpScrim" hidden>
+  <div class="modal wide" role="dialog" aria-label="MCP settings" aria-modal="true">
+    <div class="modal-h">
+      <h3>MCP — MODEL CONTEXT PROTOCOL</h3>
+      <button id="mcpClose" class="xbtn" title="Close">&#10005;</button>
+    </div>
+    <div class="modal-b">
+      <p class="modal-note">webcrawl ships a <b>stdio MCP server</b> that exposes these tools to hosts like Claude Desktop, Cursor, Windsurf, VS Code and Continue. Toggle a tool off to stop exposing it (the change persists and is applied the next time a host launches the server). Then generate a ready-to-paste client config below.</p>
+
+      <div class="mcp-sec">
+        <h4>Tools <span id="mcpToolsSummary" class="mcp-hint"></span></h4>
+        <div id="mcpTools"></div>
+      </div>
+
+      <div class="mcp-sec">
+        <h4>Client config generator</h4>
+        <div class="mcp-grid">
+          <div class="field">
+            <label>HOST</label>
+            <select id="mcpHost"></select>
+          </div>
+          <div class="field">
+            <label>NODE COMMAND</label>
+            <input id="mcpCmd" type="text" placeholder="node" autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+        <div class="field">
+          <label>SERVER SCRIPT PATH <small>(absolute path to src/mcp.js)</small></label>
+          <input id="mcpPath" type="text" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="mcp-grid">
+          <div class="field">
+            <label>LLM PROVIDER <small>(for webcrawl_extract)</small></label>
+            <select id="mcpProvider">
+              <option value="anthropic">anthropic</option>
+              <option value="openai">openai</option>
+              <option value="cloud">cloud (OpenAI-compatible)</option>
+              <option value="lmstudio">lmstudio (local)</option>
+              <option value="ollama">ollama (local)</option>
+              <option value="llamacpp">llamacpp (local)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>MODEL</label>
+            <input id="mcpModel" type="text" autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+        <div class="field">
+          <label>LLM BASE URL</label>
+          <input id="mcpBaseUrl" type="text" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="field" id="mcpKeyField">
+          <label>API KEY <small>(local providers need none — a placeholder is written to the config, never your real key)</small></label>
+          <input id="mcpKey" type="password" placeholder="sk-…  (optional; leave blank for a placeholder)" autocomplete="off" spellcheck="false">
+        </div>
+        <p class="mcp-hint" id="mcpHostHint"></p>
+        <pre class="mcp-json" id="mcpJson">…</pre>
+        <div class="modal-status" id="mcpStatus"></div>
+      </div>
+    </div>
+    <div class="modal-f">
+      <button id="mcpCopy" class="ghost-btn" type="button">COPY</button>
+      <button id="mcpDownload" class="prim-btn" type="button">DOWNLOAD</button>
+    </div>
+  </div>
+</div>
+
 <aside class="drawer" id="drawer" aria-label="History">
   <div class="drawer-h"><h3>HISTORY — LAST 20 RUNS</h3>
     <div><button id="histClear" class="abtn">CLEAR ALL</button>
@@ -1096,7 +1187,7 @@ $("#runBtn").addEventListener("click",run);
 $("#clearBtn").addEventListener("click",()=>{$("#resultBody").innerHTML=heroHtml();$("#clearBtn").hidden=true;$("#rMeta").innerHTML="";lastRun=null});
 document.addEventListener("keydown",e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){e.preventDefault();if($("#simpleView").classList.contains("on"))startResearch();else run()}
-  if(e.key==="Escape"){closeDrawer();closeSess();$("#statusPop").hidden=true}
+  if(e.key==="Escape"){closeDrawer();closeSess();closeMcp();$("#statusPop").hidden=true}
 });
 $("#histBtn").addEventListener("click",openDrawer);
 $("#histClose").addEventListener("click",closeDrawer);
@@ -1179,6 +1270,109 @@ $("#mFetch").addEventListener("click",async()=>{
     $("#mModelList").innerHTML=(j.models||[]).map(m=>`<option value="${esc(m)}">`).join("");
     mStatus(`${(j.models||[]).length} models available — click the model field`,"ok");
   }catch(e){mStatus(e.message,"bad")}
+});
+
+/* ================= MCP management panel ================= */
+const mcpScrim=$("#mcpScrim");
+let mcpState=null;                 // {tools,hosts,serverPath,defaultCommand,defaultEnv}
+const KEYLESS_PROVIDERS=["lmstudio","ollama","llamacpp"];
+function mcpStatus(msg,cls){const s=$("#mcpStatus");s.textContent=msg||"";s.className="modal-status"+(cls?" "+cls:"")}
+function setMcpCount(tools){
+  const on=(tools||[]).filter(t=>t.enabled).length,total=(tools||[]).length;
+  const b=$("#mcpCount");b.textContent=`${on}/${total}`;
+  b.className="badge"+(on===total?" local":on===0?" cloud":"");
+  $("#mcpBtn").title=`MCP — ${on} of ${total} tools exposed`;
+}
+function renderMcpTools(tools){
+  $("#mcpTools").innerHTML=(tools||[]).map(t=>`
+    <div class="mcp-tool${t.enabled?"":" off"}" data-tool="${esc(t.name)}">
+      <label class="switch"><input type="checkbox" ${t.enabled?"checked":""} data-toggle="${esc(t.name)}"><span class="sl"></span></label>
+      <div class="tinfo"><div class="tname">${esc(t.name)}</div><div class="tdesc">${esc(t.description||"")}</div></div>
+    </div>`).join("");
+  const on=(tools||[]).filter(t=>t.enabled).length;
+  $("#mcpToolsSummary").textContent=`— ${on} exposed of ${tools.length}`;
+  $$("#mcpTools [data-toggle]").forEach(cb=>cb.addEventListener("change",onToggleTool));
+}
+async function onToggleTool(e){
+  const name=e.target.dataset.toggle,enabled=e.target.checked;
+  e.target.disabled=true;
+  try{
+    const r=await fetch(API+"/v1/mcp/tools",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({name,enabled})});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"toggle failed");
+    mcpState.tools=j.tools;renderMcpTools(j.tools);setMcpCount(j.tools);
+    mcpStatus(`${name} ${enabled?"enabled":"disabled"} — applies next time a host launches the server`,"ok");
+  }catch(err){e.target.checked=!enabled;mcpStatus(err.message,"bad")}
+}
+function mcpKeyVisibility(){
+  const keyless=KEYLESS_PROVIDERS.includes($("#mcpProvider").value);
+  $("#mcpKeyField").style.display=keyless?"none":"flex";
+}
+function mcpConfigQuery(){
+  const p=new URLSearchParams({
+    host:$("#mcpHost").value,
+    command:$("#mcpCmd").value.trim()||"node",
+    serverPath:$("#mcpPath").value.trim(),
+    provider:$("#mcpProvider").value,
+    baseUrl:$("#mcpBaseUrl").value.trim(),
+    model:$("#mcpModel").value.trim(),
+  });
+  const k=$("#mcpKey").value;if(k)p.set("apiKey",k);
+  return p.toString();
+}
+let mcpBuilt=null;                 // {filename,config}
+async function refreshMcpConfig(){
+  mcpKeyVisibility();
+  const host=mcpState?.hosts?.find(h=>h.id===$("#mcpHost").value);
+  $("#mcpHostHint").textContent=host?.hint||"";
+  try{
+    const r=await fetch(API+"/v1/mcp/config?"+mcpConfigQuery());
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"could not build config");
+    mcpBuilt={filename:j.filename,config:j.config};
+    $("#mcpJson").textContent=JSON.stringify(j.config,null,2);
+    mcpStatus("");
+  }catch(e){$("#mcpJson").textContent="";mcpStatus(e.message,"bad")}
+}
+async function loadMcp(){
+  try{
+    const r=await fetch(API+"/v1/mcp");const j=await r.json();
+    if(!r.ok||j.success===false)throw new Error(j.error||"mcp load failed");
+    mcpState=j;setMcpCount(j.tools);
+    return j;
+  }catch(e){$("#mcpCount").textContent="!";return null}
+}
+async function openMcp(){
+  const j=mcpState||await loadMcp();
+  if(!j){toast("MCP status not available");return}
+  renderMcpTools(j.tools);setMcpCount(j.tools);
+  $("#mcpHost").innerHTML=j.hosts.map(h=>`<option value="${esc(h.id)}">${esc(h.label)}</option>`).join("");
+  $("#mcpCmd").value=j.defaultCommand||"node";
+  $("#mcpPath").value=j.serverPath||"";
+  const env=j.defaultEnv||{};
+  $("#mcpProvider").value=env.WEBCRAWL_LLM_PROVIDER||"anthropic";
+  $("#mcpBaseUrl").value=env.WEBCRAWL_LLM_BASE_URL||"";
+  $("#mcpModel").value=env.WEBCRAWL_LLM_MODEL||"";
+  $("#mcpKey").value="";
+  mcpStatus("");await refreshMcpConfig();
+  mcpScrim.hidden=false;
+}
+function closeMcp(){mcpScrim.hidden=true}
+$("#mcpBtn").addEventListener("click",openMcp);
+$("#mcpClose").addEventListener("click",closeMcp);
+mcpScrim.addEventListener("click",e=>{if(e.target===mcpScrim)closeMcp()});
+["#mcpHost","#mcpCmd","#mcpPath","#mcpProvider","#mcpBaseUrl","#mcpModel","#mcpKey"].forEach(sel=>{
+  const el=$(sel),ev=el.tagName==="SELECT"?"change":"input";
+  el.addEventListener(ev,refreshMcpConfig);
+});
+$("#mcpCopy").addEventListener("click",()=>{
+  if(!mcpBuilt){toast("Nothing to copy");return}
+  copy(JSON.stringify(mcpBuilt.config,null,2),"Config copied");
+});
+$("#mcpDownload").addEventListener("click",()=>{
+  if(!mcpBuilt)return;
+  const blob=new Blob([JSON.stringify(mcpBuilt.config,null,2)+"\n"],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=mcpBuilt.filename||"mcp_config.json";
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  toast("Downloaded "+(mcpBuilt.filename||"config"));
 });
 
 /* ================= mode toggle (Simple / Advanced) ================= */
@@ -1446,7 +1640,7 @@ updateSchemaBox();
 loadHist();renderHist();
 let savedMode="simple";try{savedMode=localStorage.getItem("webcrawl.mode")||"simple"}catch{}
 setMode(savedMode);
-(async()=>{await ping();loadLlm();loadSessions();setInterval(ping,15000);setInterval(loadLlm,30000)})();
+(async()=>{await ping();loadLlm();loadSessions();loadMcp();setInterval(ping,15000);setInterval(loadLlm,30000)})();
 </script>
 </body>
 </html>

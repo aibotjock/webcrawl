@@ -160,6 +160,13 @@ node mcp/generate-configs.mjs   # writes host configs with this checkout's path 
 node mcp/smoke-test.mjs         # verify: lists the 6 tools
 ```
 
+**Manage it from the WebUI:** click **MCP** in the top bar to enable/disable individual
+tools (persisted server-side and honored by the stdio server at startup — a disabled tool
+isn't registered) and to generate a ready-to-paste client config for Claude Desktop, Cursor,
+Windsurf, VS Code or Continue. The config is built live with this checkout's absolute path
+filled in; you can tweak the node command, server-script path and LLM env, then copy or
+download it. Keyed providers show an `sk-ant-...` placeholder (your real key is never emitted).
+
 Full registration steps for each host and ready-to-edit config templates are in
 [`mcp/README.md`](./mcp/README.md).
 

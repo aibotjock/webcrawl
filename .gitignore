@@ -5,4 +5,5 @@ node_modules/
 results/tmp/
 mcp/generated/
 data/sessions/
+data/mcp-settings.json
 .abacus.donotdelete
