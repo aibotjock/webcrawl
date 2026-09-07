@@ -7,6 +7,7 @@ import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from './core/config.js';
+import { llmPublic, setLlm, llmReachable, llmModels } from './core/llm.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const { version } = JSON.parse(await readFile(path.join(here, '../package.json'), 'utf8'));
@@ -122,12 +123,26 @@ app.get('/v1/test', async (req, res) => {
     await b.close();
     chromium = true;
   } catch { /* headless chromium missing/broken */ }
-  let llm = 'unreachable';
-  try {
-    const r = await fetch(`${config.llmBaseUrl}/models`, { signal: AbortSignal.timeout(2000) });
-    if (r.ok) llm = 'reachable';
-  } catch { /* LM Studio down */ }
+  const llm = (await llmReachable(2000)) ? 'reachable' : 'unreachable';
   res.json({ success: Object.values(modules).every(Boolean) && chromium, modules, chromium, llm, version });
+});
+
+// --- LLM model settings (local or cloud, runtime-switchable) ---
+// GET  /v1/llm         -> current provider/baseUrl/model + whether a key is set + presets (key never returned)
+// POST /v1/llm         -> { provider?, baseUrl?, model?, apiKey? } patch; applies live, returns new snapshot
+// GET  /v1/llm/models  -> model ids advertised by the configured endpoint (for the WebUI dropdown)
+app.get('/v1/llm', async (req, res) => {
+  res.json({ success: true, ...llmPublic(), reachable: await llmReachable(2000) });
+});
+app.post('/v1/llm', async (req, res) => {
+  try {
+    const snap = setLlm(req.body || {});
+    res.json({ success: true, ...snap, reachable: await llmReachable(2500) });
+  } catch (e) { bad(res, 400, e?.message || String(e)); }
+});
+app.get('/v1/llm/models', async (req, res) => {
+  try { res.json({ success: true, models: await llmModels() }); }
+  catch (e) { bad(res, 502, `could not list models: ${e?.message || e}`); }
 });
 
 const webui = path.join(here, '..', 'webui'); // optional; tolerated if absent

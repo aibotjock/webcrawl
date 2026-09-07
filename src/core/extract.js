@@ -1,14 +1,14 @@
 // Structured extraction: scrape -> markdown -> LLM (OpenAI-compatible) or label/table heuristics.
-import { config } from './config.js';
+// The LLM can be local (Ollama/LM Studio/llama.cpp) or cloud (any OpenAI-compatible endpoint);
+// see ./llm.js for the runtime-switchable client.
+import { llm, chatCompletion, llmReachable } from './llm.js';
 
 async function getMarkdown(url, _mdFn) {
   if (_mdFn) return _mdFn(url);
   const { scrape } = await import('./scrape.js');
   return scrape(url, { formats: ['markdown'] });
 }
-async function llmUp() {
-  try { return (await fetch(`${config.llmBaseUrl}/models`, { signal: AbortSignal.timeout(1500) })).ok; } catch { return false; }
-}
+const llmUp = () => llmReachable(1500);
 
 function parseJson(text) {
   if (!text) return undefined;
@@ -55,14 +55,9 @@ function conform(v, s, path = '$', errs = []) {
 }
 const validate = (data, schema) => { const errs = [], value = conform(data, schema, '$', errs); return { ok: !errs.length, value, errs }; };
 
-async function rawChat(body) {
-  const res = await fetch(`${config.llmBaseUrl}/chat/completions`, {
-    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(180000),
-  });
-  return { status: res.status, j: await res.json().catch(() => ({})) };
-}
+const rawChat = (body) => chatCompletion(body);
 async function complete(messages, { maxTokens = 4096, jsonMode = true } = {}) {
-  const body = { model: config.llmModel, temperature: 0, max_tokens: maxTokens, messages };
+  const body = { model: llm.model, temperature: 0, max_tokens: maxTokens, messages };
   if (jsonMode) body.response_format = { type: 'json_object' };
   let { status, j } = await rawChat(body);
   if (status === 400 && jsonMode && /response_format/i.test(JSON.stringify(j))) { delete body.response_format; ({ status, j } = await rawChat(body)); }

@@ -1,0 +1,15 @@
+{
+  "// note": "VS Code native MCP (Copilot Agent mode). Save as .vscode/mcp.json in your workspace, or add under \"mcp.servers\" in user settings.json.",
+  "servers": {
+    "webcrawl": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/ABSOLUTE/PATH/TO/webcrawl/src/mcp.js"],
+      "env": {
+        "WEBCRAWL_LLM_PROVIDER": "lmstudio",
+        "WEBCRAWL_LLM_BASE_URL": "http://127.0.0.1:1234/v1",
+        "WEBCRAWL_LLM_MODEL": "local-model"
+      }
+    }
+  }
+}

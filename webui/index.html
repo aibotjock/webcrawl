@@ -346,6 +346,37 @@ details.page[open] summary::before{transform:rotate(90deg)}
   padding:10px 18px;font-family:var(--mono);font-size:12px;letter-spacing:.05em;
   box-shadow:0 12px 34px rgba(0,0,0,.5),0 0 22px rgba(34,211,238,.16);transition:all .25s}
 #toast.on{opacity:1;transform:translate(-50%,0)}
+/* model modal */
+.modal-scrim{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:18px;
+  background:rgba(3,5,10,.62);backdrop-filter:blur(3px)}
+.modal-scrim[hidden]{display:none}
+.modal{width:min(480px,100%);max-height:90vh;overflow:auto;border-radius:16px;border:1px solid var(--line2);
+  background:linear-gradient(180deg,rgba(16,21,36,.98),rgba(10,13,24,.98));box-shadow:0 24px 70px rgba(0,0,0,.55)}
+.modal-h{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--line)}
+.modal-h h3{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--txt)}
+.xbtn{background:none;border:none;color:var(--mut);font-size:15px;cursor:pointer;line-height:1}
+.xbtn:hover{color:var(--txt)}
+.modal-b{padding:16px 18px;display:flex;flex-direction:column;gap:13px}
+.modal-note{font-size:12px;line-height:1.55;color:var(--mut)}
+.modal-note b{color:var(--txt)}
+.modal .field label{font-family:var(--mono);font-size:10px;letter-spacing:.13em;color:var(--dim)}
+.modal .field label small{letter-spacing:0;text-transform:none;color:#3d4763}
+.modal select,.modal input[type=url],.modal input[type=text],.modal input[type=password]{
+  width:100%;padding:9px 11px;border-radius:9px;border:1px solid var(--line2);background:rgba(8,11,20,.7);
+  color:var(--txt);font-size:12.5px;font-family:var(--mono)}
+.modal select:focus,.modal input:focus{border-color:rgba(57,216,245,.65);box-shadow:0 0 0 1px rgba(57,216,245,.3);outline:none}
+.model-row{display:flex;gap:8px}.model-row input{flex:1}
+.modal-status{min-height:18px;font-family:var(--mono);font-size:11px;letter-spacing:.04em}
+.modal-status.ok{color:var(--grn)}.modal-status.bad{color:var(--red)}.modal-status.busy{color:var(--amber)}
+.modal-f{display:flex;justify-content:flex-end;gap:9px;padding:13px 18px;border-top:1px solid var(--line)}
+.ghost-btn,.prim-btn{height:36px;padding:0 15px;border-radius:9px;font-size:11.5px;letter-spacing:.06em;cursor:pointer;
+  font-family:var(--mono);transition:border-color .18s,box-shadow .18s,color .18s}
+.ghost-btn{border:1px solid var(--line2);background:rgba(12,16,29,.6);color:var(--mut)}
+.ghost-btn:hover{color:var(--txt);border-color:rgba(139,168,255,.45)}
+.prim-btn{border:1px solid rgba(57,216,245,.5);background:linear-gradient(180deg,rgba(34,211,238,.22),rgba(34,211,238,.08));color:#bff4ff}
+.prim-btn:hover{box-shadow:0 0 18px rgba(34,211,238,.24)}
+.badge.cloud{background:rgba(167,139,250,.16);color:#c9b8ff}
+.badge.local{background:rgba(52,227,161,.14);color:var(--grn)}
 
 /* ---- responsive ---- */
 @media (max-width:960px){
@@ -388,6 +419,10 @@ details.page[open] summary::before{transform:rotate(90deg)}
     <span><b>WEBCRAWL</b></span>
   </div>
   <div class="top-right">
+    <button id="modelBtn" class="tbtn" title="AI model — local or cloud">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 4h6M8.5 13v2M15.5 13v2M2 12v4M22 12v4"/></svg>
+      <span class="tl">Model</span><span id="modelTag" class="badge">…</span>
+    </button>
     <button id="histBtn" class="tbtn" title="History (last 20 runs)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.2v5l3.2 2"/></svg>
       <span class="tl">History</span><span id="histCount" class="badge">0</span>
@@ -496,6 +531,43 @@ details.page[open] summary::before{transform:rotate(90deg)}
 </div>
 
 <div class="scrim" id="scrim"></div>
+
+<div class="modal-scrim" id="modelScrim" hidden>
+  <div class="modal" role="dialog" aria-label="AI model settings" aria-modal="true">
+    <div class="modal-h">
+      <h3>AI MODEL — POWERS EXTRACT</h3>
+      <button id="modelClose" class="xbtn" title="Close">&#10005;</button>
+    </div>
+    <div class="modal-b">
+      <p class="modal-note">Pick a <b>local</b> model (Ollama / LM Studio / llama.cpp — no key) or a <b>cloud</b> OpenAI-compatible endpoint (OpenAI, Abacus gateway, …). Applies live; the API key stays on the server and is never sent back to the browser.</p>
+      <div class="field">
+        <label>PROVIDER PRESET</label>
+        <select id="mProvider"></select>
+      </div>
+      <div class="field">
+        <label>BASE URL <small>(OpenAI-compatible, ends in /v1)</small></label>
+        <input id="mBaseUrl" type="url" placeholder="http://127.0.0.1:1234/v1" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="field">
+        <label>MODEL</label>
+        <div class="model-row">
+          <input id="mModel" type="text" placeholder="local-model / gpt-4o-mini / llama3.1" autocomplete="off" spellcheck="false" list="mModelList">
+          <datalist id="mModelList"></datalist>
+          <button id="mFetch" class="ghost-btn" type="button" title="List models from the endpoint">FETCH</button>
+        </div>
+      </div>
+      <div class="field" id="mKeyField">
+        <label>API KEY <small>(cloud only — leave blank to keep existing)</small></label>
+        <input id="mKey" type="password" placeholder="sk-…  (stored server-side)" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="modal-status" id="mStatus"></div>
+    </div>
+    <div class="modal-f">
+      <button id="mTest" class="ghost-btn" type="button">TEST CONNECTION</button>
+      <button id="mSave" class="prim-btn" type="button">SAVE &amp; APPLY</button>
+    </div>
+  </div>
+</div>
 <aside class="drawer" id="drawer" aria-label="History">
   <div class="drawer-h"><h3>HISTORY — LAST 20 RUNS</h3>
     <div><button id="histClear" class="abtn">CLEAR ALL</button>
@@ -857,13 +929,79 @@ function heroHtml(){
       `<button class="hop ${op}" data-op="${op}">${svg(op,19)}<span><span class="hop-tag">${OPS[op].g}</span><b>${OPS[op].t}</b><small>${OPS[op].one}</small></span></button>`).join("")}</div></div>`;
 }
 
+/* ---------- AI model settings ---------- */
+let llmState=null;
+const mScrim=$("#modelScrim");
+function mStatus(msg,cls){const s=$("#mStatus");s.textContent=msg||"";s.className="modal-status"+(cls?" "+cls:"")}
+function setModelTag(st){
+  const tag=$("#modelTag");if(!st){tag.textContent="?";return}
+  const p=st.presets&&st.presets[st.provider];const kind=p?p.kind:(st.hasKey?"cloud":"local");
+  tag.textContent=(st.model||"—").split("/").pop().slice(0,14);
+  tag.className="badge "+(kind==="cloud"?"cloud":"local");
+  $("#modelBtn").title=`AI model: ${st.model} @ ${st.baseUrl} (${kind}${st.reachable?", online":", offline"})`;
+}
+function fillModelForm(st){
+  const sel=$("#mProvider");
+  sel.innerHTML=Object.entries(st.presets||{}).map(([k,v])=>`<option value="${k}">${esc(v.label)}</option>`).join("");
+  sel.value=st.provider in (st.presets||{})?st.provider:"cloud";
+  $("#mBaseUrl").value=st.baseUrl||"";$("#mModel").value=st.model||"";$("#mKey").value="";
+  const p=st.presets&&st.presets[sel.value];
+  $("#mKeyField").style.display=(p&&p.keyless)?"none":"flex";
+  mStatus(st.reachable?"Endpoint reachable"+(st.hasKey?" · key set":""):"Endpoint not reachable",st.reachable?"ok":"bad");
+}
+async function loadLlm(){
+  try{const r=await fetch(API+"/v1/llm");llmState=await r.json();setModelTag(llmState)}
+  catch{setModelTag(null)}
+}
+function openModel(){if(!llmState){toast("Model status not loaded yet");return}fillModelForm(llmState);mScrim.hidden=false}
+function closeModel(){mScrim.hidden=true}
+$("#modelBtn").addEventListener("click",openModel);
+$("#modelClose").addEventListener("click",closeModel);
+mScrim.addEventListener("click",e=>{if(e.target===mScrim)closeModel()});
+$("#mProvider").addEventListener("change",()=>{
+  const k=$("#mProvider").value,p=llmState.presets[k];
+  if(p){if(p.baseUrl)$("#mBaseUrl").value=p.baseUrl;$("#mKeyField").style.display=p.keyless?"none":"flex"}
+});
+function modelPatch(){
+  const patch={provider:$("#mProvider").value,baseUrl:$("#mBaseUrl").value.trim(),model:$("#mModel").value.trim()};
+  const k=$("#mKey").value;if(k)patch.apiKey=k;return patch;
+}
+$("#mSave").addEventListener("click",async()=>{
+  mStatus("Saving…","busy");
+  try{
+    const r=await fetch(API+"/v1/llm",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(modelPatch())});
+    const j=await r.json();
+    if(!r.ok||j.success===false)throw new Error(j.error||"save failed");
+    llmState=j;setModelTag(j);mStatus(j.reachable?"Saved · endpoint reachable":"Saved · endpoint NOT reachable",j.reachable?"ok":"bad");
+    toast("Model settings applied");ping();
+  }catch(e){mStatus(e.message,"bad")}
+});
+$("#mTest").addEventListener("click",async()=>{
+  mStatus("Testing…","busy");
+  try{
+    const r=await fetch(API+"/v1/llm",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(modelPatch())});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"test failed");
+    llmState=j;setModelTag(j);mStatus(j.reachable?"Connection OK — endpoint reachable":"Endpoint not reachable (check URL / key / that the model server is running)",j.reachable?"ok":"bad");
+  }catch(e){mStatus(e.message,"bad")}
+});
+$("#mFetch").addEventListener("click",async()=>{
+  mStatus("Fetching models…","busy");
+  try{
+    await fetch(API+"/v1/llm",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(modelPatch())});
+    const r=await fetch(API+"/v1/llm/models");const j=await r.json();
+    if(!r.ok||j.success===false)throw new Error(j.error||"could not list models");
+    $("#mModelList").innerHTML=(j.models||[]).map(m=>`<option value="${esc(m)}">`).join("");
+    mStatus(`${(j.models||[]).length} models available — click the model field`,"ok");
+  }catch(e){mStatus(e.message,"bad")}
+});
+
 /* ---------- init ---------- */
 $$(".segtab").forEach(b=>b.insertAdjacentHTML("afterbegin",svg(b.dataset.op,15)));
 $("#curlBtn").insertAdjacentHTML("afterbegin",svg("copy",13));
 switchOp("scrape");
 $("#resultBody").innerHTML=heroHtml();
 loadHist();renderHist();
-(async()=>{await ping();setInterval(ping,15000)})();
+(async()=>{await ping();loadLlm();setInterval(ping,15000);setInterval(loadLlm,30000)})();
 </script>
 </body>
 </html>
