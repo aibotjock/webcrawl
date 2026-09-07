@@ -24,8 +24,10 @@ License: MIT (original clean-room implementation; no Firecrawl code copied).
 ## AI model (local or cloud)
 
 `extract` turns a page into typed JSON using an LLM (with a heuristic fallback when no LLM is
-reachable). The LLM is **OpenAI-compatible and switchable at runtime** — run it against a local
-model or a cloud endpoint, and flip between them live from the WebUI without restarting.
+reachable). The LLM is **switchable at runtime** — run it against a local model, an
+OpenAI-compatible cloud endpoint, or **Anthropic Claude** (native `/v1/messages` API), and flip
+between them live from the WebUI without restarting. Anthropic requests/responses are translated
+transparently, so `extract` and the `/v1/llm` routes behave identically across providers.
 
 **From the WebUI:** click **Model** in the top bar. Pick a provider preset, set the base URL /
 model / API key, hit **Test Connection** or **Fetch** (to list the endpoint's models), then
@@ -35,10 +37,11 @@ model / API key, hit **Test Connection** or **Fetch** (to list the endpoint's mo
 
 | Variable | Meaning | Example |
 |----------|---------|---------|
-| `WEBCRAWL_LLM_PROVIDER` | `lmstudio` \| `ollama` \| `llamacpp` \| `openai` \| `cloud` | `ollama` |
-| `WEBCRAWL_LLM_BASE_URL` | OpenAI-compatible base URL (ends in `/v1`) | `http://127.0.0.1:11434/v1` |
+| `WEBCRAWL_LLM_PROVIDER` | `lmstudio` \| `ollama` \| `llamacpp` \| `openai` \| `anthropic` \| `cloud` | `ollama` |
+| `WEBCRAWL_LLM_BASE_URL` | base URL ending in `/v1` (`https://api.anthropic.com/v1` for Claude) | `http://127.0.0.1:11434/v1` |
 | `WEBCRAWL_LLM_MODEL` | model id | `llama3.1` |
-| `WEBCRAWL_LLM_API_KEY` | Bearer key — **cloud only** (omit for local) | `sk-...` |
+| `WEBCRAWL_LLM_API_KEY` | key — **cloud only** (Bearer, or `x-api-key` for Anthropic; omit for local) | `sk-...` |
+| `ANTHROPIC_API_KEY` | fallback key used when `provider=anthropic` and `WEBCRAWL_LLM_API_KEY` is unset | `sk-ant-...` |
 
 **Local examples**
 
@@ -54,6 +57,13 @@ WEBCRAWL_LLM_PROVIDER=lmstudio WEBCRAWL_LLM_BASE_URL=http://127.0.0.1:1234/v1  W
 ```bash
 WEBCRAWL_LLM_PROVIDER=openai WEBCRAWL_LLM_BASE_URL=https://api.openai.com/v1 \
 WEBCRAWL_LLM_MODEL=gpt-4o-mini WEBCRAWL_LLM_API_KEY=sk-...
+```
+
+**Anthropic Claude example** (native `/v1/messages` API — not OpenAI-compatible)
+
+```bash
+WEBCRAWL_LLM_PROVIDER=anthropic WEBCRAWL_LLM_BASE_URL=https://api.anthropic.com/v1 \
+WEBCRAWL_LLM_MODEL=claude-3-5-sonnet-latest ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 **LLM control endpoints**
