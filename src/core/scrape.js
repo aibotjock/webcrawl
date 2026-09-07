@@ -38,6 +38,7 @@ export async function scrape(url, opts = {}) {
   let res = await fetchPage(url, { timeoutMs: timeout });
   let html = res.html || '';
   let finalUrl = res.finalUrl || url;
+  let fetchMethod = 'fetch'; // 'fetch' = static HTTP, 'browser' = headless re-render (provenance)
   let conv = html ? htmlToMarkdown(html, { baseUrl: finalUrl }) : { markdown: '', title: '', description: '' };
   const mdChars = conv.markdown.replace(/\s+/g, '').length;
 
@@ -48,6 +49,7 @@ export async function scrape(url, opts = {}) {
       html = r.html;
       finalUrl = r.finalUrl || finalUrl;
       res = { ...res, status: r.status };
+      fetchMethod = 'browser';
       conv = htmlToMarkdown(html, { baseUrl: finalUrl });
     } else if (!html) {
       res = { ...res, error: res.error || r.error };
@@ -59,6 +61,7 @@ export async function scrape(url, opts = {}) {
     description: conv.description || '',
     statusCode: res.status || 0,
     url: finalUrl,
+    fetchMethod,
   };
   if (!html) {
     out.metadata.error = res.error || 'empty response';

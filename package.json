@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node src/server.js",
     "mcp": "node src/mcp.js",
-    "test": "node --test test/",
+    "test": "node --test test/*.test.js",
+    "mcp:configs": "node mcp/generate-configs.mjs",
+    "mcp:smoke": "node mcp/smoke-test.mjs",
     "bench": "node scripts/bench.js",
     "capture:bar": "node scripts/bar-capture.js"
   },

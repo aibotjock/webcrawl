@@ -3,3 +3,10 @@ node_modules/
 .DS_Store
 .env
 results/tmp/
+mcp/generated/
+data/sessions/
+data/mcp-settings.json
+data/mcp-servers.json
+data/mcp-profiles.json
+data/localfs-allowlist.json
+.abacus.donotdelete
