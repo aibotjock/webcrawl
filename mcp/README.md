@@ -42,6 +42,27 @@ The same data is available over HTTP if you'd rather script it:
 `POST /v1/mcp/tools` (`{name,enabled}` or `{disabled:[...]}`),
 `GET /v1/mcp/config?host=&command=&serverPath=&provider=&baseUrl=&model=&apiKey=`.
 
+### Managing *external* MCP servers *(new)*
+
+The MCP panel is now a full **manager** for external MCP servers (in addition to the six
+built-in tools and the config generator above). From the browser you can:
+
+- **Servers** — register external MCP servers, toggle them on/off, **test** connectivity, and
+  remove them. Enabled servers can act as tools during agentic research runs.
+- **Profiles** — save/apply named bundles of servers; **8 built-in starter profiles** ship in.
+- **Import** — paste MCP server JSON; it is **validated**, **previewed with secret env values
+  masked**, and required env vars are flagged before you save it.
+- **Templates** — **15 starter server templates** you can add in one click.
+
+Scriptable over HTTP:
+`GET/POST /v1/mcp/servers`, `DELETE /v1/mcp/servers/:id`,
+`POST /v1/mcp/servers/:id/toggle`, `POST /v1/mcp/servers/:id/test`,
+`GET /v1/mcp/templates`, `GET/POST /v1/mcp/profiles`,
+`POST /v1/mcp/profiles/:id/apply`, `DELETE /v1/mcp/profiles/:id`,
+`POST /v1/mcp/import` (returns `{ preview }` to validate, then `{ saved, servers }` to persist).
+Server and template records use a `name` field. Imported secrets are stored server-side and
+never returned to the browser unmasked.
+
 The CLI generator below is still available and shares the exact same config-building logic
 (`src/core/mcp-config.js`) as the WebUI, so both produce identical output.
 

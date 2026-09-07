@@ -513,6 +513,87 @@ details.page[open] summary::before{transform:rotate(90deg)}
 .compare-panel{border:1px solid var(--line);border-radius:12px;background:rgba(12,16,29,.5);padding:14px;margin-bottom:14px}
 .cmp-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:720px){.cmp-cols{grid-template-columns:1fr}.rctrls{grid-template-columns:1fr 1fr}}
+
+/* ============ CLEAN LIGHT THEME (toggle) ============ */
+body.light{
+  --bg0:#f4f6fc;
+  --panel:linear-gradient(180deg,#ffffff,#f7f9ff);
+  --line:rgba(40,60,120,.13);--line2:rgba(40,60,120,.24);
+  --txt:#141a2e;--mut:#4a5578;--dim:#7a83a0;
+  --cyan:#0891b2;--violet:#7c3aed;--grn:#059669;--red:#dc2626;--amber:#b45309;--blue:#2563eb;
+  --grad:linear-gradient(135deg,#0891b2 0%,#4f6bed 55%,#7c3aed 100%);
+  background:var(--bg0);color:var(--txt);
+}
+body.light .bgfx{background:
+  radial-gradient(900px 620px at 10% -12%,rgba(8,145,178,.09),transparent 62%),
+  radial-gradient(1100px 760px at 106% 112%,rgba(124,58,237,.08),transparent 62%),
+  linear-gradient(180deg,#eef2fb,#f4f6fc 45%,#eef1fa)}
+body.light .bgfx::before{background-image:
+  linear-gradient(rgba(60,90,180,.06) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(60,90,180,.06) 1px,transparent 1px)}
+body.light .bgfx::after{opacity:0}
+body.light .topbar{background:rgba(255,255,255,.82)}
+body.light .tbtn,body.light .status,body.light .modeseg{background:#fff}
+body.light .seg-row,body.light .srcseg,body.light .srcseg2,body.light .modeseg{background:#eef1fa}
+body.light .rc select,body.light .rc input[type=text],body.light .rc input[type=number],
+body.light .rprompt,body.light textarea,body.light input[type=url],body.light input[type=password],body.light input[type=text]{background:#fff;color:var(--txt)}
+body.light .segtab.on,body.light .modeseg button.on{background:linear-gradient(180deg,#e5edff,#d6e4ff);color:#123;border-color:rgba(8,145,178,.5)}
+body.light .status-pop,body.light .drawer,body.light .modal-card,body.light .panel{background:#fff}
+body.light .mcp-tool,body.light .mcp-json,body.light .li-row,body.light .sess-row,body.light .page{background:#f7f9ff}
+body.light a{color:var(--cyan)}
+
+/* ============ theme toggle button ============ */
+.iconbtn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;
+  border:1px solid var(--line2);background:rgba(12,16,29,.6);color:var(--mut);transition:color .18s,border-color .18s}
+.iconbtn:hover{color:var(--txt);border-color:rgba(139,168,255,.45)}
+.iconbtn svg{width:16px;height:16px}
+body.light .iconbtn{background:#fff}
+
+/* ============ extra multi-source chips + agent-mode segment ============ */
+.srcseg2{display:flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:11px;background:rgba(8,11,20,.55);border:1px solid var(--line);margin-top:8px}
+.srcseg2 button{height:30px;padding:0 12px;border-radius:8px;font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--mut);
+  border:1px solid transparent;background:transparent;transition:color .16s,background .16s,border-color .16s}
+.srcseg2 button.on{color:#dff8ff;background:rgba(167,139,250,.16);border-color:rgba(167,139,250,.55)}
+body.light .srcseg2 button.on{color:#3b1e70}
+.agmode{display:flex;gap:4px;padding:4px;border-radius:11px;background:rgba(8,11,20,.55);border:1px solid var(--line);flex-wrap:wrap}
+.agmode button{flex:1;min-width:78px;height:34px;border-radius:8px;font-size:10px;font-weight:650;letter-spacing:.05em;color:var(--mut);
+  border:1px solid transparent;background:transparent;transition:color .16s,background .16s,border-color .16s}
+.agmode button.on{color:#eafcff;background:linear-gradient(180deg,rgba(40,54,92,.92),rgba(21,29,53,.92));border-color:rgba(167,139,250,.55);box-shadow:0 0 14px rgba(167,139,250,.16)}
+body.light .agmode button.on{background:linear-gradient(180deg,#efe7ff,#e2d6ff);color:#3b1e70}
+.agmode-desc{font-size:11px;color:var(--mut);margin-top:6px;line-height:1.4;min-height:16px}
+.limitsbox{margin-top:13px;border:1px solid var(--line);border-radius:12px;padding:12px;background:rgba(8,11,20,.4)}
+body.light .limitsbox{background:#f7f9ff}
+.limitsbox summary{cursor:pointer;font:600 10px var(--mono);letter-spacing:.16em;color:var(--dim);list-style:none}
+.limitsbox summary::-webkit-details-marker{display:none}
+.limitsgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin-top:12px}
+.approvalrow{display:flex;align-items:center;gap:8px;margin-top:11px;flex-wrap:wrap}
+.approvalrow label{font-size:11.5px;color:var(--mut);display:inline-flex;align-items:center;gap:6px}
+
+/* ============ MCP manager + localfs ============ */
+.mcp-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;border-bottom:1px solid var(--line);padding-bottom:2px}
+.mcp-tabb{height:34px;padding:0 13px;border-radius:8px 8px 0 0;font:650 10.5px var(--mono);letter-spacing:.1em;color:var(--mut);border:1px solid transparent;background:transparent}
+.mcp-tabb.on{color:#eafcff;background:rgba(34,211,238,.1);border-color:var(--line) var(--line) transparent}
+body.light .mcp-tabb.on{color:#0a3;background:rgba(8,145,178,.09)}
+.mcp-pane{display:none;flex-direction:column;gap:9px}
+.mcp-pane.on{display:flex}
+.srv-row{display:flex;align-items:flex-start;gap:10px;padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:rgba(8,11,20,.5)}
+body.light .srv-row{background:#f7f9ff}
+.srv-row .sinfo{flex:1;min-width:0}
+.srv-name{font-family:var(--mono);font-size:12px;color:var(--txt);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.srv-desc{font-size:11px;color:var(--mut);margin-top:2px;line-height:1.4}
+.cap{font:600 9px var(--mono);letter-spacing:.06em;padding:1px 6px;border-radius:999px}
+.cap.readonly{background:rgba(52,227,161,.14);color:var(--grn)}
+.cap.readwrite{background:rgba(255,200,87,.14);color:var(--amber)}
+.cap.destructive{background:rgba(255,107,129,.16);color:var(--red)}
+.tmpl-row{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:rgba(8,11,20,.42)}
+body.light .tmpl-row{background:#f7f9ff}
+.import-prev{border:1px solid var(--line);border-radius:9px;padding:9px;margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--mut);max-height:220px;overflow:auto}
+.root-row{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--line);border-radius:9px;background:rgba(8,11,20,.42);font-family:var(--mono);font-size:11.5px}
+body.light .root-row{background:#f7f9ff}
+.switch{position:relative;width:38px;height:21px;flex:none;border-radius:999px;background:rgba(139,168,255,.2);border:1px solid var(--line2);cursor:pointer;transition:background .18s}
+.switch.on{background:rgba(52,227,161,.6)}
+.switch::after{content:"";position:absolute;top:1.5px;left:1.5px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .18s}
+.switch.on::after{left:19px}
 </style>
 </head>
 <body>
@@ -537,6 +618,10 @@ details.page[open] summary::before{transform:rotate(90deg)}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 4h6M8.5 13v2M15.5 13v2M2 12v4M22 12v4"/></svg>
       <span class="tl">Model</span><span id="modelTag" class="badge">…</span>
     </button>
+    <button id="localBtn" class="tbtn" title="Local files — read-only allowlisted folders">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5C3 6.7 3.7 6 4.5 6h4L10.5 8H19.5c.8 0 1.5.7 1.5 1.5v8c0 .8-.7 1.5-1.5 1.5h-15C3.7 19 3 18.3 3 17.5z"/></svg>
+      <span class="tl">Files</span><span id="localCount" class="badge">0</span>
+    </button>
     <button id="sessBtn" class="tbtn" title="Saved research sessions">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C4 4.7 4.7 4 5.5 4h9L20 9.5V18.5c0 .8-.7 1.5-1.5 1.5h-13C4.7 20 4 19.3 4 18.5z"/><path d="M14 4v6h6M8 13h8M8 16.5h5"/></svg>
       <span class="tl">Sessions</span><span id="sessCount" class="badge">0</span>
@@ -553,6 +638,9 @@ details.page[open] summary::before{transform:rotate(90deg)}
       <button id="statusChip" class="status"><span class="sdot"></span><span id="statusTxt">CHECKING</span></button>
       <div id="statusPop" class="status-pop" hidden></div>
     </div>
+    <button id="themeBtn" class="iconbtn" title="Toggle light / dark theme" aria-label="Toggle theme">
+      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
   </div>
 </header>
 
@@ -569,6 +657,16 @@ details.page[open] summary::before{transform:rotate(90deg)}
 
       <div class="rctrls">
         <div class="rc" style="grid-column:1/-1">
+          <span class="fl">AGENT MODE</span>
+          <div class="agmode" id="rAgentMode" role="tablist" aria-label="Agent mode">
+            <button type="button" data-mode="manual" class="on">MANUAL</button>
+            <button type="button" data-mode="assisted">ASSISTED</button>
+            <button type="button" data-mode="agent">AGENT</button>
+            <button type="button" data-mode="advanced-agent">ADVANCED</button>
+          </div>
+          <div class="agmode-desc" id="rAgentModeDesc">Manual — a single research pass over your sources (classic mode).</div>
+        </div>
+        <div class="rc" style="grid-column:1/-1">
           <span class="fl">SOURCES</span>
           <div class="srcseg" id="rSrcSeg">
             <button type="button" data-src="web" class="on">ENTIRE WEB</button>
@@ -576,6 +674,27 @@ details.page[open] summary::before{transform:rotate(90deg)}
             <button type="button" data-src="urls">SPECIFIC URLS</button>
           </div>
           <input id="rSrcValues" type="text" placeholder="comma-separated domains or URLs" style="display:none;margin-top:8px" spellcheck="false" autocomplete="off">
+          <div class="srcseg2" id="rSrcExtra" title="Additional sources for Agent modes">
+            <button type="button" data-xsrc="localfs">+ LOCAL FILES</button>
+            <button type="button" data-xsrc="github">+ GITHUB</button>
+            <button type="button" data-xsrc="mcp">+ MCP SERVERS</button>
+            <button type="button" data-xsrc="previous">+ PREVIOUS RESULTS</button>
+          </div>
+        </div>
+        <div class="rc">
+          <span class="fl">RESEARCH DOMAIN</span>
+          <select id="rDomain">
+            <option value="general" selected>General</option>
+            <option value="ai-technology">AI &amp; Technology</option>
+            <option value="medicine">Medicine &amp; Health</option>
+            <option value="law">Law &amp; Policy</option>
+            <option value="science">Science</option>
+            <option value="finance">Finance &amp; Markets</option>
+            <option value="academic">Academic</option>
+            <option value="engineering">Engineering</option>
+            <option value="business">Business</option>
+            <option value="custom">Custom</option>
+          </select>
         </div>
         <div class="rc">
           <span class="fl">DEPTH</span>
@@ -583,6 +702,8 @@ details.page[open] summary::before{transform:rotate(90deg)}
             <option value="quick">Quick — 1 query · ~4 pages</option>
             <option value="standard" selected>Standard — 3 queries · ~10 pages</option>
             <option value="deep">Deep — 5 queries · ~24 pages + crawl</option>
+            <option value="exhaustive">Exhaustive — 8 queries · ~50 pages + deep crawl</option>
+            <option value="custom">Custom — set the limits yourself</option>
           </select>
         </div>
         <div class="rc">
@@ -600,6 +721,29 @@ details.page[open] summary::before{transform:rotate(90deg)}
           <input id="rMaxPages" type="number" value="10" min="1" max="100">
         </div>
       </div>
+
+      <details class="limitsbox" id="rLimitsBox">
+        <summary>AGENT LIMITS &amp; PERMISSIONS <span style="color:var(--dim);font-weight:400;letter-spacing:0">— iterations, budgets, approvals</span></summary>
+        <div class="limitsgrid">
+          <div class="rc"><span class="fl">MAX SEARCHES</span><input id="rMaxSearches" type="number" value="3" min="1" max="25"></div>
+          <div class="rc"><span class="fl">MAX CRAWL DEPTH</span><input id="rMaxCrawlDepth" type="number" value="0" min="0" max="5"></div>
+          <div class="rc"><span class="fl">MAX ITERATIONS</span><input id="rMaxIterations" type="number" value="1" min="1" max="6"></div>
+          <div class="rc"><span class="fl">RUNTIME BUDGET (s)</span><input id="rRuntimeSec" type="number" value="180" min="5" max="600"></div>
+          <div class="rc"><span class="fl">LLM CALL CAP</span><input id="rLlmCap" type="number" value="40" min="1" max="200"></div>
+          <div class="rc"><span class="fl">TOOL PREFERENCE</span>
+            <select id="rToolPref"><option value="auto" selected>Auto</option><option value="local">Prefer local</option><option value="cloud">Prefer cloud</option></select>
+          </div>
+        </div>
+        <div class="approvalrow">
+          <div class="rc" style="flex:1;min-width:180px"><span class="fl">APPROVAL POLICY</span>
+            <select id="rApproval"><option value="destructive-only" selected>Approve destructive actions</option><option value="always">Approve every tool call</option><option value="never">No approvals (autonomous)</option></select>
+          </div>
+          <label class="switch" style="align-self:flex-end;margin-bottom:6px" title="Allow write-capable / destructive MCP tools (opt-in)">
+            <input type="checkbox" id="rAllowWrite"><span class="sl"></span>
+            <span style="font:600 10px var(--mono);letter-spacing:.1em;color:var(--mut);margin-left:8px">ALLOW WRITE / DESTRUCTIVE TOOLS</span>
+          </label>
+        </div>
+      </details>
 
       <div class="schemabox" id="rSchemaBox" style="display:none">
         <span class="fl" style="display:block;margin-bottom:7px">DESCRIBE THE DATA TO EXTRACT (plain English)</span>
@@ -772,15 +916,59 @@ details.page[open] summary::before{transform:rotate(90deg)}
       <button id="mcpClose" class="xbtn" title="Close">&#10005;</button>
     </div>
     <div class="modal-b">
-      <p class="modal-note">webcrawl ships a <b>stdio MCP server</b> that exposes these tools to hosts like Claude Desktop, Cursor, Windsurf, VS Code and Continue. Toggle a tool off to stop exposing it (the change persists and is applied the next time a host launches the server). Then generate a ready-to-paste client config below.</p>
-
-      <div class="mcp-sec">
-        <h4>Tools <span id="mcpToolsSummary" class="mcp-hint"></span></h4>
-        <div id="mcpTools"></div>
+      <div class="mcp-tabs" id="mcpTabs" role="tablist">
+        <button class="mcp-tabb on" data-mtab="tools" type="button">TOOLS</button>
+        <button class="mcp-tabb" data-mtab="servers" type="button">SERVERS</button>
+        <button class="mcp-tabb" data-mtab="profiles" type="button">PROFILES</button>
+        <button class="mcp-tabb" data-mtab="import" type="button">IMPORT</button>
+        <button class="mcp-tabb" data-mtab="templates" type="button">TEMPLATES</button>
+        <button class="mcp-tabb" data-mtab="config" type="button">CLIENT CONFIG</button>
       </div>
 
-      <div class="mcp-sec">
-        <h4>Client config generator</h4>
+      <div class="mcp-pane on" data-pane="tools">
+        <p class="modal-note">webcrawl ships a <b>stdio MCP server</b> that exposes these tools to hosts like Claude Desktop, Cursor, Windsurf, VS Code and Continue. Toggle a tool off to stop exposing it (the change persists and is applied the next time a host launches the server).</p>
+        <div class="mcp-sec">
+          <h4>Tools <span id="mcpToolsSummary" class="mcp-hint"></span></h4>
+          <div id="mcpTools"></div>
+        </div>
+      </div>
+
+      <div class="mcp-pane" data-pane="servers">
+        <p class="modal-note">MCP servers the <b>agent</b> can draw on. Enable a server to advertise it to Agent-mode runs; toggle, test (static validation) or remove entries. Add servers from <b>Templates</b> or <b>Import</b>.</p>
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+          <button id="mcpSrvEnableAll" class="ghost-btn" type="button">ENABLE ALL</button>
+          <button id="mcpSrvDisableAll" class="ghost-btn" type="button">DISABLE ALL</button>
+          <button id="mcpSrvRefresh" class="ghost-btn" type="button">REFRESH</button>
+        </div>
+        <div id="mcpServers"></div>
+      </div>
+
+      <div class="mcp-pane" data-pane="profiles">
+        <p class="modal-note">Save the current set of enabled servers as a reusable <b>profile</b>, or apply a built-in / saved profile. Applying a profile enables exactly its servers.</p>
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:flex-end">
+          <div class="field" style="flex:1;min-width:160px"><label>NEW PROFILE NAME</label><input id="mcpProfileName" type="text" placeholder="e.g. Research stack" autocomplete="off" spellcheck="false"></div>
+          <button id="mcpProfileSave" class="prim-btn" type="button">SAVE CURRENT</button>
+        </div>
+        <div id="mcpProfiles"></div>
+      </div>
+
+      <div class="mcp-pane" data-pane="import">
+        <p class="modal-note">Paste a client MCP JSON block (<code>{"mcpServers":{…}}</code> or a single server). webcrawl validates it, previews each server and <b>masks secrets</b> before you save. Nothing is executed on import.</p>
+        <textarea id="mcpImportText" spellcheck="false" placeholder='{"mcpServers":{"github":{"command":"npx","args":["-y","@modelcontextprotocol/server-github"],"env":{"GITHUB_TOKEN":"ghp_…"}}}}' style="width:100%;min-height:130px"></textarea>
+        <div style="display:flex;gap:8px;margin-top:9px;flex-wrap:wrap">
+          <button id="mcpImportPreview" class="ghost-btn" type="button">VALIDATE &amp; PREVIEW</button>
+          <button id="mcpImportSave" class="prim-btn" type="button" disabled>SAVE SERVERS</button>
+        </div>
+        <div id="mcpImportPrev"></div>
+      </div>
+
+      <div class="mcp-pane" data-pane="templates">
+        <p class="modal-note">Starter templates for popular MCP servers. Click <b>ADD</b> to register a server (any required secrets are left blank for you to fill in the Servers tab or your host config).</p>
+        <div id="mcpTemplates"></div>
+      </div>
+
+      <div class="mcp-pane" data-pane="config">
+        <h4 style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--dim);margin:2px 0 10px">CLIENT CONFIG GENERATOR</h4>
         <div class="mcp-grid">
           <div class="field">
             <label>HOST</label>
@@ -832,6 +1020,35 @@ details.page[open] summary::before{transform:rotate(90deg)}
   </div>
 </div>
 
+<div class="modal-scrim" id="localScrim" hidden>
+  <div class="modal wide" role="dialog" aria-label="Local files" aria-modal="true">
+    <div class="modal-h">
+      <h3>LOCAL FILES — READ-ONLY ALLOWLIST</h3>
+      <button id="localClose" class="xbtn" title="Close">&#10005;</button>
+    </div>
+    <div class="modal-b">
+      <p class="modal-note">The agent can search text inside folders you explicitly allow here. Access is <b>read-only</b> and strictly confined to these roots — nothing outside them is ever read, and no file is ever modified. Add a folder by absolute path, then search across all allowed roots.</p>
+      <div class="mcp-sec">
+        <h4>Allowed folders</h4>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:8px">
+          <div class="field" style="flex:1;min-width:220px"><label>ADD FOLDER (absolute path)</label><input id="localRootInput" type="text" placeholder="/home/you/research-notes" autocomplete="off" spellcheck="false"></div>
+          <button id="localAddBtn" class="prim-btn" type="button">ADD</button>
+        </div>
+        <div id="localRoots"></div>
+      </div>
+      <div class="mcp-sec">
+        <h4>Search allowed folders</h4>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:8px">
+          <div class="field" style="flex:1;min-width:220px"><label>QUERY</label><input id="localQuery" type="text" placeholder="text to find in file names or contents" autocomplete="off" spellcheck="false"></div>
+          <button id="localSearchBtn" class="prim-btn" type="button">SEARCH</button>
+        </div>
+        <div class="modal-status" id="localStatus"></div>
+        <div id="localResults"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <aside class="drawer" id="drawer" aria-label="History">
   <div class="drawer-h"><h3>HISTORY — LAST 20 RUNS</h3>
     <div><button id="histClear" class="abtn">CLEAR ALL</button>
@@ -876,7 +1093,12 @@ const ICONS={
   extract:'<path d="M8 3H7a2 2 0 0 0-2 2v3.5a2 2 0 0 1-2 2 2 2 0 0 1 2 2V17a2 2 0 0 0 2 2h1M16 3h1a2 2 0 0 1 2 2v3.5a2 2 0 0 0 2 2 2 2 0 0 0-2 2V17a2 2 0 0 1-2 2h-1"/>',
   copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
   ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/>',
-  warn:'<path d="M12 3 2.5 20h19L12 3z"/><path d="M12 10v4.5M12 17.5v.1"/>'
+  warn:'<path d="M12 3 2.5 20h19L12 3z"/><path d="M12 10v4.5M12 17.5v.1"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  x:'<path d="M18 6 6 18M6 6l12 12"/>',
+  play:'<path d="M6 4l14 8-14 8V4z"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  download:'<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>'
 };
 const svg=(n,w=18)=>`<svg viewBox="0 0 24 24" width="${w}" height="${w}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]}</svg>`;
 
@@ -1353,6 +1575,8 @@ async function openMcp(){
   $("#mcpModel").value=env.WEBCRAWL_LLM_MODEL||"";
   $("#mcpKey").value="";
   mcpStatus("");await refreshMcpConfig();
+  mcpMgrLoaded={servers:false,profiles:false,templates:false};
+  if(typeof mcpSwitchTab==="function")mcpSwitchTab("tools");
   mcpScrim.hidden=false;
 }
 function closeMcp(){mcpScrim.hidden=true}
@@ -1375,6 +1599,213 @@ $("#mcpDownload").addEventListener("click",()=>{
   toast("Downloaded "+(mcpBuilt.filename||"config"));
 });
 
+/* ================= MCP Manager (servers / profiles / import / templates) ================= */
+let mcpMgrLoaded={servers:false,profiles:false,templates:false};
+function mcpSwitchTab(tab){
+  $$("#mcpTabs .mcp-tabb").forEach(b=>b.classList.toggle("on",b.dataset.mtab===tab));
+  $$(".mcp-pane").forEach(p=>p.classList.toggle("on",p.dataset.pane===tab));
+  if(tab==="servers"&&!mcpMgrLoaded.servers)loadMcpServers();
+  else if(tab==="profiles"&&!mcpMgrLoaded.profiles)loadMcpProfiles();
+  else if(tab==="templates"&&!mcpMgrLoaded.templates)loadMcpTemplates();
+}
+$$("#mcpTabs .mcp-tabb").forEach(b=>b.addEventListener("click",()=>mcpSwitchTab(b.dataset.mtab)));
+
+/* ---- Servers ---- */
+async function loadMcpServers(){
+  const box=$("#mcpServers");box.innerHTML='<p class="modal-note">Loading…</p>';
+  try{
+    const r=await fetch(API+"/v1/mcp/servers");const j=await r.json();
+    if(!r.ok||j.success===false)throw new Error(j.error||"could not load servers");
+    mcpMgrLoaded.servers=true;renderMcpServers(j.servers||[]);
+  }catch(e){box.innerHTML=`<p class="modal-status bad">${esc(e.message)}</p>`}
+}
+function renderMcpServers(servers){
+  const box=$("#mcpServers");
+  if(!servers.length){box.innerHTML='<p class="modal-note">No servers registered yet. Add one from <b>Templates</b> or <b>Import</b>.</p>';return}
+  box.innerHTML=servers.map(s=>{
+    const env=s.env&&Object.keys(s.env).length?Object.keys(s.env).map(k=>esc(k)).join(", "):"";
+    const cmd=[s.command,...(s.args||[])].join(" ");
+    return `<div class="srv-row${s.enabled?" on":""}" data-id="${esc(s.id)}">
+      <label class="switch"><input type="checkbox" ${s.enabled?"checked":""} data-srv-toggle="${esc(s.id)}"><span class="sl"></span></label>
+      <div class="tinfo">
+        <div class="tname">${esc(s.name||s.label||s.id)} ${s.enabled?'<span class="chip local">enabled</span>':""}${s.capability&&s.capability!=="readonly"?` <span class="chip ${s.capability==="destructive"?"cloud":""}">${esc(s.capability)}</span>`:""}</div>
+        <div class="tdesc">${esc(s.description||"")}</div>
+        <div class="tdesc mono" style="opacity:.7">${esc(cmd)}${env?` · env: ${env}`:""}</div>
+      </div>
+      <div class="srv-acts">
+        ${abtn("TEST","check",`data-srv-test="${esc(s.id)}"`)}
+        ${abtn("REMOVE","x",`data-srv-remove="${esc(s.id)}"`,"danger")}
+      </div>
+    </div>`;
+  }).join("");
+  box.querySelectorAll("[data-srv-toggle]").forEach(cb=>cb.addEventListener("change",onSrvToggle));
+  box.querySelectorAll("[data-srv-test]").forEach(b=>b.addEventListener("click",()=>onSrvTest(b.dataset.srvTest)));
+  box.querySelectorAll("[data-srv-remove]").forEach(b=>b.addEventListener("click",()=>onSrvRemove(b.dataset.srvRemove)));
+}
+async function onSrvToggle(e){
+  const id=e.target.dataset.srvToggle,enabled=e.target.checked;e.target.disabled=true;
+  try{
+    const r=await fetch(API+"/v1/mcp/servers/"+encodeURIComponent(id)+"/toggle",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({enabled})});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"toggle failed");
+    renderMcpServers(j.servers||[]);mcpStatus(`${id} ${enabled?"enabled":"disabled"}`,"ok");
+  }catch(err){e.target.checked=!enabled;e.target.disabled=false;mcpStatus(err.message,"bad")}
+}
+async function onSrvTest(id){
+  mcpStatus("Testing "+id+"…","busy");
+  try{
+    const r=await fetch(API+"/v1/mcp/servers/"+encodeURIComponent(id)+"/test",{method:"POST"});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"test failed");
+    const res=j.result||{};
+    mcpStatus(`${id}: ${res.ok?"OK":"issues"} — ${esc(res.message||(res.problems||[]).join("; ")||"validated")}`,res.ok?"ok":"bad");
+  }catch(e){mcpStatus(e.message,"bad")}
+}
+async function onSrvRemove(id){
+  if(!confirm("Remove MCP server \""+id+"\"?"))return;
+  try{
+    const r=await fetch(API+"/v1/mcp/servers/"+encodeURIComponent(id),{method:"DELETE"});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"remove failed");
+    renderMcpServers(j.servers||[]);mcpStatus(id+" removed","ok");
+  }catch(e){mcpStatus(e.message,"bad")}
+}
+$("#mcpSrvEnableAll").addEventListener("click",async()=>{
+  try{const r=await fetch(API+"/v1/mcp/servers/enable-all",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({enabled:true})});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"failed");
+    renderMcpServers(j.servers||[]);mcpStatus("All servers enabled","ok");}catch(e){mcpStatus(e.message,"bad")}
+});
+$("#mcpSrvDisableAll").addEventListener("click",async()=>{
+  try{const r=await fetch(API+"/v1/mcp/servers/enable-all",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({enabled:false})});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"failed");
+    renderMcpServers(j.servers||[]);mcpStatus("All servers disabled","ok");}catch(e){mcpStatus(e.message,"bad")}
+});
+$("#mcpSrvRefresh").addEventListener("click",loadMcpServers);
+
+/* ---- Profiles ---- */
+async function loadMcpProfiles(){
+  const box=$("#mcpProfiles");box.innerHTML='<p class="modal-note">Loading…</p>';
+  try{
+    const r=await fetch(API+"/v1/mcp/profiles");const j=await r.json();
+    if(!r.ok||j.success===false)throw new Error(j.error||"could not load profiles");
+    mcpMgrLoaded.profiles=true;renderMcpProfiles(j.profiles||[]);
+  }catch(e){box.innerHTML=`<p class="modal-status bad">${esc(e.message)}</p>`}
+}
+function renderMcpProfiles(profiles){
+  const box=$("#mcpProfiles");
+  if(!profiles.length){box.innerHTML='<p class="modal-note">No profiles yet. Save the current enabled servers as a profile above.</p>';return}
+  box.innerHTML=profiles.map(p=>{
+    const ids=(p.servers||p.serverIds||[]).join(", ");
+    return `<div class="srv-row" data-id="${esc(p.id)}">
+      <div class="tinfo">
+        <div class="tname">${esc(p.name||p.id)} ${p.builtin?'<span class="chip">built-in</span>':""}</div>
+        <div class="tdesc">${esc(p.description||"")}</div>
+        <div class="tdesc mono" style="opacity:.7">${esc(ids)}</div>
+      </div>
+      <div class="srv-acts">
+        ${abtn("APPLY","play",`data-prof-apply="${esc(p.id)}"`)}
+        ${p.builtin?"":abtn("REMOVE","x",`data-prof-remove="${esc(p.id)}"`,"danger")}
+      </div>
+    </div>`;
+  }).join("");
+  box.querySelectorAll("[data-prof-apply]").forEach(b=>b.addEventListener("click",()=>onProfApply(b.dataset.profApply)));
+  box.querySelectorAll("[data-prof-remove]").forEach(b=>b.addEventListener("click",()=>onProfRemove(b.dataset.profRemove)));
+}
+async function onProfApply(id){
+  mcpStatus("Applying profile "+id+"…","busy");
+  try{
+    const r=await fetch(API+"/v1/mcp/profiles/"+encodeURIComponent(id)+"/apply",{method:"POST"});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"apply failed");
+    const missing=(j.missing||[]).length?` — missing env for: ${(j.missing||[]).join(", ")}`:"";
+    mcpStatus(`Applied ${j.profile?.name||id}${missing}`,missing?"bad":"ok");
+    mcpMgrLoaded.servers=false;
+  }catch(e){mcpStatus(e.message,"bad")}
+}
+async function onProfRemove(id){
+  if(!confirm("Remove profile \""+id+"\"?"))return;
+  try{
+    const r=await fetch(API+"/v1/mcp/profiles/"+encodeURIComponent(id),{method:"DELETE"});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"remove failed");
+    renderMcpProfiles(j.profiles||[]);mcpStatus(id+" removed","ok");
+  }catch(e){mcpStatus(e.message,"bad")}
+}
+$("#mcpProfileSave").addEventListener("click",async()=>{
+  const name=$("#mcpProfileName").value.trim();
+  if(!name){mcpStatus("Enter a profile name","bad");return}
+  try{
+    const r=await fetch(API+"/v1/mcp/profiles",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({name})});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"save failed");
+    $("#mcpProfileName").value="";renderMcpProfiles(j.profiles||[]);mcpStatus("Profile saved","ok");
+  }catch(e){mcpStatus(e.message,"bad")}
+});
+
+/* ---- Import ---- */
+let mcpImportOk=false;
+async function mcpImportRun(save){
+  const raw=$("#mcpImportText").value.trim();
+  if(!raw){mcpStatus("Paste an MCP JSON block first","bad");return}
+  try{
+    const r=await fetch(API+"/v1/mcp/import",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(save?{raw,save:true}:{raw})});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"import failed");
+    const servers=j.preview||[];
+    const anyValid=servers.some(s=>!(s.problems||[]).length);
+    $("#mcpImportPrev").innerHTML=servers.map(s=>{
+      const probs=(s.problems||[]);
+      const env=s.env&&Object.keys(s.env).length?Object.entries(s.env).map(([k,v])=>`${esc(k)}=${esc(v)}`).join(", "):"";
+      const reqEnv=(s.requiredEnv||[]).length?` · requires: ${(s.requiredEnv||[]).map(esc).join(", ")}`:"";
+      return `<div class="import-prev${probs.length?" bad":""}">
+        <div class="tname">${esc(s.id||s.label||"server")} ${probs.length?'<span class="chip cloud">issues</span>':'<span class="chip local">valid</span>'}</div>
+        <div class="tdesc mono" style="opacity:.75">${esc([s.command,...(s.args||[])].join(" "))}${reqEnv}</div>
+        ${env?`<div class="tdesc mono" style="opacity:.6">env: ${env}</div>`:""}
+        ${probs.length?`<div class="tdesc" style="color:var(--bad)">${probs.map(esc).join("; ")}</div>`:""}
+      </div>`;
+    }).join("")||'<p class="modal-note">No servers found in the pasted JSON.</p>';
+    mcpImportOk=anyValid&&!save;
+    $("#mcpImportSave").disabled=!mcpImportOk;
+    if(save){
+      mcpStatus(`Imported ${servers.filter(s=>!(s.problems||[]).length).length} server(s)`,"ok");
+      $("#mcpImportSave").disabled=true;mcpMgrLoaded.servers=false;
+    }else{
+      mcpStatus(anyValid?"Preview ready — secrets masked. Click SAVE SERVERS to persist.":"No valid servers to save.",anyValid?"ok":"bad");
+    }
+  }catch(e){$("#mcpImportSave").disabled=true;mcpStatus(e.message,"bad")}
+}
+$("#mcpImportPreview").addEventListener("click",()=>mcpImportRun(false));
+$("#mcpImportSave").addEventListener("click",()=>mcpImportRun(true));
+
+/* ---- Templates ---- */
+async function loadMcpTemplates(){
+  const box=$("#mcpTemplates");box.innerHTML='<p class="modal-note">Loading…</p>';
+  try{
+    const r=await fetch(API+"/v1/mcp/templates");const j=await r.json();
+    if(!r.ok||j.success===false)throw new Error(j.error||"could not load templates");
+    mcpMgrLoaded.templates=true;renderMcpTemplates(j.templates||[]);
+  }catch(e){box.innerHTML=`<p class="modal-status bad">${esc(e.message)}</p>`}
+}
+function renderMcpTemplates(tmpls){
+  const box=$("#mcpTemplates");
+  if(!tmpls.length){box.innerHTML='<p class="modal-note">No templates available.</p>';return}
+  box.innerHTML=tmpls.map((t,i)=>{
+    const reqEnv=(t.requiredEnv||[]).length?` · requires: ${(t.requiredEnv||[]).map(esc).join(", ")}`:"";
+    return `<div class="tmpl-row" data-idx="${i}">
+      <div class="tinfo">
+        <div class="tname">${esc(t.name||t.label||t.id)}${t.capability&&t.capability!=="readonly"?` <span class="chip ${t.capability==="destructive"?"cloud":""}">${esc(t.capability)}</span>`:""}</div>
+        <div class="tdesc">${esc(t.description||"")}</div>
+        <div class="tdesc mono" style="opacity:.7">${esc([t.command,...(t.args||[])].join(" "))}${reqEnv}</div>
+      </div>
+      <div class="srv-acts">${abtn("ADD","plus",`data-tmpl-add="${i}"`)}</div>
+    </div>`;
+  }).join("");
+  box.querySelectorAll("[data-tmpl-add]").forEach(b=>b.addEventListener("click",()=>onTmplAdd(tmpls[+b.dataset.tmplAdd])));
+}
+async function onTmplAdd(t){
+  if(!t)return;
+  try{
+    const body={id:t.id,name:t.name||t.label,description:t.description,command:t.command,args:t.args,env:t.env,capability:t.capability,scope:t.scope,enabled:false};
+    const r=await fetch(API+"/v1/mcp/servers",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"add failed");
+    mcpMgrLoaded.servers=false;
+    mcpStatus(`${t.name||t.label||t.id} added — open Servers to fill any secrets & enable`,"ok");
+  }catch(e){mcpStatus(e.message,"bad")}
+}
+
 /* ================= mode toggle (Simple / Advanced) ================= */
 function setMode(m){
   const simple=m!=="advanced";
@@ -1391,7 +1822,7 @@ $("#modeAdvanced").addEventListener("click",()=>setMode("advanced"));
 const R_STEPS=[
   {label:"Planning"},{label:"Searching"},{label:"Sources Found"},
   {label:"Scraping"},{label:"Extracting"},{label:"Verifying"},{label:"Complete"}];
-const R_STEPIDX={planning:0,planned:0,searching:1,sources_found:2,scraping:3,scraped:3,extracting:4,extracted:4,verifying:5,complete:6};
+const R_STEPIDX={planning:0,planned:0,plan:0,mcp:1,inspect:1,searching:1,sources_found:2,local_found:2,scraping:3,scraped:3,extracting:4,extracted:4,verifying:5,verify:5,local_error:5,awaiting_approval:6,complete:6};
 const CHK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
 let rBusy=false,rPoll=null,rSince=0,rActivity=[],rResultData=null,rTab="answer";
 
@@ -1410,7 +1841,10 @@ function stageMessage(e){
   if(e.stage==="sources_found")return `Found ${e.count??0} candidate source(s)`;
   if(e.stage==="scraped")return `Scraped ${e.ok??0} page(s)`+(e.failed?`, ${e.failed} failed`:"");
   if(e.stage==="extracted")return `Extracted ${e.rows??0} row(s)`;
-  return e.message||({planning:"Interpreting your request…",searching:"Searching the web…",scraping:"Fetching pages…",extracting:"Extracting structured data…",verifying:"Synthesizing the answer…",complete:"Done"}[e.stage]||e.stage);
+  if(e.stage==="local_found")return `Found ${e.count??0} local file match(es)`;
+  if(e.stage==="mcp")return e.message||`${(e.servers||[]).length} MCP server(s) available`;
+  if(e.stage==="awaiting_approval")return e.message||"Plan ready — review, then run in Agent mode to execute";
+  return e.message||({planning:"Interpreting your request…",plan:"Interpreting the goal…",mcp:"Checking enabled MCP servers…",inspect:"Searching approved local folders…",searching:"Searching the web…",scraping:"Fetching pages…",extracting:"Extracting structured data…",verifying:"Synthesizing the answer…",verify:"Cross-checking sources…",complete:"Done"}[e.stage]||e.stage);
 }
 function updateStage(){
   const last=rActivity[rActivity.length-1];if(!last)return;
@@ -1418,7 +1852,9 @@ function updateStage(){
   $("#stageMsg").textContent=stageMessage(last);
 }
 
-function beginJob(id){
+let rJobKind="research";
+function beginJob(id,kind="research"){
+  rJobKind=kind;
   rBusy=true;$("#researchBtn").disabled=true;
   rActivity=[];rSince=0;
   $("#stageWrap").hidden=false;$("#rResult").innerHTML="";
@@ -1428,17 +1864,22 @@ function beginJob(id){
 function stopPoll(){clearInterval(rPoll);rPoll=null;rBusy=false;$("#researchBtn").disabled=false}
 async function pollResearch(id){
   try{
-    const r=await fetch(`${API}/v1/research/${id}?since=${rSince}`);
+    const r=await fetch(`${API}/v1/${rJobKind}/${id}?since=${rSince}`);
     const j=await r.json();
     if(!r.ok||j.success===false)throw new Error(j.error||"poll failed");
     if(j.stages&&j.stages.length){for(const s of j.stages)rActivity.push(s);rSince=j.stageCount;updateStage()}
     if(j.status==="completed"){stopPoll();onComplete(j.result)}
-    else if(j.status==="failed"){stopPoll();rFail(j.error||"research failed")}
+    else if(j.status==="failed"){stopPoll();rFail(j.error||(rJobKind==="agent"?"agent run failed":"research failed"))}
   }catch(e){/* transient network error — keep polling */}
 }
 function onComplete(result){
   renderSteps(6,true);
-  $("#stageMsg").textContent="Complete"+(result?.stats?` · ${fMs(result.stats.durationMs)} · ${result.stats.scraped}/${result.stats.sources} pages`:"");
+  if(result&&result.awaitingApproval){
+    $("#stageMsg").textContent="Plan ready — review below, then switch to Agent mode to execute.";
+  }else{
+    const st=result?.stats;const files=st?.files?` · ${st.files} local file(s)`:"";
+    $("#stageMsg").textContent="Complete"+(st?` · ${fMs(st.durationMs)} · ${st.scraped||0}/${st.sources||0} pages${files}`:"");
+  }
   rResultData=result;renderResearchResult(result);loadSessions();
 }
 function rFail(msg){
@@ -1446,47 +1887,131 @@ function rFail(msg){
   $("#rResult").innerHTML=`<div class="err" style="margin-top:16px">${svg("warn")}<div><b>RESEARCH FAILED</b><p>${esc(msg)}</p></div></div>`;
 }
 
+const rAgentMode=()=>($("#rAgentMode").querySelector("button.on")||{dataset:{mode:"manual"}}).dataset.mode;
+const rExtraSources=()=>$$("#rSrcExtra button.on").map(b=>b.dataset.xsrc);
+function applySchemaToBody(body){
+  const ep=$("#rExtractPrompt").value.trim();if(ep)body.extractPrompt=ep;
+  const sj=$("#rSchemaJson");
+  if(sj&&sj.style.display!=="none"&&sj.value.trim()){try{body.schema=JSON.parse(sj.value)}catch(e){toast("Schema JSON invalid: "+e.message);return false}}
+  return true;
+}
 async function startResearch(){
   if(rBusy)return;
   const prompt=$("#rPrompt").value.trim();
-  if(!prompt){toast("Describe what you want to research");$("#rPrompt").focus();return}
+  if(!prompt){toast("Describe what you want to find out");$("#rPrompt").focus();return}
   const mode=rSourceMode();
   const values=$("#rSrcValues").value.split(",").map(s=>s.trim()).filter(Boolean);
   if((mode==="domains"||mode==="urls")&&!values.length){toast("Add at least one "+(mode==="urls"?"URL":"domain"));$("#rSrcValues").focus();return}
-  const body={prompt,sources:{mode,values},depth:$("#rDepth").value,output:$("#rOutput").value,maxPages:+$("#rMaxPages").value||10};
-  const ep=$("#rExtractPrompt").value.trim();if(ep)body.extractPrompt=ep;
-  const sj=$("#rSchemaJson");
-  if(sj&&sj.style.display!=="none"&&sj.value.trim()){try{body.schema=JSON.parse(sj.value)}catch(e){toast("Schema JSON invalid: "+e.message);return}}
+  const agentMode=rAgentMode();
+  // Manual mode → classic single-pass research pipeline (unchanged, back-compatible).
+  if(agentMode==="manual"){
+    const body={prompt,sources:{mode,values},depth:normalizeManualDepth($("#rDepth").value),output:$("#rOutput").value,maxPages:+$("#rMaxPages").value||10};
+    if(!applySchemaToBody(body))return;
+    try{
+      const r=await fetch(API+"/v1/research",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
+      const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"could not start research");
+      beginJob(j.id,"research");
+    }catch(e){toast(e.message)}
+    return;
+  }
+  // Assisted / Agent / Advanced-agent → agentic pipeline (/v1/agent).
+  const sources=[];
+  if(mode==="web")sources.push({type:"web"});
+  else if(mode==="domains")sources.push({type:"domain",values});
+  else if(mode==="urls")sources.push({type:"url",values});
+  for(const x of rExtraSources())sources.push({type:x});
+  if(!sources.length)sources.push({type:"web"});
+  const body={
+    goal:prompt,mode:agentMode,depth:$("#rDepth").value,domain:$("#rDomain").value,
+    output:$("#rOutput").value,sources,
+    limits:{
+      maxPages:+$("#rMaxPages").value||10,
+      maxSearches:+$("#rMaxSearches").value||3,
+      maxCrawlDepth:+$("#rMaxCrawlDepth").value||0,
+      maxIterations:+$("#rMaxIterations").value||1,
+      runtimeMs:(+$("#rRuntimeSec").value||180)*1000,
+      llmCap:+$("#rLlmCap").value||40,
+      toolPreference:$("#rToolPref").value,
+    },
+    allowWrite:$("#rAllowWrite").checked,
+    approvalPolicy:$("#rApproval").value,
+  };
+  if(!applySchemaToBody(body))return;
   try{
-    const r=await fetch(API+"/v1/research",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
-    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"could not start research");
-    beginJob(j.id);
+    const r=await fetch(API+"/v1/agent",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"could not start agent");
+    beginJob(j.id,"agent");
   }catch(e){toast(e.message)}
 }
+// The classic research pipeline only understands quick/standard/deep.
+function normalizeManualDepth(d){return (d==="exhaustive"||d==="custom")?"deep":d}
 
 /* ---- result tabs ---- */
+const isAgentResult=(res)=>!!(res&&(res.toolCalls||res.agentActivity||res.routing||res.mode&&res.mode!=="manual"));
 function rTabsBar(res){
-  const n=res.sources?.length||0,raw=res.raw?.length||0,act=res.activity?.length||0;
+  const n=res.sources?.length||0,raw=res.raw?.length||0;
+  const act=(res.agentActivity||res.activity||[]).length;
   const rows=res.extracted?res.extracted.rows.length:0;
-  return `<div class="rtabs">
+  const files=res.files?.length||0,tc=res.toolCalls?.length||0,logs=res.logs?.length||0;
+  const agent=isAgentResult(res);
+  let t=`<div class="rtabs">
     <button class="rtab" data-rt="answer">ANSWER</button>
     <button class="rtab" data-rt="sources">SOURCES<span class="badge">${n}</span></button>
-    <button class="rtab" data-rt="raw">RAW DATA<span class="badge">${raw}${rows?"+"+rows:""}</span></button>
-    <button class="rtab" data-rt="activity">ACTIVITY<span class="badge">${act}</span></button>
-  </div><div class="rtabbody" id="rTabBody"></div>`;
+    <button class="rtab" data-rt="raw">RAW DATA<span class="badge">${raw}${rows?"+"+rows:""}</span></button>`;
+  if(agent)t+=`<button class="rtab" data-rt="files">FILES<span class="badge">${files}</span></button>`;
+  t+=`<button class="rtab" data-rt="activity">${agent?"AGENT ACTIVITY":"ACTIVITY"}<span class="badge">${act}</span></button>`;
+  if(agent)t+=`<button class="rtab" data-rt="tools">TOOL CALLS<span class="badge">${tc}</span></button>`;
+  if(agent)t+=`<button class="rtab" data-rt="logs">LOGS<span class="badge">${logs}</span></button>`;
+  return t+`</div><div class="rtabbody" id="rTabBody"></div>`;
 }
 function answerView(res){
   const meta=[chip("SCRAPED",res.stats?.scraped??0,"cy"),chip("PAGES",res.stats?.sources??0,"vi"),
     chip("TIME",fMs(res.stats?.durationMs||0),"am"),chip("LLM",res.llmUsed?"USED":"OFF",res.llmUsed?"gr":"rd")];
-  if(res.plan?.planSource)meta.push(chip("PLAN",res.plan.planSource.toUpperCase(),res.plan.planSource==="llm"?"vi":"am"));
+  if(res.stats&&res.stats.files)meta.push(chip("FILES",res.stats.files,"gr"));
+  if(res.mode&&res.mode!=="manual")meta.push(chip("MODE",res.mode.toUpperCase(),"vi"));
+  const ps=res.plan?.planSource||res.plan?.source;
+  if(ps)meta.push(chip("PLAN",String(ps).toUpperCase(),ps==="llm"?"vi":"am"));
   const planBody=(res.plan?.queries?.length
     ?`<div style="margin-bottom:7px"><b style="color:var(--dim);font-family:var(--mono);font-size:9.5px;letter-spacing:.14em">SEARCH PLAN</b></div>`+res.plan.queries.map(q=>chip("",q,"")).join(" ")
     :"")+(res.plan?.note?`<p style="color:var(--mut);font-size:12px;margin-top:9px">${esc(res.plan.note)}</p>`:"");
-  let h=sec("SUMMARY",meta.join(""),"",planBody||'<p style="color:var(--mut)">Plan complete.</p>');
+  let h="";
+  if(res.awaitingApproval)h+=`<div class="err" style="border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08);margin-bottom:12px">${svg("warn")}<div><b>ASSISTED MODE — PLAN READY</b><p>Review the plan and tool routing below. Switch AGENT MODE to <b>Agent</b> and run again to execute it.</p></div></div>`;
+  h+=sec("SUMMARY",meta.join(""),"",planBody||'<p style="color:var(--mut)">Plan complete.</p>');
+  if(res.routing&&res.routing.length){
+    h+=`<div style="margin:10px 0 4px"><b style="color:var(--dim);font-family:var(--mono);font-size:9.5px;letter-spacing:.14em">TOOL ROUTING</b></div>`+
+      res.routing.map(r=>chip(r.tool.toUpperCase(),r.reason,"cy")).join(" ");
+  }
   h+=res.answer?`<div class="md" style="margin-top:6px">${mdToHtml(res.answer)}</div>`
-    :`<p style="color:var(--mut)">No synthesized answer — see the Sources and Raw Data tabs.</p>`;
+    :`<p style="color:var(--mut);margin-top:8px">No synthesized answer — see the Sources, Raw Data${isAgentResult(res)?", Files":""} tabs.</p>`;
   if(res.synthError)h+=`<p style="color:var(--amber);font-size:11px;font-family:var(--mono);margin-top:10px">synthesis note: ${esc(res.synthError)}</p>`;
   return h;
+}
+function filesView(res){
+  const f=res.files||[];
+  if(!f.length)return `<p style="color:var(--mut)">No local files matched (enable <b>+ LOCAL FILES</b> and allow a folder in the Files panel).</p>`;
+  const rows=f.map(x=>`<tr>
+    <td>${esc(x.name||(x.path||"").split("/").pop())}<div class="pt-url">${esc(x.path||"")}</div></td>
+    <td class="pt-q">${esc(x.discoveryQuery||"—")}</td>
+    <td style="white-space:nowrap;color:var(--dim);font-size:10px">${x.size!=null?fN(x.size)+" B":""}</td>
+    <td style="color:var(--mut);font-size:11px">${esc(short(x.snippet||x.preview||"",160))}</td>
+  </tr>`).join("");
+  return `<div style="overflow-x:auto"><table class="provtbl"><thead><tr><th>FILE</th><th>MATCHED QUERY</th><th>SIZE</th><th>SNIPPET</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function toolCallsView(res){
+  const t=res.toolCalls||[];
+  if(!t.length)return `<p style="color:var(--mut)">No tool calls recorded.</p>`;
+  return `<div class="list" style="max-height:none">${t.map(c=>{
+    const {ts,tool,ok,input,note,...rest}=c;const extra=Object.keys(rest).length?" · "+esc(JSON.stringify(rest)):"";
+    return `<div class="li-row" style="cursor:default;align-items:flex-start">
+      <span class="n" style="min-width:62px">${esc(String(ts||"").slice(11,19))}</span>
+      <span style="min-width:88px;flex:none;color:${ok?"var(--grn)":"var(--red)"}">${esc(tool)} ${ok?"ok":"FAIL"}</span>
+      <span style="white-space:normal;color:var(--mut)">${note?esc(note):""}${input?" · "+esc(short(JSON.stringify(input),120)):""}${extra}</span></div>`;
+  }).join("")}</div>`;
+}
+function logsView(res){
+  const l=res.logs||[];
+  if(!l.length)return `<p style="color:var(--mut)">No logs.</p>`;
+  return `<pre class="mcp-json" style="max-height:none">${esc(l.join("\n"))}</pre>`;
 }
 function provTable(sources){
   if(!sources||!sources.length)return `<p style="color:var(--mut)">No sources collected.</p>`;
@@ -1515,7 +2040,7 @@ function rawView(res){
   return h;
 }
 function activityView(res){
-  const a=res.activity||[];
+  const a=res.agentActivity||res.activity||[];
   if(!a.length)return `<p style="color:var(--mut)">No activity recorded.</p>`;
   return `<div class="list" style="max-height:none">${a.map(e=>{
     const {ts,stage,...rest}=e;const extra=Object.keys(rest).length?esc(JSON.stringify(rest)):"";
@@ -1534,6 +2059,9 @@ function rShowTab(name){
   if(name==="answer")body.innerHTML=answerView(res);
   else if(name==="sources")body.innerHTML=provTable(res.sources);
   else if(name==="raw")body.innerHTML=rawView(res);
+  else if(name==="files")body.innerHTML=filesView(res);
+  else if(name==="tools")body.innerHTML=toolCallsView(res);
+  else if(name==="logs")body.innerHTML=logsView(res);
   else body.innerHTML=activityView(res);
 }
 $("#rResult").addEventListener("click",e=>{
@@ -1563,6 +2091,111 @@ $("#rSchemaPreview").addEventListener("click",async()=>{
 });
 $("#researchBtn").addEventListener("click",startResearch);
 
+/* ---- agent mode / extra sources / depth / limits ---- */
+const AGENT_MODE_DESC={
+  manual:"Manual — a single research pass over your sources (classic mode).",
+  assisted:"Assisted — the agent plans and shows its tool routing; you approve, then run in Agent mode to execute.",
+  agent:"Agent — autonomous: plans, searches, retrieves, inspects local files & MCP servers, verifies and synthesizes.",
+  "advanced-agent":"Advanced Agent — full control over iterations, budgets, tool preference and approval policy."
+};
+function syncAgentUi(){
+  const m=rAgentMode();
+  $("#rAgentModeDesc").textContent=AGENT_MODE_DESC[m]||"";
+  const agentic=m!=="manual";
+  $("#rSrcExtra").style.display=agentic?"flex":"none";
+  $("#rLimitsBox").style.display=agentic?"block":"none";
+  if(m==="advanced-agent")$("#rLimitsBox").open=true;
+  const lbl=m==="assisted"?"PLAN RESEARCH":(agentic?"RUN AGENT":"RUN RESEARCH");
+  const btn=$("#researchBtn");btn.childNodes[btn.childNodes.length-1].nodeValue=" "+lbl;
+}
+$("#rAgentMode").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-mode]");if(!b)return;
+  $$("#rAgentMode button").forEach(x=>x.classList.toggle("on",x===b));
+  syncAgentUi();
+});
+$("#rSrcExtra").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-xsrc]");if(!b)return;
+  b.classList.toggle("on");
+  if(b.dataset.xsrc==="localfs"&&b.classList.contains("on"))loadLocalCount();
+});
+// Depth → sync the limit inputs so Custom starts from the chosen preset.
+const DEPTH_PRESETS={quick:{p:4,s:1,c:0,i:1},standard:{p:10,s:3,c:0,i:1},deep:{p:24,s:5,c:1,i:2},exhaustive:{p:50,s:8,c:2,i:3}};
+$("#rDepth").addEventListener("change",()=>{
+  const d=$("#rDepth").value,pre=DEPTH_PRESETS[d];
+  if(pre){$("#rMaxPages").value=pre.p;$("#rMaxSearches").value=pre.s;$("#rMaxCrawlDepth").value=pre.c;$("#rMaxIterations").value=pre.i}
+  if(d==="custom"&&rAgentMode()!=="manual"){$("#rLimitsBox").style.display="block";$("#rLimitsBox").open=true}
+});
+syncAgentUi();
+
+/* ================= theme toggle ================= */
+function applyTheme(t){
+  document.body.classList.toggle("light",t==="light");
+  const sun='<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M4.8 4.8l1.8 1.8M17.4 17.4l1.8 1.8M2.5 12h2.6M18.9 12h2.6M4.8 19.2l1.8-1.8M17.4 6.6l1.8-1.8"/>';
+  const moon='<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>';
+  $("#themeIcon").innerHTML=t==="light"?moon:sun;
+  try{localStorage.setItem("webcrawl.theme",t)}catch{}
+}
+$("#themeBtn").addEventListener("click",()=>applyTheme(document.body.classList.contains("light")?"dark":"light"));
+(function initTheme(){let t="dark";try{t=localStorage.getItem("webcrawl.theme")||"dark"}catch{}applyTheme(t)})();
+
+/* ================= local files panel ================= */
+const localScrim=$("#localScrim");
+let localRoots=[];
+const openLocal=()=>{localScrim.hidden=false;loadLocal()};
+const closeLocal=()=>{localScrim.hidden=true};
+async function loadLocalCount(){try{const r=await fetch(API+"/v1/localfs");const j=await r.json();$("#localCount").textContent=(j.roots||[]).length}catch{}}
+async function loadLocal(){
+  try{
+    const r=await fetch(API+"/v1/localfs");const j=await r.json();
+    localRoots=j.roots||[];renderLocalRoots();$("#localCount").textContent=localRoots.length;
+  }catch(e){$("#localStatus").textContent=e.message;$("#localStatus").className="modal-status bad"}
+}
+function renderLocalRoots(){
+  const L=$("#localRoots");
+  if(!localRoots.length){L.innerHTML=`<p style="color:var(--mut);font-size:12px">No folders allowed yet — the agent cannot read any local files until you add one.</p>`;return}
+  L.innerHTML=localRoots.map(p=>`<div class="root-row"><span style="flex:1;word-break:break-all">${esc(p)}</span><button class="abtn" data-rmroot="${esc(p)}">REMOVE</button></div>`).join("");
+}
+async function addLocalRoot(){
+  const p=$("#localRootInput").value.trim();if(!p){toast("Enter an absolute folder path");return}
+  $("#localStatus").textContent="Adding…";$("#localStatus").className="modal-status busy";
+  try{
+    const r=await fetch(API+"/v1/localfs/roots",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({path:p})});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"could not add folder");
+    localRoots=j.roots||[];renderLocalRoots();$("#localCount").textContent=localRoots.length;
+    $("#localRootInput").value="";$("#localStatus").textContent="Folder allowed (read-only).";$("#localStatus").className="modal-status ok";
+  }catch(e){$("#localStatus").textContent=e.message;$("#localStatus").className="modal-status bad"}
+}
+async function removeLocalRoot(p){
+  try{
+    const r=await fetch(API+"/v1/localfs/roots",{method:"DELETE",headers:{"content-type":"application/json"},body:JSON.stringify({path:p})});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"could not remove");
+    localRoots=j.roots||[];renderLocalRoots();$("#localCount").textContent=localRoots.length;
+  }catch(e){toast(e.message)}
+}
+async function searchLocalFiles(){
+  const q=$("#localQuery").value.trim();if(!q){toast("Enter a search query");return}
+  if(!localRoots.length){$("#localStatus").textContent="Add an allowed folder first.";$("#localStatus").className="modal-status bad";return}
+  $("#localStatus").textContent="Searching…";$("#localStatus").className="modal-status busy";
+  try{
+    const r=await fetch(API+"/v1/localfs/search",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({query:q,maxResults:100})});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"search failed");
+    const res=j.results||[];
+    $("#localStatus").textContent=`${res.length} match(es) · scanned ${j.scannedFiles||0} file(s)`;$("#localStatus").className="modal-status ok";
+    $("#localResults").innerHTML=res.length?res.map(x=>`<div class="root-row" style="flex-direction:column;align-items:stretch;gap:4px">
+      <div style="word-break:break-all;color:#dbe4ff">${esc(x.name||(x.path||"").split("/").pop())}</div>
+      <div style="color:var(--dim);word-break:break-all">${esc(x.path||"")}</div>
+      ${x.snippet?`<div style="color:var(--mut);white-space:normal">${esc(short(x.snippet,220))}</div>`:""}</div>`).join(""):`<p style="color:var(--mut);font-size:12px">No matches.</p>`;
+  }catch(e){$("#localStatus").textContent=e.message;$("#localStatus").className="modal-status bad";$("#localResults").innerHTML=""}
+}
+$("#localBtn").addEventListener("click",openLocal);
+$("#localClose").addEventListener("click",closeLocal);
+localScrim.addEventListener("click",e=>{if(e.target===localScrim)closeLocal()});
+$("#localAddBtn").addEventListener("click",addLocalRoot);
+$("#localRootInput").addEventListener("keydown",e=>{if(e.key==="Enter")addLocalRoot()});
+$("#localSearchBtn").addEventListener("click",searchLocalFiles);
+$("#localQuery").addEventListener("keydown",e=>{if(e.key==="Enter")searchLocalFiles()});
+$("#localRoots").addEventListener("click",e=>{const b=e.target.closest("[data-rmroot]");if(b)removeLocalRoot(b.dataset.rmroot)});
+
 /* ================= saved sessions ================= */
 let sessData=[],sessSel=new Set();
 const openSess=()=>{loadSessions();$("#sessDrawer").classList.add("on");$("#scrim").classList.add("on")};
@@ -1580,7 +2213,7 @@ function renderSessions(){
       <div class="sess-title">${esc(s.title||s.prompt||"Untitled research")}</div>
     </div>
     <div class="sess-meta"><span>${esc((s.output||"").toUpperCase())}</span><span>·</span><span>${esc((s.depth||"").toUpperCase())}</span><span>·</span><span>${s.scraped}/${s.sources} pages</span><span>·</span><span>${fMs(s.durationMs||0)}</span><span>·</span><span>${esc((s.createdAt||"").replace("T"," ").replace(/\..*/,""))}</span>${s.rerunOf?"<span>· rerun</span>":""}</div>
-    <div class="sess-acts">${abtn("OPEN","ext",`data-open="${esc(s.id)}"`)}${abtn("RERUN","",`data-rerun="${esc(s.id)}"`)}</div>
+    <div class="sess-acts">${abtn("OPEN","ext",`data-open="${esc(s.id)}"`)}${abtn("RERUN","",`data-rerun="${esc(s.id)}"`)}${abtn("DUPLICATE","copy",`data-dup="${esc(s.id)}"`)}${abtn("EXPORT","download",`data-export="${esc(s.id)}"`)}</div>
   </div>`).join("");
   $("#sessCompare").textContent=`COMPARE (${sessSel.size})`;
 }
@@ -1597,6 +2230,23 @@ async function rerunSession(id){
     const r=await fetch(`${API}/v1/sessions/${encodeURIComponent(id)}/rerun`,{method:"POST"});const j=await r.json();
     if(!r.ok||j.success===false)throw new Error(j.error||"rerun failed");
     setMode("simple");closeSess();beginJob(j.id);toast("Re-running session…");
+  }catch(e){toast(e.message)}
+}
+async function duplicateSession(id){
+  try{
+    const r=await fetch(`${API}/v1/workspaces/${encodeURIComponent(id)}/duplicate`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({})});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"duplicate failed");
+    await loadSessions();toast("Session duplicated");
+  }catch(e){toast(e.message)}
+}
+async function exportSession(id){
+  try{
+    const r=await fetch(`${API}/v1/workspaces/${encodeURIComponent(id)}/export`);
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"export failed");
+    const blob=new Blob([JSON.stringify(j,null,2)+"\n"],{type:"application/json"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`workspace-${id}.json`;
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    toast("Workspace exported");
   }catch(e){toast(e.message)}
 }
 async function doCompare(){
@@ -1629,6 +2279,8 @@ $("#sessList").addEventListener("click",e=>{
   if(cb){const id=cb.dataset.id;if(cb.checked)sessSel.add(id);else sessSel.delete(id);$("#sessCompare").textContent=`COMPARE (${sessSel.size})`;return}
   const op=e.target.closest("[data-open]");if(op){openSession(op.dataset.open);return}
   const rr=e.target.closest("[data-rerun]");if(rr){rerunSession(rr.dataset.rerun);return}
+  const dp=e.target.closest("[data-dup]");if(dp){duplicateSession(dp.dataset.dup);return}
+  const ex=e.target.closest("[data-export]");if(ex){exportSession(ex.dataset.export);return}
 });
 
 /* ---------- init ---------- */

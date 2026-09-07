@@ -87,6 +87,125 @@ curl -s "localhost:8787/v1/research/$ID" | python3 -m json.tool
 
 ---
 
+## Agentic research, sources & the unified workspace *(new)*
+
+Simple Mode is now an **intent-first workspace**. You still type *what you want to find out* in
+plain language (the input is unlimited — paste a whole brief), but you can now aim the run at many
+kinds of **sources**, run it at four **agent autonomy levels**, and manage everything from one
+screen. Everything here is **additive** — the classic tool panels, the HTTP API and the six MCP
+tools are all unchanged.
+
+### Sources — where the agent looks
+
+Pick any combination:
+
+| Source | Meaning |
+|---|---|
+| **Entire web** | keyless live web search (default) |
+| **Specific domains** | restrict search/crawl to domains you list |
+| **Specific URLs** | seed the run with exact pages |
+| **Local files** | search an **allow-listed** folder on the machine (read-only — see below) |
+| **GitHub** | a repo / org as a source |
+| **MCP tools** | let enabled MCP servers act as tools during the run |
+| **Previous workspace** | reuse a saved run's sources as input |
+
+### Research domain
+
+An optional **domain selector** (General, Academic, News, Technical/Code, Legal, Medical,
+Financial, Market/Competitive, Social, Government) biases planning and source weighting.
+
+### Depth presets
+
+| Preset | Roughly |
+|---|---|
+| **Quick** | 1 query · a few pages |
+| **Standard** | 3 queries · ~10 pages |
+| **Deep** | 5 queries · ~24 pages + crawl |
+| **Exhaustive** | widest sweep |
+| **Custom** | set your own query/page/step limits |
+
+### Agent autonomy modes
+
+| Mode | Behaviour |
+|---|---|
+| **Manual** | you drive the classic tools yourself |
+| **Assisted** | the agent produces a **plan** and waits for your approval before executing |
+| **Agent** | full autonomous loop: **Plan → Search → Inspect → Retrieve → Extract → Verify → Synthesize → Complete** |
+| **Advanced-Agent** | the loop with configurable per-run limits (max steps / pages / tool calls) and extra sources exposed |
+
+Switching to an agentic mode reveals the limit controls and the extra source pickers, and relabels
+the run button. Every step is transparent: the results workspace has **Answer · Sources · Data ·
+Raw · Files · Agent Activity · Tool Calls · Logs** tabs, each with full provenance (which tool ran,
+against which source, when, with what result).
+
+**Least privilege.** The agent is **read-only by default**. Write / destructive MCP tools are
+opt-in (`allowWrite`) and gated by an **approval policy** (destructive actions require explicit
+approval). Scraped/fetched page content stays fenced as untrusted input and never reaches the
+planner as instructions (prompt-injection guard, unchanged).
+
+### Local file search (secure, read-only)
+
+Add a folder to the **allow-list** and the agent can search and read files **only inside** those
+roots — every read is path-checked against the allow-list and anything outside is refused (`403`).
+Nothing is writable. Manage roots from the **Local Files** panel or over HTTP:
+
+| Method / route | Purpose |
+|---|---|
+| `GET /v1/localfs` | list allow-listed roots |
+| `POST /v1/localfs/roots` | add a root `{ path }` |
+| `DELETE /v1/localfs/roots` | remove a root `{ path }` |
+| `POST /v1/localfs/search` | search within the allow-list `{ query, ... }` → `{ results, scannedFiles }` |
+| `GET /v1/localfs/file?path=` | read one allow-listed file (`403` if outside) |
+
+### MCP Manager
+
+The **MCP** panel is now a full manager with tabs:
+
+- **Tools** — enable/disable the six built-in tools (as before).
+- **Servers** — register external MCP servers, toggle them on/off, **test** connectivity, remove.
+- **Profiles** — save/apply named bundles of servers; 8 built-in starter profiles ship in.
+- **Import** — paste MCP server JSON; it's **validated**, **previewed with secrets masked**, and
+  required env vars are flagged before you **Save**.
+- **Templates** — 15 starter server templates you can add in one click.
+- **Config** — the existing client-config generator (Claude Desktop / Cursor / Windsurf / VS Code
+  / Continue), unchanged.
+
+| Method / route | Purpose |
+|---|---|
+| `GET /v1/mcp/servers` · `POST` · `DELETE /:id` | list / add / remove servers |
+| `POST /v1/mcp/servers/:id/toggle` · `/test` | enable-disable · connectivity test |
+| `GET /v1/mcp/templates` | starter server templates |
+| `GET /v1/mcp/profiles` · `POST` · `POST /:id/apply` · `DELETE /:id` | manage & apply profiles |
+| `POST /v1/mcp/import` | validate/preview (`{ preview }`) then save (`{ saved, servers }`) |
+
+### Agent API
+
+| Method / route | Purpose |
+|---|---|
+| `GET /v1/agent/meta` | available `modes`, `domains`, `depths` |
+| `POST /v1/agent` | start an agent run → `{ id }` |
+| `GET /v1/agent/:id` | poll `{ status, stages, result, error }` (assisted mode returns a plan with `awaitingApproval: true`) |
+
+### Saved workspaces
+
+Saved sessions are now **workspaces** — persisted as dependency-free JSON under `data/sessions/`.
+From the **Sessions** drawer you can **open**, **rerun**, **duplicate** and **export** any run
+(`webcrawl.workspace.v1` bundle), plus **compare** two runs. Tags and notes can be patched in place.
+
+| Method / route | Purpose |
+|---|---|
+| `GET /v1/workspaces` | list saved workspaces |
+| `POST /v1/workspaces/:id` | patch tags / notes |
+| `POST /v1/workspaces/:id/duplicate` | duplicate a workspace |
+| `GET /v1/workspaces/:id/export` | export bundle `{ format: 'webcrawl.workspace.v1', workspace }` |
+
+### Theme
+
+A top-bar toggle flips between a **vibrant dark** theme and a **clean light** theme; the choice
+persists in the browser.
+
+---
+
 ## AI model (local or cloud)
 
 `extract` turns a page into typed JSON using an LLM (with a heuristic fallback when no LLM is

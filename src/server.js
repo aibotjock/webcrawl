@@ -14,6 +14,18 @@ import {
   HOSTS, HOST_IDS, SERVER_PATH, toolsWithState, saveMcpSettings, setToolEnabled,
   buildConfig, defaultEnv, sanitizeEnv, SECRET_PLACEHOLDER,
 } from './core/mcp-config.js';
+import {
+  getAllowlist, addRoot, removeRoot, searchLocal, readLocalFile,
+} from './core/localfs.js';
+import {
+  TEMPLATES as MCP_TEMPLATES, listServers, saveServer, removeServer, toggleServer,
+  enableAll as mcpEnableAll, testServer, parseImport, listProfiles, saveProfile,
+  removeProfile, applyProfile,
+} from './core/mcp-servers.js';
+import { AGENT_MODES, RESEARCH_DOMAINS, DEPTHS, normalizeAgentRequest, runAgent } from './core/agent.js';
+import {
+  listWorkspaces, getWorkspace, duplicateWorkspace, patchWorkspace, exportWorkspace,
+} from './core/workspaces.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const { version } = JSON.parse(await readFile(path.join(here, '../package.json'), 'utf8'));
@@ -339,6 +351,176 @@ app.post('/v1/llm', async (req, res) => {
 app.get('/v1/llm/models', async (req, res) => {
   try { res.json({ success: true, models: await llmModels() }); }
   catch (e) { bad(res, 502, `could not list models: ${e?.message || e}`); }
+});
+
+// --- Local filesystem search (READ-ONLY, allowlisted) ---
+// The allowlist is the ONLY thing that grants access; nothing is readable until the user
+// explicitly adds a root. All reads are bounded and confined to allowlisted roots.
+app.get('/v1/localfs', async (req, res) => {
+  try { res.json({ success: true, roots: await getAllowlist() }); }
+  catch (e) { fail(res, e, 'localfs'); }
+});
+app.post('/v1/localfs/roots', async (req, res) => {
+  const p = String(req.body?.path || '').trim();
+  if (!p) return bad(res, 400, '"path" (a folder to allow) is required');
+  try { const r = await addRoot(p); res.json({ success: true, added: r.root, roots: r.roots }); }
+  catch (e) { bad(res, 400, e?.message || String(e)); }
+});
+app.delete('/v1/localfs/roots', async (req, res) => {
+  const p = String(req.body?.path || req.query?.path || '').trim();
+  if (!p) return bad(res, 400, '"path" is required');
+  try { const r = await removeRoot(p); res.json({ success: true, removed: r.removed, roots: r.roots }); }
+  catch (e) { bad(res, 400, e?.message || String(e)); }
+});
+app.post('/v1/localfs/search', async (req, res) => {
+  const query = String(req.body?.query || '').trim();
+  if (!query) return bad(res, 400, '"query" is required');
+  try {
+    const r = await searchLocal({
+      query,
+      roots: Array.isArray(req.body?.roots) ? req.body.roots : undefined,
+      maxResults: req.body?.maxResults,
+      caseSensitive: req.body?.caseSensitive === true,
+    });
+    res.json({ success: true, ...r });
+  } catch (e) { bad(res, 400, e?.message || String(e)); }
+});
+app.get('/v1/localfs/file', async (req, res) => {
+  const p = String(req.query?.path || '').trim();
+  if (!p) return bad(res, 400, '"path" query param is required');
+  try {
+    const f = await readLocalFile(p, { maxBytes: Number(req.query?.maxBytes) || undefined });
+    res.json({ success: true, ...f });
+  } catch (e) { bad(res, 403, e?.message || String(e)); }
+});
+
+// --- MCP server registry / profiles / import / templates (WebUI MCP Manager) ---
+app.get('/v1/mcp/templates', (req, res) => {
+  res.json({ success: true, templates: MCP_TEMPLATES });
+});
+app.get('/v1/mcp/servers', async (req, res) => {
+  try { res.json({ success: true, servers: await listServers() }); }
+  catch (e) { fail(res, e, 'mcp servers'); }
+});
+app.post('/v1/mcp/servers', async (req, res) => {
+  try { const s = await saveServer(req.body || {}, { source: 'manual' }); res.json({ success: true, server: s, servers: await listServers() }); }
+  catch (e) { bad(res, 400, e?.message || String(e)); }
+});
+app.post('/v1/mcp/servers/enable-all', async (req, res) => {
+  try { const servers = await mcpEnableAll(req.body?.enabled !== false); res.json({ success: true, servers }); }
+  catch (e) { bad(res, 400, e?.message || String(e)); }
+});
+app.post('/v1/mcp/servers/:id/toggle', async (req, res) => {
+  try { const server = await toggleServer(req.params.id, req.body?.enabled !== false); res.json({ success: true, server, servers: await listServers() }); }
+  catch (e) { bad(res, 400, e?.message || String(e)); }
+});
+app.post('/v1/mcp/servers/:id/test', async (req, res) => {
+  try { const r = await testServer(req.params.id); res.json({ success: true, result: r }); }
+  catch (e) { bad(res, 400, e?.message || String(e)); }
+});
+app.delete('/v1/mcp/servers/:id', async (req, res) => {
+  try { const r = await removeServer(req.params.id); res.json({ success: true, removed: r.removed, servers: r.servers }); }
+  catch (e) { bad(res, 400, e?.message || String(e)); }
+});
+// Validate + preview an imported MCP JSON config (secrets masked; nothing saved yet).
+app.post('/v1/mcp/import', async (req, res) => {
+  const raw = typeof req.body?.raw === 'string' ? req.body.raw : JSON.stringify(req.body?.config ?? req.body ?? {});
+  const parsed = parseImport(raw);
+  if (!parsed.ok) return bad(res, 400, parsed.error);
+  // If ?save=1 (or body.save), persist the valid servers; else just preview.
+  if (req.body?.save === true) {
+    const saved = [];
+    for (const s of parsed.servers) if (s.valid) { try { saved.push(await saveServer(s, { source: 'import' })); } catch {} }
+    return res.json({ success: true, preview: parsed.servers, saved: saved.length, servers: await listServers() });
+  }
+  res.json({ success: true, preview: parsed.servers });
+});
+app.get('/v1/mcp/profiles', async (req, res) => {
+  try { res.json({ success: true, profiles: await listProfiles() }); }
+  catch (e) { fail(res, e, 'mcp profiles'); }
+});
+app.post('/v1/mcp/profiles', async (req, res) => {
+  try { const p = await saveProfile(req.body || {}); res.json({ success: true, profile: p, profiles: await listProfiles() }); }
+  catch (e) { bad(res, 400, e?.message || String(e)); }
+});
+app.post('/v1/mcp/profiles/:id/apply', async (req, res) => {
+  try { const r = await applyProfile(req.params.id); if (!r) return bad(res, 404, 'profile not found'); res.json({ success: true, ...r }); }
+  catch (e) { bad(res, 400, e?.message || String(e)); }
+});
+app.delete('/v1/mcp/profiles/:id', async (req, res) => {
+  try { const profiles = await removeProfile(req.params.id); res.json({ success: true, profiles }); }
+  catch (e) { bad(res, 400, e?.message || String(e)); }
+});
+
+// --- Agentic research (Agent Mode): plan -> route -> execute -> verify -> synthesize ---
+// Async jobs like /v1/research so the UI polls staged agent activity. Completed runs are
+// auto-saved as workspaces (unless assisted/plan-only). Reuses the same job map machinery.
+const agentJobs = new Map();
+const A_TTL = 60 * 60_000;
+const asweep = () => { for (const [id, j] of agentJobs) if (j.done && Date.now() - j.ts > A_TTL) agentJobs.delete(id); };
+
+app.get('/v1/agent/meta', (req, res) => {
+  res.json({ success: true, modes: AGENT_MODES, domains: RESEARCH_DOMAINS, depths: DEPTHS });
+});
+app.post('/v1/agent', async (req, res) => {
+  asweep();
+  const request = normalizeAgentRequest(req.body);
+  if (!request.goal) return bad(res, 400, '"goal" (or "prompt") describing what to research is required');
+  const job = { id: randomUUID(), status: 'running', stage: 'plan', stages: [], result: null, error: null, workspaceId: null, done: false, ts: Date.now() };
+  agentJobs.set(job.id, job);
+  (async () => {
+    try {
+      const result = await runAgent(request, (stage, entry) => { job.stage = stage; job.stages.push(entry); });
+      job.result = result;
+      job.status = 'completed';
+      // Persist as a workspace unless it was a plan-only assisted run.
+      if (!result.awaitingApproval) {
+        try { const s = await saveSession(result, { title: request.goal.slice(0, 120) }); job.workspaceId = s.id; }
+        catch (e) { job.saveError = String(e?.message || e); }
+      }
+    } catch (e) {
+      job.status = 'failed';
+      job.error = String(e?.message || e);
+    }
+    job.done = true;
+    job.ts = Date.now();
+  })();
+  res.json({ success: true, id: job.id });
+});
+app.get('/v1/agent/:id', (req, res) => {
+  asweep();
+  const j = agentJobs.get(req.params.id);
+  if (!j) return bad(res, 404, `unknown or expired agent job: ${req.params.id}`);
+  const since = Math.max(0, Number(req.query.since) || 0);
+  res.json({
+    success: true, id: j.id, status: j.status, stage: j.stage,
+    stages: j.stages.slice(since), stageCount: j.stages.length,
+    ...(j.result && { result: j.result }),
+    ...(j.workspaceId && { workspaceId: j.workspaceId }),
+    ...(j.error && { error: j.error }),
+  });
+});
+
+// --- Persistent workspaces (superset of saved sessions) ---
+app.get('/v1/workspaces', async (req, res) => {
+  try { res.json({ success: true, workspaces: await listWorkspaces() }); }
+  catch (e) { fail(res, e, 'workspaces'); }
+});
+app.get('/v1/workspaces/:id/export', async (req, res) => {
+  try { const b = await exportWorkspace(req.params.id); return b ? res.json({ success: true, ...b }) : bad(res, 404, 'workspace not found'); }
+  catch (e) { fail(res, e, 'export'); }
+});
+app.get('/v1/workspaces/:id', async (req, res) => {
+  try { const w = await getWorkspace(req.params.id); return w ? res.json({ success: true, workspace: w }) : bad(res, 404, 'workspace not found'); }
+  catch (e) { fail(res, e, 'workspace'); }
+});
+app.post('/v1/workspaces/:id/duplicate', async (req, res) => {
+  try { const w = await duplicateWorkspace(req.params.id, req.body || {}); return w ? res.json({ success: true, workspace: w }) : bad(res, 404, 'workspace not found'); }
+  catch (e) { bad(res, 400, e?.message || String(e)); }
+});
+app.post('/v1/workspaces/:id', async (req, res) => {
+  try { const w = await patchWorkspace(req.params.id, req.body || {}); return w ? res.json({ success: true, workspace: w }) : bad(res, 404, 'workspace not found'); }
+  catch (e) { bad(res, 400, e?.message || String(e)); }
 });
 
 const webui = path.join(here, '..', 'webui'); // optional; tolerated if absent
