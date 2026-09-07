@@ -22,22 +22,34 @@
 //   ANTHROPIC_API_KEY       fallback key used when provider=anthropic and WEBCRAWL_LLM_API_KEY is unset
 //   WEBCRAWL_ANTHROPIC_VERSION  anthropic-version header (default 2023-06-01)
 
-// Known providers. `keyless: true` => local runtime that needs no auth header.
+// Known providers. Order matters — the WebUI provider dropdown is built from this order, so the
+// default (anthropic) is listed first. `model` is a suggested default the WebUI prefills when you
+// pick the preset. `keyless: true` => local runtime that needs no auth header.
 export const PRESETS = {
-  lmstudio:  { label: 'LM Studio (local)',            baseUrl: 'http://127.0.0.1:1234/v1',  keyless: true,  kind: 'local' },
-  ollama:    { label: 'Ollama (local)',               baseUrl: 'http://127.0.0.1:11434/v1', keyless: true,  kind: 'local' },
-  llamacpp:  { label: 'llama.cpp (local)',            baseUrl: 'http://127.0.0.1:8080/v1',  keyless: true,  kind: 'local' },
-  openai:    { label: 'OpenAI (cloud)',               baseUrl: 'https://api.openai.com/v1', keyless: false, kind: 'cloud' },
-  anthropic: { label: 'Anthropic Claude (cloud)',     baseUrl: 'https://api.anthropic.com/v1', keyless: false, kind: 'cloud' },
-  cloud:     { label: 'Cloud (OpenAI-compatible)',    baseUrl: '',                          keyless: false, kind: 'cloud' },
+  anthropic: { label: 'Anthropic Claude (cloud)',  baseUrl: 'https://api.anthropic.com/v1', model: 'claude-3-5-sonnet-latest', keyless: false, kind: 'cloud' },
+  openai:    { label: 'OpenAI (cloud)',            baseUrl: 'https://api.openai.com/v1',    model: 'gpt-4o-mini',              keyless: false, kind: 'cloud' },
+  cloud:     { label: 'Cloud (OpenAI-compatible)', baseUrl: '',                             model: '',                         keyless: false, kind: 'cloud' },
+  lmstudio:  { label: 'LM Studio (local)',         baseUrl: 'http://127.0.0.1:1234/v1',     model: '',                         keyless: true,  kind: 'local' },
+  ollama:    { label: 'Ollama (local)',            baseUrl: 'http://127.0.0.1:11434/v1',    model: 'llama3.1',                 keyless: true,  kind: 'local' },
+  llamacpp:  { label: 'llama.cpp (local)',         baseUrl: 'http://127.0.0.1:8080/v1',     model: '',                         keyless: true,  kind: 'local' },
 };
 
 const ANTHROPIC_VERSION = process.env.WEBCRAWL_ANTHROPIC_VERSION || '2023-06-01';
 const stripSlash = (u) => String(u || '').trim().replace(/\/+$/, '');
 
+// Provider used out of the box when the environment sets nothing. Anthropic Claude is the
+// shipped default; any deployment can still pin a different provider via the WEBCRAWL_LLM_* env
+// vars (e.g. the live host keeps a working OpenAI-compatible gateway in its .env).
+export const DEFAULT_PROVIDER = 'anthropic';
+
+const defaultModelFor = (p) => (p === 'anthropic' ? 'claude-3-5-sonnet-latest' : 'local-model');
+
 // Seed runtime settings from env, with provider-aware defaults.
-const SEED_PROVIDER = (process.env.WEBCRAWL_LLM_PROVIDER || 'lmstudio').trim();
+const SEED_PROVIDER = (process.env.WEBCRAWL_LLM_PROVIDER || DEFAULT_PROVIDER).trim();
 const SEED_PRESET = PRESETS[SEED_PROVIDER];
+// Anthropic accepts its key from either WEBCRAWL_LLM_API_KEY or the conventional ANTHROPIC_API_KEY.
+const SEED_KEY = process.env.WEBCRAWL_LLM_API_KEY
+  || (SEED_PROVIDER === 'anthropic' ? (process.env.ANTHROPIC_API_KEY || '') : '');
 
 // Live, mutable runtime settings.
 export const llm = {
@@ -45,9 +57,24 @@ export const llm = {
   baseUrl: stripSlash(
     process.env.WEBCRAWL_LLM_BASE_URL || (SEED_PRESET && SEED_PRESET.baseUrl) || 'http://127.0.0.1:1234/v1',
   ),
-  model: process.env.WEBCRAWL_LLM_MODEL || (SEED_PROVIDER === 'anthropic' ? 'claude-3-5-sonnet-latest' : 'local-model'),
-  apiKey: process.env.WEBCRAWL_LLM_API_KEY || (SEED_PROVIDER === 'anthropic' ? (process.env.ANTHROPIC_API_KEY || '') : ''),
+  model: process.env.WEBCRAWL_LLM_MODEL || defaultModelFor(SEED_PROVIDER),
+  apiKey: SEED_KEY,
 };
+
+// Human-readable warning when the current config can't actually reach a model, so the WebUI and
+// logs can tell the user what to do. Empty string means the config looks usable. This is the
+// graceful part of "Anthropic is the default": if no key is present, nothing crashes — extract
+// degrades to its heuristic mode (see extract.js) and this note explains why.
+export function llmNote() {
+  const preset = PRESETS[llm.provider];
+  if (llm.provider === 'anthropic' && !llm.apiKey) {
+    return 'Anthropic Claude is the default provider but no API key is set. Add ANTHROPIC_API_KEY (or paste a key in the Model panel), or switch to another provider. Until then, extract falls back to heuristic mode.';
+  }
+  if (preset && !preset.keyless && !llm.apiKey) {
+    return `${preset.label} needs an API key — add one in the Model panel or switch to a local provider. Extract uses heuristic mode until then.`;
+  }
+  return '';
+}
 
 const isAnthropic = () => llm.provider === 'anthropic';
 
@@ -75,8 +102,9 @@ export function llmPublic() {
     baseUrl: llm.baseUrl,
     model: llm.model,
     hasKey: !!llm.apiKey,
+    note: llmNote(),
     presets: Object.fromEntries(
-      Object.entries(PRESETS).map(([k, v]) => [k, { label: v.label, baseUrl: v.baseUrl, keyless: v.keyless, kind: v.kind }]),
+      Object.entries(PRESETS).map(([k, v]) => [k, { label: v.label, baseUrl: v.baseUrl, model: v.model, keyless: v.keyless, kind: v.kind }]),
     ),
   };
 }

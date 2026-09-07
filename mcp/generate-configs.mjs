@@ -9,12 +9,15 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const server = path.join(root, 'src', 'mcp.js');
 const outDir = (() => { const i = process.argv.indexOf('--out'); return i > 0 ? process.argv[i + 1] : path.join(root, 'mcp', 'generated'); })();
 
-// Edit these if you want the MCP host to use a cloud model for webcrawl_extract instead of a local one.
+// Default provider is Anthropic Claude. Override any of these via the environment when running
+// this script, or edit the generated file, to point webcrawl_extract at a local model or another
+// cloud endpoint. Set ANTHROPIC_API_KEY (or WEBCRAWL_LLM_API_KEY) to actually reach Claude.
+const anthropicKey = process.env.WEBCRAWL_LLM_API_KEY || process.env.ANTHROPIC_API_KEY || '';
 const env = {
-  WEBCRAWL_LLM_PROVIDER: process.env.WEBCRAWL_LLM_PROVIDER || 'lmstudio',
-  WEBCRAWL_LLM_BASE_URL: process.env.WEBCRAWL_LLM_BASE_URL || 'http://127.0.0.1:1234/v1',
-  WEBCRAWL_LLM_MODEL: process.env.WEBCRAWL_LLM_MODEL || 'local-model',
-  ...(process.env.WEBCRAWL_LLM_API_KEY ? { WEBCRAWL_LLM_API_KEY: process.env.WEBCRAWL_LLM_API_KEY } : {}),
+  WEBCRAWL_LLM_PROVIDER: process.env.WEBCRAWL_LLM_PROVIDER || 'anthropic',
+  WEBCRAWL_LLM_BASE_URL: process.env.WEBCRAWL_LLM_BASE_URL || 'https://api.anthropic.com/v1',
+  WEBCRAWL_LLM_MODEL: process.env.WEBCRAWL_LLM_MODEL || 'claude-3-5-sonnet-latest',
+  ...(anthropicKey ? { ANTHROPIC_API_KEY: anthropicKey } : {}),
 };
 const stdio = { command: 'node', args: [server], env };
 

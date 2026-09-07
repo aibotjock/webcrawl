@@ -13,10 +13,11 @@ so any MCP host can call webcrawl's tools directly from the terminal or an edito
 | `webcrawl_screenshot` | PNG as a `data:image/png;base64` URI |
 
 `webcrawl_extract` uses the same runtime-switchable LLM as the WebUI (see the root
-[README](../README.md#ai-model-local-or-cloud)). Point it at a local model (Ollama /
-LM Studio / llama.cpp — no key), a cloud OpenAI-compatible endpoint, or **Anthropic
-Claude** (native `/v1/messages` API) via the `env` block in the config below —
-e.g. `WEBCRAWL_LLM_PROVIDER=anthropic`, `WEBCRAWL_LLM_BASE_URL=https://api.anthropic.com/v1`,
+[README](../README.md#ai-model-local-or-cloud)). The default provider is **Anthropic
+Claude** (native `/v1/messages` API) — just set `ANTHROPIC_API_KEY` in the `env` block. You can
+also point it at a local model (Ollama / LM Studio / llama.cpp — no key) or a cloud
+OpenAI-compatible endpoint. Anthropic env example:
+`WEBCRAWL_LLM_PROVIDER=anthropic`, `WEBCRAWL_LLM_BASE_URL=https://api.anthropic.com/v1`,
 `WEBCRAWL_LLM_MODEL=claude-3-5-sonnet-latest`, `ANTHROPIC_API_KEY=sk-ant-...`.
 
 ## Run it from a terminal

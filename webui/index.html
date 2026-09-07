@@ -938,16 +938,17 @@ function setModelTag(st){
   const p=st.presets&&st.presets[st.provider];const kind=p?p.kind:(st.hasKey?"cloud":"local");
   tag.textContent=(st.model||"—").split("/").pop().slice(0,14);
   tag.className="badge "+(kind==="cloud"?"cloud":"local");
-  $("#modelBtn").title=`AI model: ${st.model} @ ${st.baseUrl} (${kind}${st.reachable?", online":", offline"})`;
+  $("#modelBtn").title=`AI model: ${st.model} @ ${st.baseUrl} (${kind}${st.reachable?", online":", offline"})`+(st.note?`\n⚠ ${st.note}`:"");
 }
 function fillModelForm(st){
   const sel=$("#mProvider");
   sel.innerHTML=Object.entries(st.presets||{}).map(([k,v])=>`<option value="${k}">${esc(v.label)}</option>`).join("");
-  sel.value=st.provider in (st.presets||{})?st.provider:"cloud";
+  sel.value=st.provider in (st.presets||{})?st.provider:"anthropic";
   $("#mBaseUrl").value=st.baseUrl||"";$("#mModel").value=st.model||"";$("#mKey").value="";
   const p=st.presets&&st.presets[sel.value];
   $("#mKeyField").style.display=(p&&p.keyless)?"none":"flex";
-  mStatus(st.reachable?"Endpoint reachable"+(st.hasKey?" · key set":""):"Endpoint not reachable",st.reachable?"ok":"bad");
+  if(st.note) mStatus(st.note,"bad");
+  else mStatus(st.reachable?"Endpoint reachable"+(st.hasKey?" · key set":""):"Endpoint not reachable",st.reachable?"ok":"bad");
 }
 async function loadLlm(){
   try{const r=await fetch(API+"/v1/llm");llmState=await r.json();setModelTag(llmState)}
@@ -960,7 +961,7 @@ $("#modelClose").addEventListener("click",closeModel);
 mScrim.addEventListener("click",e=>{if(e.target===mScrim)closeModel()});
 $("#mProvider").addEventListener("change",()=>{
   const k=$("#mProvider").value,p=llmState.presets[k];
-  if(p){if(p.baseUrl)$("#mBaseUrl").value=p.baseUrl;$("#mKeyField").style.display=p.keyless?"none":"flex"}
+  if(p){if(p.baseUrl)$("#mBaseUrl").value=p.baseUrl;if(p.model)$("#mModel").value=p.model;$("#mKeyField").style.display=p.keyless?"none":"flex"}
 });
 function modelPatch(){
   const patch={provider:$("#mProvider").value,baseUrl:$("#mBaseUrl").value.trim(),model:$("#mModel").value.trim()};

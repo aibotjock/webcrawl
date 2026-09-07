@@ -29,6 +29,11 @@ OpenAI-compatible cloud endpoint, or **Anthropic Claude** (native `/v1/messages`
 between them live from the WebUI without restarting. Anthropic requests/responses are translated
 transparently, so `extract` and the `/v1/llm` routes behave identically across providers.
 
+**Default provider: Anthropic Claude** (`claude-3-5-sonnet-latest`). Set `ANTHROPIC_API_KEY` to
+use it out of the box, or pick another provider in the WebUI / `.env`. If Anthropic is selected
+without a key, nothing crashes — `extract` degrades to its heuristic mode and the WebUI shows a
+note telling you to add a key or switch providers.
+
 **From the WebUI:** click **Model** in the top bar. Pick a provider preset, set the base URL /
 model / API key, hit **Test Connection** or **Fetch** (to list the endpoint's models), then
 **Save & Apply**. The API key is stored server-side and never returned to the browser.
@@ -37,9 +42,9 @@ model / API key, hit **Test Connection** or **Fetch** (to list the endpoint's mo
 
 | Variable | Meaning | Example |
 |----------|---------|---------|
-| `WEBCRAWL_LLM_PROVIDER` | `lmstudio` \| `ollama` \| `llamacpp` \| `openai` \| `anthropic` \| `cloud` | `ollama` |
-| `WEBCRAWL_LLM_BASE_URL` | base URL ending in `/v1` (`https://api.anthropic.com/v1` for Claude) | `http://127.0.0.1:11434/v1` |
-| `WEBCRAWL_LLM_MODEL` | model id | `llama3.1` |
+| `WEBCRAWL_LLM_PROVIDER` | `anthropic` (default) \| `openai` \| `cloud` \| `lmstudio` \| `ollama` \| `llamacpp` | `anthropic` |
+| `WEBCRAWL_LLM_BASE_URL` | base URL ending in `/v1` (`https://api.anthropic.com/v1` for Claude) | `https://api.anthropic.com/v1` |
+| `WEBCRAWL_LLM_MODEL` | model id | `claude-3-5-sonnet-latest` |
 | `WEBCRAWL_LLM_API_KEY` | key — **cloud only** (Bearer, or `x-api-key` for Anthropic; omit for local) | `sk-...` |
 | `ANTHROPIC_API_KEY` | fallback key used when `provider=anthropic` and `WEBCRAWL_LLM_API_KEY` is unset | `sk-ant-...` |
 

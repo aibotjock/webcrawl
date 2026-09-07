@@ -7,7 +7,7 @@ import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from './core/config.js';
-import { llmPublic, setLlm, llmReachable, llmModels } from './core/llm.js';
+import { llm, llmPublic, llmNote, setLlm, llmReachable, llmModels } from './core/llm.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const { version } = JSON.parse(await readFile(path.join(here, '../package.json'), 'utf8'));
@@ -151,5 +151,9 @@ app.use((req, res) => bad(res, 404, `no route: ${req.method} ${req.path}`));
 app.use((err, req, res, _next) =>
   bad(res, err?.type === 'entity.parse.failed' ? 400 : 500, err?.message || 'internal error'));
 
-app.listen(config.port, () =>
-  console.log(`webcrawl v${version} listening on http://localhost:${config.port} (API /v1/*, WebUI /)`));
+app.listen(config.port, () => {
+  console.log(`webcrawl v${version} listening on http://localhost:${config.port} (API /v1/*, WebUI /)`);
+  console.log(`webcrawl LLM: provider=${llm.provider} model=${llm.model} baseUrl=${llm.baseUrl} key=${llm.apiKey ? 'set' : 'none'}`);
+  const note = llmNote();
+  if (note) console.warn(`webcrawl LLM warning: ${note}`);
+});
