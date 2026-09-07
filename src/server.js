@@ -8,6 +8,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from './core/config.js';
 import { llm, llmPublic, llmNote, setLlm, llmReachable, llmModels } from './core/llm.js';
+import { runResearch, generateSchema } from './core/research.js';
+import { saveSession, listSessions, getSession, compareSessions } from './core/sessions.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const { version } = JSON.parse(await readFile(path.join(here, '../package.json'), 'utf8'));
@@ -125,6 +127,132 @@ app.get('/v1/test', async (req, res) => {
   } catch { /* headless chromium missing/broken */ }
   const llm = (await llmReachable(2000)) ? 'reachable' : 'unreachable';
   res.json({ success: Object.values(modules).every(Boolean) && chromium, modules, chromium, llm, version });
+});
+
+// --- Intent-first research (Simple Mode): plan -> search -> scrape -> extract -> answer ---
+// Jobs run async so the UI can poll staged progress. Completed runs are auto-saved as sessions.
+const research = new Map();
+const R_TTL = 60 * 60_000;
+const rsweep = () => { for (const [id, j] of research) if (j.done && Date.now() - j.ts > R_TTL) research.delete(id); };
+
+function normResearch(body) {
+  const b = body || {};
+  const prompt = String(b.prompt || '').trim();
+  const sources = b.sources && typeof b.sources === 'object'
+    ? { mode: ['web', 'domains', 'urls'].includes(b.sources.mode) ? b.sources.mode : 'web',
+        values: Array.isArray(b.sources.values) ? b.sources.values.map(String).filter(Boolean).slice(0, 25) : [] }
+    : { mode: 'web', values: [] };
+  return {
+    prompt,
+    sources,
+    depth: ['quick', 'standard', 'deep'].includes(b.depth) ? b.depth : 'standard',
+    output: ['answer', 'report', 'dataset', 'markdown', 'structured'].includes(b.output) ? b.output : 'answer',
+    maxPages: Math.max(1, Math.min(100, Number(b.maxPages) || 10)),
+    ...(b.schema && typeof b.schema === 'object' ? { schema: b.schema } : {}),
+    ...(typeof b.extractPrompt === 'string' && b.extractPrompt.trim() ? { extractPrompt: b.extractPrompt.trim() } : {}),
+  };
+}
+
+// Start a research run. Returns { id }; poll GET /v1/research/:id or stream /v1/research/:id/stream.
+app.post('/v1/research', async (req, res) => {
+  rsweep();
+  const input = normResearch(req.body);
+  if (!input.prompt) return bad(res, 400, '"prompt" (what to research) is required');
+  const job = { id: randomUUID(), status: 'running', stage: 'planning', stages: [], result: null, error: null, sessionId: null, done: false, ts: Date.now() };
+  research.set(job.id, job);
+  (async () => {
+    try {
+      const result = await runResearch(input, (stage, entry) => { job.stage = stage; job.stages.push(entry); });
+      job.result = result;
+      job.status = 'completed';
+      try { const s = await saveSession(result); job.sessionId = s.id; } catch (e) { job.saveError = String(e?.message || e); }
+    } catch (e) {
+      job.status = 'failed';
+      job.error = String(e?.message || e);
+    }
+    job.done = true;
+    job.ts = Date.now();
+  })();
+  res.json({ success: true, id: job.id });
+});
+
+// Poll a research job. ?since=N returns only stages after index N (cheap live updates).
+app.get('/v1/research/:id', (req, res) => {
+  rsweep();
+  const j = research.get(req.params.id);
+  if (!j) return bad(res, 404, `unknown or expired research job: ${req.params.id}`);
+  const since = Math.max(0, Number(req.query.since) || 0);
+  res.json({
+    success: true, id: j.id, status: j.status, stage: j.stage,
+    stages: j.stages.slice(since), stageCount: j.stages.length,
+    ...(j.result && { result: j.result }),
+    ...(j.sessionId && { sessionId: j.sessionId }),
+    ...(j.error && { error: j.error }),
+  });
+});
+
+// Server-Sent Events stream of stage updates for a running job (optional; polling also works).
+app.get('/v1/research/:id/stream', (req, res) => {
+  const j = research.get(req.params.id);
+  if (!j) return bad(res, 404, `unknown or expired research job: ${req.params.id}`);
+  res.set({ 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive' });
+  res.flushHeaders?.();
+  let sent = 0;
+  const push = () => {
+    while (sent < j.stages.length) res.write(`data: ${JSON.stringify(j.stages[sent++])}\n\n`);
+    if (j.done) {
+      res.write(`event: done\ndata: ${JSON.stringify({ status: j.status, sessionId: j.sessionId, error: j.error })}\n\n`);
+      clearInterval(timer);
+      res.end();
+    }
+  };
+  const timer = setInterval(push, 400);
+  push();
+  req.on('close', () => clearInterval(timer));
+});
+
+// Plain-English -> JSON schema preview (for the simplified Extract UI).
+app.post('/v1/research/schema', async (req, res) => {
+  const description = String(req.body?.description || '').trim();
+  if (!description) return bad(res, 400, '"description" of the fields is required');
+  try { const g = await generateSchema(description); res.json({ success: true, schema: g.schema, source: g.source }); }
+  catch (e) { fail(res, e, 'schema'); }
+});
+
+// --- Saved research sessions (list / get / rerun / compare) ---
+app.get('/v1/sessions', async (req, res) => {
+  try { res.json({ success: true, sessions: await listSessions() }); }
+  catch (e) { fail(res, e, 'sessions'); }
+});
+app.get('/v1/sessions/compare', async (req, res) => {
+  const { a, b } = req.query || {};
+  if (!a || !b) return bad(res, 400, 'query params "a" and "b" (session ids) are required');
+  try {
+    const cmp = await compareSessions(String(a), String(b));
+    if (!cmp) return bad(res, 404, 'one or both sessions not found');
+    res.json({ success: true, comparison: cmp });
+  } catch (e) { fail(res, e, 'compare'); }
+});
+app.get('/v1/sessions/:id', async (req, res) => {
+  try { const s = await getSession(req.params.id); return s ? res.json({ success: true, session: s }) : bad(res, 404, 'session not found'); }
+  catch (e) { fail(res, e, 'session'); }
+});
+// Rerun a saved session with the SAME request; saves and returns a new job id.
+app.post('/v1/sessions/:id/rerun', async (req, res) => {
+  const prev = await getSession(req.params.id);
+  if (!prev || !prev.request) return bad(res, 404, 'session not found');
+  const input = normResearch(prev.request);
+  const job = { id: randomUUID(), status: 'running', stage: 'planning', stages: [], result: null, error: null, sessionId: null, done: false, ts: Date.now() };
+  research.set(job.id, job);
+  (async () => {
+    try {
+      const result = await runResearch(input, (stage, entry) => { job.stage = stage; job.stages.push(entry); });
+      job.result = result; job.status = 'completed';
+      try { const s = await saveSession(result, { rerunOf: prev.id }); job.sessionId = s.id; } catch (e) { job.saveError = String(e?.message || e); }
+    } catch (e) { job.status = 'failed'; job.error = String(e?.message || e); }
+    job.done = true; job.ts = Date.now();
+  })();
+  res.json({ success: true, id: job.id, rerunOf: prev.id });
 });
 
 // --- LLM model settings (local or cloud, runtime-switchable) ---

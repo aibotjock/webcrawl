@@ -4,3 +4,5 @@ node_modules/
 .env
 results/tmp/
 mcp/generated/
+data/sessions/
+.abacus.donotdelete

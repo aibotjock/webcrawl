@@ -2,6 +2,7 @@
 
 Free, self-hosted Firecrawl alternative. One binary-ish Node process gives you:
 
+- **research** *(new)* — describe a goal in plain language; an LLM planner sequences search → scrape → crawl → map → extract and synthesizes a cited answer, report or dataset. This is the default **Simple Mode** of the WebUI.
 - **scrape** — URL to clean Markdown / HTML / links / screenshot (headless chromium for JS pages)
 - **crawl** — recursive same-origin site walk
 - **map** — every URL on a domain, fast, no sitemap required
@@ -18,6 +19,71 @@ npm run mcp            # stdio MCP server
 ```
 
 License: MIT (original clean-room implementation; no Firecrawl code copied).
+
+---
+
+## Research (Simple Mode)
+
+The WebUI opens in **Simple Mode** — an intent-first research interface. You type *what you want
+to find out* in plain language, pick a few knobs, and hit **Run Research**. Behind the scenes an
+LLM **planner** turns your goal into a plan and the engine sequences the existing core tools
+(**search → scrape → crawl → map → extract**) automatically, then synthesizes the result.
+
+**Knobs**
+
+| Control | Options | Meaning |
+|---|---|---|
+| **Sources** | Entire web · Specific domains · Specific URLs | scope of what gets gathered |
+| **Depth** | Quick (1 query · ~4 pages) · Standard (3 · ~10) · Deep (5 · ~24 + crawl) | how hard to look |
+| **Output** | Answer · Report · Dataset · Raw Markdown · Structured Data | what you get back |
+| **Max pages** | number | hard cap on pages fetched |
+
+For **Dataset / Structured Data** output you describe the fields you want in **plain English**
+(e.g. *"company name, funding amount, founding year"*) and the planner generates a JSON schema for
+you — no manual schema authoring. (The manual-schema Extract panel still lives in Advanced Mode.)
+
+**Live execution & results.** A staged progress view (Planning → Searching → Sources Found →
+Scraping → Extracting → Verifying → Complete) streams while the run executes. Results land in four
+tabs: **Answer** (synthesized, with citations), **Sources** (full provenance — URL, title,
+retrieval time, discovery query, fetch method `fetch`/`browser`, HTTP status, success/failure),
+**Raw Data** (per-source Markdown) and **Activity** (the step-by-step log).
+
+**Advanced Mode.** Toggle **Advanced** in the top bar for the original tool-first panels
+(Scrape / Crawl / Search / Map / Extract) — nothing was removed.
+
+**Saved sessions.** Every run is persisted as a JSON file under `data/sessions/` (no external
+DB). Open the **Sessions** drawer to reopen, **rerun**, or **compare** two runs (shared vs unique
+sources + headline stats). Storage is dependency-free so the deployment just works.
+
+**Safety — scraped content is untrusted.** All fetched page content is treated as **untrusted
+input**. It is delimited/fenced before being shown to the LLM, and the planner only ever sees your
+trusted prompt — never raw page text — so a malicious page cannot rewrite the research plan
+(prompt-injection guard). If the LLM is unreachable the planner and schema generator fall back to
+deterministic heuristics rather than failing.
+
+### Research API
+
+Additive routes — the Firecrawl-parity API and MCP tools are unchanged.
+
+| Method / route | Purpose |
+|---|---|
+| `POST /v1/research` | start a run: `{ prompt, sources?, depth?, output?, maxPages?, extractPrompt?, schema? }` → `{ success, id }` |
+| `GET /v1/research/:id?since=N` | poll status: `{ status, stage, stages[], result?, sessionId? }` (`since` skips already-seen stages) |
+| `GET /v1/research/:id/stream` | same progress as Server-Sent Events |
+| `POST /v1/research/schema` | plain-English → JSON schema: `{ description }` → `{ schema, source }` |
+| `GET /v1/sessions` | list saved sessions (summaries, newest first) |
+| `GET /v1/sessions/:id` | full saved session |
+| `POST /v1/sessions/:id/rerun` | re-run a saved session's request → `{ id, rerunOf }` |
+| `GET /v1/sessions/compare?a=&b=` | diff two sessions (shared/unique sources + stats + answers) |
+
+```bash
+# start a run
+ID=$(curl -s -X POST localhost:8787/v1/research -H 'content-type: application/json' \
+  -d '{"prompt":"compare the top self-hosted web scrapers","depth":"standard","output":"report"}' \
+  | python3 -c 'import sys,json;print(json.load(sys.stdin)["id"])')
+# poll until status == "completed"
+curl -s "localhost:8787/v1/research/$ID" | python3 -m json.tool
+```
 
 ---
 

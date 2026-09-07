@@ -403,6 +403,97 @@ details.page[open] summary::before{transform:rotate(90deg)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
 }
+
+/* ===== intent-first research (Simple mode) ===== */
+.modeseg{display:inline-flex;gap:3px;padding:3px;border-radius:11px;background:rgba(8,11,20,.6);border:1px solid var(--line)}
+.modeseg button{height:32px;padding:0 13px;border-radius:8px;font-size:11px;font-weight:650;letter-spacing:.1em;color:var(--mut);transition:color .18s,background .18s,box-shadow .18s;border:1px solid transparent}
+.modeseg button.on{color:#eafcff;background:linear-gradient(180deg,rgba(40,54,92,.92),rgba(21,29,53,.92));border-color:rgba(57,216,245,.5);box-shadow:0 0 14px rgba(34,211,238,.14)}
+.view{display:none;flex:1;min-height:0}
+.view.on{display:flex;flex-direction:column}
+
+#simpleView{overflow-y:auto}
+.simple-in{max-width:980px;margin:0 auto;width:100%;padding:24px 18px 48px}
+.rhero{text-align:center;margin-bottom:18px}
+.rhero h1{font-size:25px;font-weight:800;letter-spacing:.03em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.rhero p{color:var(--mut);font-size:13.5px;margin-top:6px}
+.composer{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;
+  box-shadow:0 18px 50px rgba(0,0,0,.42),inset 0 1px 0 rgba(180,200,255,.06);backdrop-filter:blur(14px)}
+.rprompt{width:100%;min-height:100px;resize:vertical;background:rgba(7,10,19,.72);border:1px solid var(--line2);
+  border-radius:12px;padding:15px 16px;font-size:16px;line-height:1.5;outline:none;color:var(--txt);
+  font-family:var(--sans);transition:border-color .18s,box-shadow .18s}
+.rprompt:focus{border-color:rgba(57,216,245,.65);box-shadow:0 0 0 1px rgba(57,216,245,.35),0 0 24px rgba(34,211,238,.14)}
+.rprompt::placeholder{color:#46506e}
+.rctrls{display:grid;grid-template-columns:repeat(auto-fit,minmax(184px,1fr));gap:13px;margin-top:15px}
+.rc{display:flex;flex-direction:column;gap:6px;min-width:0}
+.rc .fl{font-size:10px;letter-spacing:.16em;color:var(--dim);font-weight:600;font-family:var(--mono)}
+.rc select,.rc input[type=text],.rc input[type=number]{width:100%;background:rgba(7,10,19,.72);border:1px solid var(--line2);
+  border-radius:10px;padding:10px 12px;font-size:13px;outline:none;color:var(--txt);font-family:var(--mono)}
+.rc select:focus,.rc input:focus{border-color:rgba(57,216,245,.65);box-shadow:0 0 0 1px rgba(57,216,245,.3)}
+.srcseg{display:flex;gap:4px;padding:4px;border-radius:11px;background:rgba(8,11,20,.55);border:1px solid var(--line)}
+.srcseg button{flex:1;height:32px;border-radius:8px;font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--mut);
+  border:1px solid transparent;transition:all .16s}
+.srcseg button.on{color:#dff8ff;background:rgba(34,211,238,.12);border-color:rgba(57,216,245,.5)}
+.schemabox{margin-top:13px;border:1px dashed var(--line2);border-radius:12px;padding:13px;background:rgba(9,12,22,.4)}
+.schemabox textarea{width:100%;min-height:64px;background:rgba(7,10,19,.72);border:1px solid var(--line2);border-radius:9px;
+  padding:9px 11px;font-family:var(--mono);font-size:12px;color:var(--txt);outline:none;resize:vertical}
+.schemabox textarea:focus{border-color:rgba(57,216,245,.6)}
+.runresearch{margin-top:16px;width:100%;height:54px;border-radius:13px;font-weight:700;letter-spacing:.14em;font-size:14px;
+  color:#eafcff;display:inline-flex;align-items:center;justify-content:center;gap:10px;overflow:hidden;position:relative;
+  background:linear-gradient(135deg,#0891b2,#2563eb 55%,#7c3aed);
+  box-shadow:0 10px 30px rgba(56,110,255,.4),inset 0 1px 0 rgba(255,255,255,.22);transition:filter .2s,transform .12s}
+.runresearch:hover:not(:disabled){filter:brightness(1.08)}
+.runresearch:active:not(:disabled){transform:scale(.99)}
+.runresearch:disabled{cursor:wait;filter:saturate(.55) brightness(.8)}
+.runresearch svg{width:17px;height:17px}
+
+/* staged execution */
+.stagewrap{margin-top:22px;animation:fade .25s ease}
+.steps{display:flex;flex-wrap:wrap;gap:8px}
+.step{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:11px;border:1px solid var(--line);
+  background:rgba(12,16,29,.5);font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--dim);flex:1;min-width:118px}
+.step .si{width:15px;height:15px;flex:none;display:inline-flex;align-items:center;justify-content:center}
+.step .si svg{width:14px;height:14px}
+.step.done{color:var(--grn);border-color:rgba(52,227,161,.32)}
+.step.done .si{color:var(--grn)}
+.step.active{color:var(--cyan);border-color:rgba(57,216,245,.5);box-shadow:0 0 16px rgba(34,211,238,.12)}
+.spin{width:13px;height:13px;border:2px solid rgba(57,216,245,.28);border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.stagemsg{margin-top:11px;font-family:var(--mono);font-size:11.5px;color:var(--cyan);letter-spacing:.03em;min-height:16px}
+
+/* research result tabs */
+.rtabs{display:flex;gap:5px;margin-top:24px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.rtab{height:38px;padding:0 15px;border-radius:9px 9px 0 0;font-size:11px;font-weight:650;letter-spacing:.08em;color:var(--mut);
+  border:1px solid transparent;border-bottom:none;transition:color .16s,background .16s;position:relative;top:1px}
+.rtab:hover{color:var(--txt)}
+.rtab.on{color:#eafcff;background:rgba(20,27,48,.72);border-color:var(--line)}
+.rtab .badge{margin-left:6px}
+.rtabbody{padding:18px 2px 4px;min-height:120px;animation:fade .2s ease}
+
+/* provenance table */
+.provtbl{width:100%;border-collapse:collapse;font-size:12px}
+.provtbl th{text-align:left;font-family:var(--mono);font-size:9px;letter-spacing:.13em;color:var(--dim);
+  padding:7px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+.provtbl td{padding:9px;border-bottom:1px solid var(--line);vertical-align:top;color:#b6c2e4;font-size:11.5px}
+.provtbl tr:hover td{background:rgba(120,160,255,.04)}
+.provtbl .pt-url{max-width:280px;word-break:break-all;font-family:var(--mono);color:var(--cyan);font-size:11px}
+.provtbl .pt-q{max-width:180px;font-family:var(--mono);font-size:10.5px;color:var(--mut)}
+.prov-ok{color:var(--grn);font-weight:600}.prov-bad{color:var(--red);font-weight:600}
+.prov-meth{font-family:var(--mono);font-size:9.5px;padding:1px 6px;border-radius:5px;border:1px solid var(--line2);color:var(--mut)}
+.prov-meth.browser{color:var(--violet);border-color:rgba(167,139,250,.4)}
+.prov-meth.fetch{color:var(--grn);border-color:rgba(52,227,161,.35)}
+
+/* sessions rows */
+.sess-row{display:flex;flex-direction:column;gap:6px;width:100%;text-align:left;padding:11px 12px;border-radius:11px;
+  border:1px solid transparent;transition:all .16s;margin-bottom:6px;background:rgba(12,16,29,.4)}
+.sess-row:hover{border-color:rgba(57,216,245,.3);background:rgba(20,26,46,.6)}
+.sess-top{display:flex;align-items:flex-start;gap:8px}
+.sess-cb{margin-top:2px;flex:none}
+.sess-title{font-size:12.5px;color:#dbe4ff;line-height:1.4;flex:1;min-width:0}
+.sess-meta{display:flex;gap:6px;flex-wrap:wrap;font-family:var(--mono);font-size:9.5px;color:var(--dim)}
+.sess-acts{display:flex;gap:6px}
+.compare-panel{border:1px solid var(--line);border-radius:12px;background:rgba(12,16,29,.5);padding:14px;margin-bottom:14px}
+.cmp-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:720px){.cmp-cols{grid-template-columns:1fr}.rctrls{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -419,11 +510,19 @@ details.page[open] summary::before{transform:rotate(90deg)}
     <span><b>WEBCRAWL</b></span>
   </div>
   <div class="top-right">
+    <div class="modeseg" id="modeSeg" role="tablist" aria-label="Interface mode">
+      <button id="modeSimple" class="on" type="button" role="tab" aria-selected="true">SIMPLE</button>
+      <button id="modeAdvanced" type="button" role="tab" aria-selected="false">ADVANCED</button>
+    </div>
     <button id="modelBtn" class="tbtn" title="AI model — local or cloud">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 4h6M8.5 13v2M15.5 13v2M2 12v4M22 12v4"/></svg>
       <span class="tl">Model</span><span id="modelTag" class="badge">…</span>
     </button>
-    <button id="histBtn" class="tbtn" title="History (last 20 runs)">
+    <button id="sessBtn" class="tbtn" title="Saved research sessions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C4 4.7 4.7 4 5.5 4h9L20 9.5V18.5c0 .8-.7 1.5-1.5 1.5h-13C4.7 20 4 19.3 4 18.5z"/><path d="M14 4v6h6M8 13h8M8 16.5h5"/></svg>
+      <span class="tl">Sessions</span><span id="sessCount" class="badge">0</span>
+    </button>
+    <button id="histBtn" class="tbtn" title="History (last 20 tool runs)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.2v5l3.2 2"/></svg>
       <span class="tl">History</span><span id="histCount" class="badge">0</span>
     </button>
@@ -434,6 +533,79 @@ details.page[open] summary::before{transform:rotate(90deg)}
   </div>
 </header>
 
+<!-- ============ SIMPLE (intent-first research) VIEW ============ -->
+<section class="view on" id="simpleView" aria-label="Research">
+  <div class="simple-in">
+    <div class="rhero">
+      <h1>What do you want to find out?</h1>
+      <p>Describe your goal in plain language — webcrawl plans the search, gathers sources and synthesizes an answer.</p>
+    </div>
+    <div class="composer">
+      <textarea id="rPrompt" class="rprompt" spellcheck="true"
+        placeholder="What do you want to find, research, scrape, compare, or extract?&#10;e.g. Compare the pricing tiers of the top 5 self-hosted web-scraping tools and summarize the trade-offs."></textarea>
+
+      <div class="rctrls">
+        <div class="rc" style="grid-column:1/-1">
+          <span class="fl">SOURCES</span>
+          <div class="srcseg" id="rSrcSeg">
+            <button type="button" data-src="web" class="on">ENTIRE WEB</button>
+            <button type="button" data-src="domains">SPECIFIC DOMAINS</button>
+            <button type="button" data-src="urls">SPECIFIC URLS</button>
+          </div>
+          <input id="rSrcValues" type="text" placeholder="comma-separated domains or URLs" style="display:none;margin-top:8px" spellcheck="false" autocomplete="off">
+        </div>
+        <div class="rc">
+          <span class="fl">DEPTH</span>
+          <select id="rDepth">
+            <option value="quick">Quick — 1 query · ~4 pages</option>
+            <option value="standard" selected>Standard — 3 queries · ~10 pages</option>
+            <option value="deep">Deep — 5 queries · ~24 pages + crawl</option>
+          </select>
+        </div>
+        <div class="rc">
+          <span class="fl">OUTPUT</span>
+          <select id="rOutput">
+            <option value="answer" selected>Answer</option>
+            <option value="report">Report</option>
+            <option value="dataset">Dataset</option>
+            <option value="markdown">Raw Markdown</option>
+            <option value="structured">Structured Data</option>
+          </select>
+        </div>
+        <div class="rc">
+          <span class="fl">MAX PAGES</span>
+          <input id="rMaxPages" type="number" value="10" min="1" max="100">
+        </div>
+      </div>
+
+      <div class="schemabox" id="rSchemaBox" style="display:none">
+        <span class="fl" style="display:block;margin-bottom:7px">DESCRIBE THE DATA TO EXTRACT (plain English)</span>
+        <input id="rExtractPrompt" type="text" placeholder="e.g. product name, price in USD, star rating, and whether it is in stock" spellcheck="false" autocomplete="off" style="width:100%;background:rgba(7,10,19,.72);border:1px solid var(--line2);border-radius:9px;padding:10px 12px;font-family:var(--mono);font-size:12px;color:var(--txt);outline:none">
+        <div style="display:flex;gap:8px;align-items:center;margin-top:9px;flex-wrap:wrap">
+          <button id="rSchemaPreview" class="ghost-btn" type="button">PREVIEW SCHEMA</button>
+          <span id="rSchemaHint" style="font-family:var(--mono);font-size:10.5px;color:var(--dim)">Optional — a JSON schema is generated automatically from your description.</span>
+        </div>
+        <textarea id="rSchemaJson" spellcheck="false" placeholder="Generated JSON schema will appear here (editable)…" style="display:none;margin-top:9px"></textarea>
+      </div>
+
+      <button id="researchBtn" class="runresearch" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.2-4.2"/></svg>
+        RUN RESEARCH
+      </button>
+      <p class="hint" style="margin-top:10px"><b>⌘/Ctrl</b> + <b>↵</b> to run</p>
+    </div>
+
+    <div class="stagewrap" id="stageWrap" hidden>
+      <div class="steps" id="stageSteps"></div>
+      <div class="stagemsg" id="stageMsg"></div>
+    </div>
+
+    <div id="rResult"></div>
+  </div>
+</section>
+
+<!-- ============ ADVANCED (tool-first) VIEW ============ -->
+<section class="view" id="advView" aria-label="Tools">
 <div class="pagehead">
   <h1>PLAYGROUND</h1>
   <p>Scrape, crawl, map, search and extract — self-hosted, no API keys.</p>
@@ -529,6 +701,7 @@ details.page[open] summary::before{transform:rotate(90deg)}
     <div class="result-body" id="resultBody"></div>
   </main>
 </div>
+</section>
 
 <div class="scrim" id="scrim"></div>
 
@@ -576,6 +749,18 @@ details.page[open] summary::before{transform:rotate(90deg)}
       </button></div>
   </div>
   <div class="drawer-b" id="histList"></div>
+</aside>
+<aside class="drawer" id="sessDrawer" aria-label="Saved sessions">
+  <div class="drawer-h"><h3>SAVED RESEARCH SESSIONS</h3>
+    <div>
+      <button id="sessCompare" class="abtn" title="Compare the two selected sessions">COMPARE (0)</button>
+      <button id="sessRefresh" class="abtn" title="Reload list">REFRESH</button>
+      <button id="sessClose" class="icon-btn" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="drawer-b" id="sessList"></div>
 </aside>
 <div id="toast" role="status"></div>
 
@@ -910,12 +1095,12 @@ $("#resultBody").addEventListener("click",e=>{
 $("#runBtn").addEventListener("click",run);
 $("#clearBtn").addEventListener("click",()=>{$("#resultBody").innerHTML=heroHtml();$("#clearBtn").hidden=true;$("#rMeta").innerHTML="";lastRun=null});
 document.addEventListener("keydown",e=>{
-  if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){e.preventDefault();run()}
-  if(e.key==="Escape"){closeDrawer();$("#statusPop").hidden=true}
+  if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){e.preventDefault();if($("#simpleView").classList.contains("on"))startResearch();else run()}
+  if(e.key==="Escape"){closeDrawer();closeSess();$("#statusPop").hidden=true}
 });
 $("#histBtn").addEventListener("click",openDrawer);
 $("#histClose").addEventListener("click",closeDrawer);
-$("#scrim").addEventListener("click",closeDrawer);
+$("#scrim").addEventListener("click",()=>{closeDrawer();closeSess()});
 $("#histClear").addEventListener("click",()=>{hist=[];try{localStorage.removeItem(HKEY)}catch{}renderHist();toast("History cleared")});
 $("#histList").addEventListener("click",e=>{const r=e.target.closest(".hrow");if(r)restore(+r.dataset.i)});
 $("#statusChip").addEventListener("click",e=>{e.stopPropagation();const p=$("#statusPop");p.hidden=!p.hidden});
@@ -996,13 +1181,272 @@ $("#mFetch").addEventListener("click",async()=>{
   }catch(e){mStatus(e.message,"bad")}
 });
 
+/* ================= mode toggle (Simple / Advanced) ================= */
+function setMode(m){
+  const simple=m!=="advanced";
+  $("#simpleView").classList.toggle("on",simple);
+  $("#advView").classList.toggle("on",!simple);
+  $("#modeSimple").classList.toggle("on",simple);$("#modeAdvanced").classList.toggle("on",!simple);
+  $("#modeSimple").setAttribute("aria-selected",String(simple));$("#modeAdvanced").setAttribute("aria-selected",String(!simple));
+  try{localStorage.setItem("webcrawl.mode",simple?"simple":"advanced")}catch{}
+}
+$("#modeSimple").addEventListener("click",()=>setMode("simple"));
+$("#modeAdvanced").addEventListener("click",()=>setMode("advanced"));
+
+/* ================= intent-first research ================= */
+const R_STEPS=[
+  {label:"Planning"},{label:"Searching"},{label:"Sources Found"},
+  {label:"Scraping"},{label:"Extracting"},{label:"Verifying"},{label:"Complete"}];
+const R_STEPIDX={planning:0,planned:0,searching:1,sources_found:2,scraping:3,scraped:3,extracting:4,extracted:4,verifying:5,complete:6};
+const CHK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+let rBusy=false,rPoll=null,rSince=0,rActivity=[],rResultData=null,rTab="answer";
+
+const rSourceMode=()=>$("#rSrcSeg").querySelector("button.on").dataset.src;
+function renderSteps(cur,allDone){
+  $("#stageSteps").innerHTML=R_STEPS.map((s,i)=>{
+    let cls="",ic='<span class="si">•</span>';
+    if(allDone||i<cur){cls="done";ic='<span class="si">'+CHK+'</span>'}
+    else if(i===cur){cls="active";ic='<span class="si"><span class="spin"></span></span>'}
+    return `<div class="step ${cls}">${ic}${s.label}</div>`;
+  }).join("");
+}
+function stageMessage(e){
+  if(!e)return "";
+  if(e.stage==="planned"&&e.queries)return "Plan ready — "+e.queries.slice(0,4).join(" · ");
+  if(e.stage==="sources_found")return `Found ${e.count??0} candidate source(s)`;
+  if(e.stage==="scraped")return `Scraped ${e.ok??0} page(s)`+(e.failed?`, ${e.failed} failed`:"");
+  if(e.stage==="extracted")return `Extracted ${e.rows??0} row(s)`;
+  return e.message||({planning:"Interpreting your request…",searching:"Searching the web…",scraping:"Fetching pages…",extracting:"Extracting structured data…",verifying:"Synthesizing the answer…",complete:"Done"}[e.stage]||e.stage);
+}
+function updateStage(){
+  const last=rActivity[rActivity.length-1];if(!last)return;
+  renderSteps(R_STEPIDX[last.stage]??0,false);
+  $("#stageMsg").textContent=stageMessage(last);
+}
+
+function beginJob(id){
+  rBusy=true;$("#researchBtn").disabled=true;
+  rActivity=[];rSince=0;
+  $("#stageWrap").hidden=false;$("#rResult").innerHTML="";
+  renderSteps(0,false);$("#stageMsg").textContent="Starting…";
+  clearInterval(rPoll);rPoll=setInterval(()=>pollResearch(id),700);pollResearch(id);
+}
+function stopPoll(){clearInterval(rPoll);rPoll=null;rBusy=false;$("#researchBtn").disabled=false}
+async function pollResearch(id){
+  try{
+    const r=await fetch(`${API}/v1/research/${id}?since=${rSince}`);
+    const j=await r.json();
+    if(!r.ok||j.success===false)throw new Error(j.error||"poll failed");
+    if(j.stages&&j.stages.length){for(const s of j.stages)rActivity.push(s);rSince=j.stageCount;updateStage()}
+    if(j.status==="completed"){stopPoll();onComplete(j.result)}
+    else if(j.status==="failed"){stopPoll();rFail(j.error||"research failed")}
+  }catch(e){/* transient network error — keep polling */}
+}
+function onComplete(result){
+  renderSteps(6,true);
+  $("#stageMsg").textContent="Complete"+(result?.stats?` · ${fMs(result.stats.durationMs)} · ${result.stats.scraped}/${result.stats.sources} pages`:"");
+  rResultData=result;renderResearchResult(result);loadSessions();
+}
+function rFail(msg){
+  $("#stageMsg").innerHTML=`<span style="color:var(--red)">Failed: ${esc(msg)}</span>`;
+  $("#rResult").innerHTML=`<div class="err" style="margin-top:16px">${svg("warn")}<div><b>RESEARCH FAILED</b><p>${esc(msg)}</p></div></div>`;
+}
+
+async function startResearch(){
+  if(rBusy)return;
+  const prompt=$("#rPrompt").value.trim();
+  if(!prompt){toast("Describe what you want to research");$("#rPrompt").focus();return}
+  const mode=rSourceMode();
+  const values=$("#rSrcValues").value.split(",").map(s=>s.trim()).filter(Boolean);
+  if((mode==="domains"||mode==="urls")&&!values.length){toast("Add at least one "+(mode==="urls"?"URL":"domain"));$("#rSrcValues").focus();return}
+  const body={prompt,sources:{mode,values},depth:$("#rDepth").value,output:$("#rOutput").value,maxPages:+$("#rMaxPages").value||10};
+  const ep=$("#rExtractPrompt").value.trim();if(ep)body.extractPrompt=ep;
+  const sj=$("#rSchemaJson");
+  if(sj&&sj.style.display!=="none"&&sj.value.trim()){try{body.schema=JSON.parse(sj.value)}catch(e){toast("Schema JSON invalid: "+e.message);return}}
+  try{
+    const r=await fetch(API+"/v1/research",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"could not start research");
+    beginJob(j.id);
+  }catch(e){toast(e.message)}
+}
+
+/* ---- result tabs ---- */
+function rTabsBar(res){
+  const n=res.sources?.length||0,raw=res.raw?.length||0,act=res.activity?.length||0;
+  const rows=res.extracted?res.extracted.rows.length:0;
+  return `<div class="rtabs">
+    <button class="rtab" data-rt="answer">ANSWER</button>
+    <button class="rtab" data-rt="sources">SOURCES<span class="badge">${n}</span></button>
+    <button class="rtab" data-rt="raw">RAW DATA<span class="badge">${raw}${rows?"+"+rows:""}</span></button>
+    <button class="rtab" data-rt="activity">ACTIVITY<span class="badge">${act}</span></button>
+  </div><div class="rtabbody" id="rTabBody"></div>`;
+}
+function answerView(res){
+  const meta=[chip("SCRAPED",res.stats?.scraped??0,"cy"),chip("PAGES",res.stats?.sources??0,"vi"),
+    chip("TIME",fMs(res.stats?.durationMs||0),"am"),chip("LLM",res.llmUsed?"USED":"OFF",res.llmUsed?"gr":"rd")];
+  if(res.plan?.planSource)meta.push(chip("PLAN",res.plan.planSource.toUpperCase(),res.plan.planSource==="llm"?"vi":"am"));
+  const planBody=(res.plan?.queries?.length
+    ?`<div style="margin-bottom:7px"><b style="color:var(--dim);font-family:var(--mono);font-size:9.5px;letter-spacing:.14em">SEARCH PLAN</b></div>`+res.plan.queries.map(q=>chip("",q,"")).join(" ")
+    :"")+(res.plan?.note?`<p style="color:var(--mut);font-size:12px;margin-top:9px">${esc(res.plan.note)}</p>`:"");
+  let h=sec("SUMMARY",meta.join(""),"",planBody||'<p style="color:var(--mut)">Plan complete.</p>');
+  h+=res.answer?`<div class="md" style="margin-top:6px">${mdToHtml(res.answer)}</div>`
+    :`<p style="color:var(--mut)">No synthesized answer — see the Sources and Raw Data tabs.</p>`;
+  if(res.synthError)h+=`<p style="color:var(--amber);font-size:11px;font-family:var(--mono);margin-top:10px">synthesis note: ${esc(res.synthError)}</p>`;
+  return h;
+}
+function provTable(sources){
+  if(!sources||!sources.length)return `<p style="color:var(--mut)">No sources collected.</p>`;
+  const rows=sources.map(s=>`<tr>
+    <td><span class="${s.ok?"prov-ok":"prov-bad"}">${s.ok?"OK":"FAIL"}</span> <span style="color:var(--dim)">${esc(String(s.status||""))}</span></td>
+    <td>${esc(s.title||"")}<div class="pt-url"><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.url)}</a></div>${s.error?`<div style="color:var(--red);font-size:10px">${esc(s.error)}</div>`:""}</td>
+    <td><span class="prov-meth ${s.fetchMethod==="browser"?"browser":"fetch"}">${esc(s.fetchMethod||"fetch")}</span></td>
+    <td class="pt-q">${esc(s.discoveryQuery||"—")}</td>
+    <td style="white-space:nowrap;color:var(--dim);font-size:10px">${esc((s.retrievedAt||"").replace("T"," ").replace(/\..*/,""))}</td>
+  </tr>`).join("");
+  return `<div style="overflow-x:auto"><table class="provtbl"><thead><tr><th>STATUS</th><th>SOURCE</th><th>METHOD</th><th>DISCOVERY QUERY</th><th>RETRIEVED (UTC)</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function rawView(res){
+  let h="";
+  if(res.extracted){
+    const ex=res.extracted;
+    h+=sec("EXTRACTED DATA",[chip("ROWS",ex.rows.length,"gr"),chip("SCHEMA",(ex.schemaSource||"").toUpperCase(),ex.schemaSource==="llm"?"vi":"am")].join(""),
+      abtn("COPY JSON","copy",`data-cp="${cpid(JSON.stringify(ex.rows,null,2))}"`),
+      jsonTree(ex.rows,"rows",0));
+  }
+  const raw=res.raw||[];
+  if(!raw.length&&!res.extracted)return `<p style="color:var(--mut)">No raw content collected.</p>`;
+  h+=raw.map(p=>`<details class="page"><summary>
+      <span class="p-url" title="${esc(p.url)}">${esc(p.title||p.url)}</span>${chip("",fN(tok(p.markdown))+" tok","cy")}
+    </summary><div class="p-body"><div class="md">${mdToHtml(short(p.markdown,4000))}${(p.markdown||"").length>4000?"<p style='color:var(--dim)'>…preview truncated (COPY from Sources for full)</p>":""}</div></div></details>`).join("");
+  return h;
+}
+function activityView(res){
+  const a=res.activity||[];
+  if(!a.length)return `<p style="color:var(--mut)">No activity recorded.</p>`;
+  return `<div class="list" style="max-height:none">${a.map(e=>{
+    const {ts,stage,...rest}=e;const extra=Object.keys(rest).length?esc(JSON.stringify(rest)):"";
+    return `<div class="li-row" style="cursor:default;align-items:flex-start"><span class="n" style="min-width:62px">${esc(String(ts||"").slice(11,19))}</span><span style="color:var(--cyan);min-width:104px;flex:none">${esc(stage)}</span><span style="white-space:normal;color:var(--mut)">${extra}</span></div>`;
+  }).join("")}</div>`;
+}
+function renderResearchResult(res){
+  rResultData=res;
+  $("#rResult").innerHTML=rTabsBar(res);
+  rShowTab("answer");
+}
+function rShowTab(name){
+  rTab=name;const res=rResultData;if(!res)return;
+  $$("#rResult .rtab").forEach(b=>b.classList.toggle("on",b.dataset.rt===name));
+  const body=$("#rTabBody");
+  if(name==="answer")body.innerHTML=answerView(res);
+  else if(name==="sources")body.innerHTML=provTable(res.sources);
+  else if(name==="raw")body.innerHTML=rawView(res);
+  else body.innerHTML=activityView(res);
+}
+$("#rResult").addEventListener("click",e=>{
+  const t=e.target.closest(".rtab");if(t){rShowTab(t.dataset.rt);return}
+  const cpb=e.target.closest("[data-cp]");if(cpb){copy(cp[cpb.dataset.cp],"Copied to clipboard");return}
+});
+
+/* ---- source selector / output / schema preview ---- */
+$("#rSrcSeg").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-src]");if(!b)return;
+  $$("#rSrcSeg button").forEach(x=>x.classList.toggle("on",x===b));
+  const m=b.dataset.src,v=$("#rSrcValues");
+  v.style.display=m==="web"?"none":"block";
+  v.placeholder=m==="urls"?"https://example.com/page1, https://example.com/page2":"example.com, docs.example.org";
+});
+function updateSchemaBox(){const o=$("#rOutput").value;$("#rSchemaBox").style.display=(o==="dataset"||o==="structured")?"block":"none"}
+$("#rOutput").addEventListener("change",updateSchemaBox);
+$("#rSchemaPreview").addEventListener("click",async()=>{
+  const d=$("#rExtractPrompt").value.trim();if(!d){toast("Describe the data to extract first");return}
+  $("#rSchemaHint").textContent="Generating…";
+  try{
+    const r=await fetch(API+"/v1/research/schema",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({description:d})});
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"failed");
+    const sj=$("#rSchemaJson");sj.style.display="block";sj.value=JSON.stringify(j.schema,null,2);
+    $("#rSchemaHint").textContent=`Schema (${j.source}) — edit before running if needed.`;
+  }catch(e){$("#rSchemaHint").textContent=e.message}
+});
+$("#researchBtn").addEventListener("click",startResearch);
+
+/* ================= saved sessions ================= */
+let sessData=[],sessSel=new Set();
+const openSess=()=>{loadSessions();$("#sessDrawer").classList.add("on");$("#scrim").classList.add("on")};
+const closeSess=()=>{$("#sessDrawer").classList.remove("on");$("#scrim").classList.remove("on")};
+async function loadSessions(){
+  try{const r=await fetch(API+"/v1/sessions");const j=await r.json();sessData=j.sessions||[]}catch{sessData=[]}
+  $("#sessCount").textContent=sessData.length;renderSessions();
+}
+function renderSessions(){
+  const L=$("#sessList");
+  if(!sessData.length){L.innerHTML=`<div class="h-empty">No saved sessions yet.<br>Run a research query to save one.</div>`;$("#sessCompare").textContent="COMPARE (0)";return}
+  L.innerHTML=sessData.map(s=>`<div class="sess-row">
+    <div class="sess-top">
+      <input type="checkbox" class="sess-cb" data-id="${esc(s.id)}" ${sessSel.has(s.id)?"checked":""}>
+      <div class="sess-title">${esc(s.title||s.prompt||"Untitled research")}</div>
+    </div>
+    <div class="sess-meta"><span>${esc((s.output||"").toUpperCase())}</span><span>·</span><span>${esc((s.depth||"").toUpperCase())}</span><span>·</span><span>${s.scraped}/${s.sources} pages</span><span>·</span><span>${fMs(s.durationMs||0)}</span><span>·</span><span>${esc((s.createdAt||"").replace("T"," ").replace(/\..*/,""))}</span>${s.rerunOf?"<span>· rerun</span>":""}</div>
+    <div class="sess-acts">${abtn("OPEN","ext",`data-open="${esc(s.id)}"`)}${abtn("RERUN","",`data-rerun="${esc(s.id)}"`)}</div>
+  </div>`).join("");
+  $("#sessCompare").textContent=`COMPARE (${sessSel.size})`;
+}
+async function openSession(id){
+  try{
+    const r=await fetch(`${API}/v1/sessions/${encodeURIComponent(id)}`);const j=await r.json();
+    if(!r.ok||j.success===false)throw new Error(j.error||"session not found");
+    setMode("simple");closeSess();$("#stageWrap").hidden=true;
+    renderResearchResult(j.session.result);toast("Session opened");
+  }catch(e){toast(e.message)}
+}
+async function rerunSession(id){
+  try{
+    const r=await fetch(`${API}/v1/sessions/${encodeURIComponent(id)}/rerun`,{method:"POST"});const j=await r.json();
+    if(!r.ok||j.success===false)throw new Error(j.error||"rerun failed");
+    setMode("simple");closeSess();beginJob(j.id);toast("Re-running session…");
+  }catch(e){toast(e.message)}
+}
+async function doCompare(){
+  const ids=[...sessSel];if(ids.length!==2){toast("Select exactly 2 sessions to compare");return}
+  try{
+    const r=await fetch(`${API}/v1/sessions/compare?a=${encodeURIComponent(ids[0])}&b=${encodeURIComponent(ids[1])}`);
+    const j=await r.json();if(!r.ok||j.success===false)throw new Error(j.error||"compare failed");
+    setMode("simple");closeSess();$("#stageWrap").hidden=true;renderCompare(j.comparison);
+  }catch(e){toast(e.message)}
+}
+function renderCompare(c){
+  $("#rResult").innerHTML=`<div class="compare-panel">
+    <h3 style="font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--mut);margin-bottom:12px">SESSION COMPARISON</h3>
+    <div class="cmp-cols">
+      ${[c.a,c.b].map(x=>`<div>
+        <div style="font-size:12.5px;color:#dbe4ff;margin-bottom:6px">${esc(x.title)}</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px">${chip("SCRAPED",x.stats?.scraped??0,"cy")}${chip("PAGES",x.stats?.sources??0,"vi")}${chip("TIME",fMs(x.stats?.durationMs||0),"am")}</div>
+        <div class="md" style="max-height:320px;overflow:auto;font-size:12px;border:1px solid var(--line);border-radius:10px;padding:11px">${mdToHtml(short(x.answer||"_no answer_",2200))}</div>
+      </div>`).join("")}
+    </div>
+    <div style="margin-top:14px;display:flex;gap:6px;flex-wrap:wrap">${chip("SHARED SOURCES",c.sources.sharedCount,"gr")}${chip("ONLY A",c.sources.onlyACount,"cy")}${chip("ONLY B",c.sources.onlyBCount,"vi")}</div>
+  </div>`;
+}
+$("#sessBtn").addEventListener("click",openSess);
+$("#sessClose").addEventListener("click",closeSess);
+$("#sessRefresh").addEventListener("click",loadSessions);
+$("#sessCompare").addEventListener("click",doCompare);
+$("#sessList").addEventListener("click",e=>{
+  const cb=e.target.closest(".sess-cb");
+  if(cb){const id=cb.dataset.id;if(cb.checked)sessSel.add(id);else sessSel.delete(id);$("#sessCompare").textContent=`COMPARE (${sessSel.size})`;return}
+  const op=e.target.closest("[data-open]");if(op){openSession(op.dataset.open);return}
+  const rr=e.target.closest("[data-rerun]");if(rr){rerunSession(rr.dataset.rerun);return}
+});
+
 /* ---------- init ---------- */
 $$(".segtab").forEach(b=>b.insertAdjacentHTML("afterbegin",svg(b.dataset.op,15)));
 $("#curlBtn").insertAdjacentHTML("afterbegin",svg("copy",13));
 switchOp("scrape");
 $("#resultBody").innerHTML=heroHtml();
+updateSchemaBox();
 loadHist();renderHist();
-(async()=>{await ping();loadLlm();setInterval(ping,15000);setInterval(loadLlm,30000)})();
+let savedMode="simple";try{savedMode=localStorage.getItem("webcrawl.mode")||"simple"}catch{}
+setMode(savedMode);
+(async()=>{await ping();loadLlm();loadSessions();setInterval(ping,15000);setInterval(loadLlm,30000)})();
 </script>
 </body>
 </html>

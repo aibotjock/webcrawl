@@ -12,6 +12,13 @@ so any MCP host can call webcrawl's tools directly from the terminal or an edito
 | `webcrawl_extract` | page → strict typed JSON from a schema (local **or** cloud LLM) |
 | `webcrawl_screenshot` | PNG as a `data:image/png;base64` URI |
 
+> **Note:** the WebUI's new intent-first **Research (Simple Mode)** — the automatic
+> search→scrape→crawl→map→extract planner and saved sessions — is exposed over the **HTTP API**
+> (`/v1/research`, `/v1/sessions`; see the root [README](../README.md#research-simple-mode)) and
+> the WebUI. The MCP surface is **unchanged and fully backward-compatible** — still exactly the
+> six tools above. Compose them yourself from an MCP host, or call the HTTP `/v1/research` route
+> for the one-shot planned pipeline.
+
 `webcrawl_extract` uses the same runtime-switchable LLM as the WebUI (see the root
 [README](../README.md#ai-model-local-or-cloud)). The default provider is **Anthropic
 Claude** (native `/v1/messages` API) — just set `ANTHROPIC_API_KEY` in the `env` block. You can
