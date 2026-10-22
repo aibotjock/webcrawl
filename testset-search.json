@@ -1,0 +1,32 @@
+[
+  {
+    "query": "playwright take a full page screenshot in node",
+    "highly": ["playwright.dev/docs/screenshots"],
+    "relevant": ["playwright.dev/docs/api/class-page", "stackoverflow.com/questions"]
+  },
+  {
+    "query": "LTX 2.5 open weights video model",
+    "highly": ["huggingface.co/Lightricks/LTX-2.5", "ltx.io/model/ltx-2-5"],
+    "relevant": ["github.com/Lightricks", "ltx.io"]
+  },
+  {
+    "query": "python asyncio run blocking function in thread",
+    "highly": ["docs.python.org/3/library/asyncio-task.html", "docs.python.org/3/library/asyncio-eventloop.html"],
+    "relevant": ["stackoverflow.com/questions", "realpython.com"]
+  },
+  {
+    "query": "self-hosted alternative to firecrawl",
+    "highly": ["github.com/aibotjock/webcrawl"],
+    "relevant": ["github.com", "reddit.com/r/LocalLLaMA", "spider.cloud/blog", "webcrawlerapi.com/blog"]
+  },
+  {
+    "query": "react useEffect cleanup function when component unmounts",
+    "highly": ["react.dev/reference/react/useEffect", "react.dev/learn/synchronizing-with-effects"],
+    "relevant": ["react.dev", "stackoverflow.com/questions"]
+  },
+  {
+    "query": "how does reciprocal rank fusion work",
+    "highly": ["plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf"],
+    "relevant": ["en.wikipedia.org/wiki", "learn.microsoft.com", "elastic.co/guide", "opensearch.org"]
+  }
+]

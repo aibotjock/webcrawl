@@ -1,5 +1,6 @@
 // Structured extraction: scrape -> markdown -> LLM (OpenAI-compatible) or label/table heuristics.
 import { config } from './config.js';
+import { llmConfig, chat } from '../search/llm.js';
 
 async function getMarkdown(url, _mdFn) {
   if (_mdFn) return _mdFn(url);
@@ -7,6 +8,8 @@ async function getMarkdown(url, _mdFn) {
   return scrape(url, { formats: ['markdown'] });
 }
 async function llmUp() {
+  const cfg = llmConfig();
+  if (cfg && cfg.provider !== 'openai') return true; // cloud Anthropic/Gemini: configured means usable
   try { return (await fetch(`${config.llmBaseUrl}/models`, { signal: AbortSignal.timeout(1500) })).ok; } catch { return false; }
 }
 
@@ -57,11 +60,16 @@ const validate = (data, schema) => { const errs = [], value = conform(data, sche
 
 async function rawChat(body) {
   const res = await fetch(`${config.llmBaseUrl}/chat/completions`, {
-    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(180000),
+    method: 'POST', headers: { 'content-type': 'application/json', ...(process.env.WEBCRAWL_LLM_API_KEY && { authorization: `Bearer ${process.env.WEBCRAWL_LLM_API_KEY}` }) }, body: JSON.stringify(body), signal: AbortSignal.timeout(180000),
   });
   return { status: res.status, j: await res.json().catch(() => ({})) };
 }
 async function complete(messages, { maxTokens = 4096, jsonMode = true } = {}) {
+  const cfg = llmConfig();
+  if (cfg && cfg.provider !== 'openai') { // Anthropic / Gemini through the shared adapter
+    const [sys, ...rest] = messages[0]?.role === 'system' ? messages : [null, ...messages];
+    return { content: await chat({ system: sys?.content, messages: rest, maxTokens }, { cfg }) };
+  }
   const body = { model: config.llmModel, temperature: 0, max_tokens: maxTokens, messages };
   if (jsonMode) body.response_format = { type: 'json_object' };
   let { status, j } = await rawChat(body);

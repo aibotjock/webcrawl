@@ -39,9 +39,46 @@ const tools = {
     run: (a) => import('./core/map.js').then((m) => m.mapSite(a.url, a)),
   },
   webcrawl_search: {
-    description: 'Keyless web search (DuckDuckGo); returns [{ title, url, description }].',
-    schema: z.object({ query: z.string().min(1), limit: posInt }),
-    run: (a) => import('./core/search.js').then((m) => m.webSearch(a.query, { limit: a.limit })),
+    description: 'Web search that reads the pages for you. Levels: instant (pages already cached, no network), fast (titles/snippets from every source, ~1s), standard (default: fetches the top pages and returns the best passages as highlights, ~3-8s), deep (an LLM splits the question into sub-queries and follows in-site links, ~15-60s). Results are ranked by meaning (Jev when configured). Returns [{ url, title, publishedDate, score, highlights, text? }].',
+    schema: z.object({
+      query: z.string().min(1).describe('natural-language question or keywords'),
+      level: z.enum(['instant', 'fast', 'standard', 'deep']).optional(),
+      numResults: z.number().int().min(1).max(50).optional().describe('default 10'),
+      limit: posInt.describe('alias of numResults'),
+      includeDomains: z.array(z.string()).optional().describe('e.g. ["github.com", "docs.python.org/3"]'),
+      excludeDomains: z.array(z.string()).optional(),
+      startPublishedDate: z.string().optional().describe('ISO date; drops pages published earlier'),
+      endPublishedDate: z.string().optional(),
+      text: z.boolean().optional().describe('include each page as markdown'),
+      maxAgeHours: z.number().int().optional().describe('reuse cached pages up to this age; 0 = always fetch fresh, -1 = cache only'),
+      visual: z.boolean().optional().describe('also judge page screenshots (Jev images)'),
+    }),
+    run: (a) => import('./search/engine.js').then((m) => m.search(a.query, { ...a, numResults: a.numResults || a.limit, highlights: { highlightsPerUrl: 2 } })),
+  },
+  webcrawl_answer: {
+    description: 'Search, read the best pages, and answer the question with numbered citations. Uses the configured LLM (any OpenAI-compatible, Anthropic or Gemini); without one it returns the top extracted passages. Pass outputSchema to get JSON matching a schema, with sources per field.',
+    schema: z.object({
+      query: z.string().min(1),
+      level: z.enum(['standard', 'deep']).optional(),
+      includeDomains: z.array(z.string()).optional(), excludeDomains: z.array(z.string()).optional(),
+      outputSchema: z.record(z.string(), z.any()).optional(),
+    }),
+    run: (a) => import('./search/engine.js').then((m) => m.search(a.query, { ...a, numResults: 8, answer: true, highlights: true })),
+  },
+  webcrawl_find_similar: {
+    description: 'Find pages similar to a given URL (on other sites by default).',
+    schema: z.object({ url, numResults: z.number().int().min(1).max(50).optional(), excludeSourceDomain: z.boolean().optional() }),
+    run: (a) => import('./search/engine.js').then((m) => m.findSimilar(a.url, { ...a, highlights: true })),
+  },
+  webcrawl_find_by_image: {
+    description: 'Search with a photo: finds pages showing the same item (product, model, object) and checks their images against the photo with Jev or a vision LLM. Good for identifying an item or finding where it is sold.',
+    schema: z.object({
+      image: z.string().describe('image as http(s) URL, data: URI, or base64'),
+      query: z.string().optional().describe('what the item is, if known; written from the photo by the LLM when omitted'),
+      numResults: z.number().int().min(1).max(30).optional(),
+      includeDomains: z.array(z.string()).optional().describe('e.g. ["ebay.com", "amazon.com"]'),
+    }),
+    run: (a) => import('./search/engine.js').then((m) => m.findByImage(a)),
   },
   webcrawl_extract: {
     description: 'Scrape a URL and extract structured JSON matching the given schema (local LLM, heuristic fallback).',
@@ -64,7 +101,7 @@ const tools = {
 const clip = (v) => Array.isArray(v) ? v.map(clip)
   : v && typeof v === 'object'
     ? Object.fromEntries(Object.entries(v).map(([k, x]) =>
-      [k, k === 'markdown' && typeof x === 'string' && x.length > 200e3
+      [k, (k === 'markdown' || k === 'text') && typeof x === 'string' && x.length > 200e3
         ? x.slice(0, 200e3) + '\n[... truncated]' : clip(x)]))
     : v;
 
