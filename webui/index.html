@@ -120,12 +120,12 @@ button:focus-visible,a:focus-visible,summary:focus-visible,.filterbox:focus-visi
 .opform.on{display:flex}
 .field{display:flex;flex-direction:column;gap:6px;min-width:0}
 .fl{font-size:10px;letter-spacing:.16em;color:var(--dim);font-weight:600;font-family:var(--mono)}
-.field input[type=text],.field input[type=url],.field input[type=number],.field textarea{
+.field input[type=text],.field input[type=url],.field input[type=number],.field textarea,.field select{
   width:100%;background:rgba(7,10,19,.72);border:1px solid var(--line2);border-radius:10px;
   padding:11px 12px;font-size:13.5px;outline:none;transition:border-color .18s,box-shadow .18s}
 .field input[name=url],.field input[type=number],.field textarea{font-family:var(--mono);font-size:12.5px}
 .field textarea{resize:vertical;min-height:88px;line-height:1.5}
-.field input:focus,.field textarea:focus{border-color:rgba(57,216,245,.65);box-shadow:0 0 0 1px rgba(57,216,245,.35),0 0 20px rgba(34,211,238,.16)}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(57,216,245,.65);box-shadow:0 0 0 1px rgba(57,216,245,.35),0 0 20px rgba(34,211,238,.16)}
 .field input::placeholder,.field textarea::placeholder{color:#3d4763}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .chips{display:flex;flex-wrap:wrap;gap:7px}
@@ -458,6 +458,13 @@ details.page[open] summary::before{transform:rotate(90deg)}
     <div class="opform" id="f-search">
       <label class="field"><span class="fl">QUERY</span>
         <input name="query" type="text" placeholder="self-hosted firecrawl alternative" spellcheck="false" autocomplete="off"></label>
+      <label class="field"><span class="fl">LEVEL</span>
+        <select name="level">
+          <option value="instant">INSTANT — cached pages only</option>
+          <option value="fast">FAST — snippets from every source</option>
+          <option value="standard" selected>STANDARD — reads the top pages</option>
+          <option value="deep">DEEP — sub-queries + answer (needs an LLM)</option>
+        </select></label>
       <label class="field"><span class="fl">RESULT LIMIT</span><input name="limit" type="number" value="8" min="1" max="30"></label>
     </div>
 
@@ -515,7 +522,7 @@ const OPS={
   scrape:{t:"SCRAPE",g:"EXTRACT",d:"One URL in, clean Markdown, HTML, links or a full-page screenshot out. JS pages render in headless chromium.",one:"One URL → clean Markdown, HTML, links or screenshot"},
   crawl:{t:"CRAWL",g:"CRAWL",d:"Walk an entire site same-origin, breadth-first, depth by depth. Every page comes back as Markdown.",one:"Recursive same-origin site walk, page by page"},
   map:{t:"MAP",g:"DISCOVER",d:"Every URL on a domain in milliseconds — sitemap.xml and link-graph discovery, no scraping required.",one:"Every URL on a domain, sitemap + link graph"},
-  search:{t:"SEARCH",g:"DISCOVER",d:"Keyless live web search. Straight results with titles, URLs and descriptions.",one:"Keyless live web search, no API key"},
+  search:{t:"SEARCH",g:"DISCOVER",d:"Searches every configured source, reads the best pages and ranks passages by meaning (Jev when configured). Returns the passages that answer you.",one:"Search that reads the pages for you"},
   extract:{t:"EXTRACT",g:"EXTRACT",d:"Any page to strict typed JSON from a schema you define. Local LLM with heuristic fallback.",one:"Page → strict typed JSON from a schema"}
 };
 const OPCOLOR={scrape:"cy",crawl:"vi",map:"gr",search:"am",extract:"rd"};
@@ -618,7 +625,7 @@ function payloadOf(op){
     timeout:+fv("scrape","timeout")||30000,waitFor:+fv("scrape","waitFor")||0}}
   if(op==="crawl"){const f=$("#f-crawl");return{url:fv("crawl","url"),limit:+fv("crawl","limit")||20,maxDepth:+fv("crawl","maxDepth")||2,wait:f.querySelector("[name=wait]").checked}}
   if(op==="map")return{url:fv("map","url"),limit:+fv("map","limit")||200};
-  if(op==="search")return{query:fv("search","query"),limit:+fv("search","limit")||8};
+  if(op==="search"){const level=fv("search","level")||"standard";return{query:fv("search","query"),limit:+fv("search","limit")||8,level,...(level==="deep"&&{answer:true})}}
   const rawSchema=fv("extract","schema");
   let schema;try{schema=rawSchema?JSON.parse(rawSchema):{}}catch(e){throw new Error("Schema is not valid JSON — "+e.message)}
   const p={url:fv("extract","url"),schema};const prompt=fv("extract","prompt");if(prompt)p.prompt=prompt;return p;
@@ -649,6 +656,15 @@ function setMeta(op,target){
   $("#rMeta").innerHTML=`<span class="opchip" style="color:var(--${OPVAR[OPCOLOR[op]]})">${OPS[op].t}</span><span class="tgt" title="${esc(target)}">${esc(short(target,64))}</span>`;
   $("#clearBtn").hidden=false;
 }
+// WEBCRAWL_API_KEY on the server: ask once, keep it in this browser.
+const KKEY="webcrawl_api_key";
+async function apiFetch(path,body){
+  const go=()=>{let k="";try{k=localStorage.getItem(KKEY)||""}catch{}
+    return fetch(API+path,{method:"POST",headers:{"content-type":"application/json",...(k&&{"x-api-key":k})},body:JSON.stringify(body)})};
+  let res=await go();
+  if(res.status===401){const k=prompt("This server needs its API key (WEBCRAWL_API_KEY):");if(k){try{localStorage.setItem(KKEY,k.trim())}catch{}res=await go()}}
+  return res;
+}
 async function run(){
   if(busy)return;
   let p;try{p=payloadOf(cur)}catch(e){showError("INVALID INPUT",e.message);return}
@@ -657,7 +673,7 @@ async function run(){
   if(need==="url"&&!/^https?:\/\//i.test(p.url)){showError("INVALID URL","URL must start with http:// or https://");return}
   setLoading(true);
   try{
-    const res=await fetch(API+"/v1/"+cur,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(p)});
+    const res=await apiFetch("/v1/"+cur,p);
     const json=await res.json().catch(()=>({success:false,error:"Server returned non-JSON (HTTP "+res.status+")"}));
     if(!res.ok||json.success===false)throw new Error(json.error||"HTTP "+res.status+" "+res.statusText);
     lastRun={op:cur,p,json};
@@ -741,14 +757,20 @@ function renderMap(d,body){
 }
 function renderSearch(d,body){
   const rs=d.results||[];
-  let h=sec("SEARCH RESULTS",[chip("COUNT",rs.length,"am"),chip("LATENCY",fMs(d.latencyMs),"cy")].join(""),"",
-    rs.length?"":`<p style="color:var(--mut)">No results for this query.</p>`);
+  const chips=[chip("COUNT",rs.length,"am"),chip("LEVEL",String(d.level||"").toUpperCase(),"vi"),chip("RANKED BY",String(d.ranking||"—").toUpperCase(),"gr"),chip("LATENCY",fMs(d.latencyMs),"cy")];
+  if(d.costDollars&&d.costDollars.jev)chips.push(chip("JEV COST","$"+d.costDollars.jev.toFixed(5),"rd"));
+  let h=sec("SEARCH RESULTS",chips.join(""),"",
+    (d.answer?`<div class="scard"><p class="sc-desc" style="white-space:pre-wrap">${esc(d.answer)}</p></div>`:"")+
+    ((d.notes||[]).length?`<p style="color:var(--mut)">${d.notes.map(esc).join("<br>")}</p>`:"")+
+    (rs.length?"":`<p style="color:var(--mut)">No results for this query.</p>`));
   h+=rs.map(r=>`<div class="scard">
       <a class="sc-title" href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title||r.url)}</a>
       <div class="sc-url"><span title="${esc(r.url)}">${esc(r.url)}</span>
         <button class="icon-btn" data-cp="${cpid(r.url)}" title="Copy URL">${svg("copy",11)}</button>
         <a class="icon-btn" href="${esc(r.url)}" target="_blank" rel="noopener" title="Open">${svg("ext",11)}</a></div>
-      <p class="sc-desc">${esc(r.description||"")}</p></div>`).join("");
+      <p class="sc-desc">${esc(r.description||"")}</p>
+      ${(r.highlights||[]).slice(1).map(x=>`<p class="sc-desc">${esc(x)}</p>`).join("")}
+      <div class="sc-url">${r.score!=null?`<span>score ${esc(String(r.score))}</span>`:""}${r.publishedDate?`<span>· ${esc(String(r.publishedDate).slice(0,10))}</span>`:""}${(r.sources||[]).length?`<span>· ${esc(r.sources.join(", "))}</span>`:""}</div></div>`).join("");
   body.innerHTML=h;
 }
 function renderExtract(d,body){

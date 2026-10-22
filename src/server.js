@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // webcrawl HTTP API + static WebUI. Firecrawl-parity shapes per notes/core-contract.md.
 // Core modules are imported lazily so the server boots even if some are missing.
 import express from 'express';
@@ -5,22 +6,29 @@ import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { config } from './core/config.js';
+import { searchRouter, apiKeyGuard } from './search/api.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const { version } = JSON.parse(await readFile(path.join(here, '../package.json'), 'utf8'));
 const core = (name) => import(`./core/${name}.js`);
 
 const app = express();
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '30mb' })); // photos for /findByImage arrive as base64
 app.use((req, res, next) => {
   res.set('Access-Control-Allow-Origin', '*')
     .set('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS')
-    .set('Access-Control-Allow-Headers', 'content-type,authorization');
+    .set('Access-Control-Allow-Headers', 'content-type,authorization,x-api-key');
   next();
 });
 app.options(/.*/, (req, res) => res.sendStatus(204));
+
+// Every API route needs WEBCRAWL_API_KEY when it is set (the WebUI page itself stays open).
+const guard = apiKeyGuard();
+app.use(['/v1', '/search', '/contents', '/findSimilar', '/answer', '/findByImage'], guard);
+// Exa-compatible search API (see src/search/api.js)
+app.use(searchRouter());
 
 const bad = (res, code, error) => res.status(code).json({ success: false, error });
 const fail = (res, e, what) =>
@@ -51,12 +59,18 @@ app.post('/v1/map', async (req, res) => {
   } catch (e) { fail(res, e, 'map'); }
 });
 
+// Firecrawl-shaped search. `level` (instant|fast|standard|deep) picks the depth; default
+// fast keeps the old snippet-only behavior but now fuses every configured source.
 app.post('/v1/search', async (req, res) => {
-  const { query, limit = 8 } = req.body || {};
+  const { query, limit = 8, level = 'fast', ...rest } = req.body || {};
   if (typeof query !== 'string' || !query.trim()) return bad(res, 400, '"query" required');
   try {
-    const d = await (await core('search')).webSearch(query, { limit });
-    res.json({ success: true, data: { results: d.results, latencyMs: d.latencyMs } });
+    const { search } = await import('./search/engine.js');
+    const d = await search(query, { ...rest, level, numResults: limit, highlights: rest.highlights ?? true });
+    if (d.error && !d.results.length) return bad(res, 502, d.error);
+    const results = d.results.map((r) => ({ ...r, description: r.highlights?.[0] || '' }));
+    const { results: _r, ...meta } = d;
+    res.json({ success: true, data: { results, ...meta } });
   } catch (e) { fail(res, e, 'search'); }
 });
 
@@ -127,7 +141,13 @@ app.get('/v1/test', async (req, res) => {
     const r = await fetch(`${config.llmBaseUrl}/models`, { signal: AbortSignal.timeout(2000) });
     if (r.ok) llm = 'reachable';
   } catch { /* LM Studio down */ }
-  res.json({ success: Object.values(modules).every(Boolean) && chromium, modules, chromium, llm, version });
+  const { jevConfig } = await import('./search/jev.js');
+  const { pickProviders } = await import('./search/providers.js');
+  const jev = jevConfig();
+  res.json({
+    success: Object.values(modules).every(Boolean) && chromium, modules, chromium, llm, version,
+    search: { providers: pickProviders().use, jev: jev ? { model: jev.model, images: jev.images } : null, embeddings: Boolean(process.env.WEBCRAWL_EMBED_BASE_URL) },
+  });
 });
 
 const webui = path.join(here, '..', 'webui'); // optional; tolerated if absent
@@ -136,5 +156,10 @@ app.use((req, res) => bad(res, 404, `no route: ${req.method} ${req.path}`));
 app.use((err, req, res, _next) =>
   bad(res, err?.type === 'entity.parse.failed' ? 400 : 500, err?.message || 'internal error'));
 
-app.listen(config.port, () =>
-  console.log(`webcrawl v${version} listening on http://localhost:${config.port} (API /v1/*, WebUI /)`));
+export { app };
+// Start only when run directly (node src/server.js / the `webcrawl` bin), not when imported.
+const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+if (isMain || process.env.WEBCRAWL_FORCE_LISTEN) {
+  app.listen(config.port, () =>
+    console.log(`webcrawl v${version} listening on http://localhost:${config.port} (API /v1/* and Exa-style /search, WebUI /)`));
+}

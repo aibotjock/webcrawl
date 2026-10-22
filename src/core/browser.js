@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { config } from './config.js';
+import { assertPublicUrl, allowPrivate } from './guard.js';
 
 let browser = null;
 let idleTimer = null;
@@ -37,6 +38,7 @@ async function getBrowser() {
 
 // Run fn(page, response). Shared context per call; hard timeout per page.
 export async function withPage(url, fn, { timeoutMs = config.timeoutMs, waitUntil = 'domcontentloaded', viewport = { width: 1280, height: 800 } } = {}) {
+  await assertPublicUrl(url); // throws BlockedUrlError for private targets
   const b = await getBrowser();
   const ctx = await b.newContext({
     viewport,
@@ -44,9 +46,16 @@ export async function withPage(url, fn, { timeoutMs = config.timeoutMs, waitUnti
     locale: 'en-US',
     timezoneId: 'UTC',
   });
-  await ctx.route('**/*', (route) => {
-    const t = route.request().resourceType();
-    return t === 'font' || t === 'media' ? route.abort() : route.continue();
+  const guard = !allowPrivate();
+  await ctx.route('**/*', async (route) => {
+    const req = route.request();
+    const t = req.resourceType();
+    if (t === 'font' || t === 'media') return route.abort();
+    // page scripts, redirects and subresources may not reach private networks either
+    if (guard && /^https?:/i.test(req.url())) {
+      try { await assertPublicUrl(req.url()); } catch { return route.abort('blockedbyclient'); }
+    }
+    return route.continue();
   });
   const page = await ctx.newPage();
   page.setDefaultTimeout(timeoutMs);

@@ -3,6 +3,7 @@
 // Merged under a hard time budget. Never throws.
 import { config } from './config.js';
 import { fetchPage, extractHrefs, normalizeUrl } from './fetch.js';
+import { guardedFetch } from './guard.js';
 
 const isSame = (u, origin) => u.startsWith(origin + '/') || u === origin || u === origin + '/';
 
@@ -11,7 +12,7 @@ async function getText(url, timeoutMs) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), Math.max(1, timeoutMs));
   try {
-    const res = await fetch(url, { signal: ctrl.signal, headers: { 'user-agent': config.userAgent } });
+    const res = await guardedFetch(url, { signal: ctrl.signal, headers: { 'user-agent': config.userAgent } });
     return res.ok ? await res.text() : '';
   } catch {
     return '';

@@ -1,13 +1,13 @@
 // Plain HTTP page fetch. Never throws — errors come back in-band.
 import { config } from './config.js';
+import { guardedFetch } from './guard.js';
 
 export async function fetchPage(url, { timeoutMs = config.timeoutMs, headers = {} } = {}) {
   const t0 = Date.now();
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    const res = await fetch(url, {
-      redirect: 'follow',
+    const res = await guardedFetch(url, {
       signal: ctrl.signal,
       headers: {
         'user-agent': config.userAgent,
