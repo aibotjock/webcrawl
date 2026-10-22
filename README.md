@@ -9,12 +9,48 @@ Free, self-hosted search and crawling. One Node process gives you:
 - **extract** — unstructured page to strict typed JSON from a schema (any LLM, no CSS selectors)
 - **HTTP API** (Firecrawl-parity `/v1/*` routes **and** Exa-compatible `/search`, `/contents`, `/findSimilar`, `/answer`) + **MCP server** (Claude Code, LM Studio, Hermes) + **WebUI**
 
+## Three ways to use it
+
+**1. Standalone app** — HTTP API + WebUI on one port.
+
 ```bash
 npm install
 npx playwright install chromium
-npm start          # HTTP API + WebUI on :8787
-npm run mcp        # stdio MCP server
+cp .env.example .env   # optional: add keys when you have them
+npm start              # http://localhost:8787 (WebUI /, API /v1/* and /search)
 ```
+
+Or as a container on any host: `docker build -t webcrawl . && docker run -p 8787:8787 -v webcrawl-data:/data --env-file .env webcrawl`.
+
+**2. MCP server** — for Claude Code, LM Studio, Hermes, Codex or any stdio MCP client.
+
+```bash
+claude mcp add webcrawl -- node /path/to/webcrawl/src/mcp.js
+```
+
+**3. Engine inside your own app** — import it; keys come from your app, not env vars.
+
+```bash
+npm install github:aibotjock/webcrawl
+```
+
+```js
+import { createWebcrawl } from 'webcrawl';
+
+const wc = createWebcrawl({
+  typesafe: { apiKey: process.env.TYPESAFE_API_KEY, images: true }, // optional
+  llm: { provider: 'anthropic', apiKey: process.env.ANTHROPIC_API_KEY }, // optional, any provider
+  sources: { braveApiKey: process.env.BRAVE_API_KEY },                // optional
+});
+
+const { results } = await wc.search('best budget espresso grinder', { level: 'standard', numResults: 5 });
+const { answer, citations } = await wc.answer('what does Jev 1.14 add?');
+const matches = await wc.findByImage({ image: photoDataUri, includeDomains: ['ebay.com', 'amazon.com'] });
+
+app.use('/api/web', wc.router({ apiKey: process.env.MY_KEY })); // Exa-compatible routes in your server
+```
+
+Nothing is required: with no keys it uses the keyless sources and BM25 ranking, and every result says how it was ranked. `wc.status()` reports what is switched on.
 
 ## Search
 
@@ -41,6 +77,9 @@ Extras on any level: `includeDomains` / `excludeDomains` (subdomains and path pr
 
 ### Configuration
 
+All variables are optional and listed in `.env.example`. The library takes the same settings as options.
+
+
 | Variable | Purpose |
 | --- | --- |
 | `TYPESAFE_API_KEY` | Turns on Jev ranking. Without it, ranking is BM25 (+ embeddings if set). |
@@ -56,6 +95,7 @@ Extras on any level: `includeDomains` / `excludeDomains` (subdomains and path pr
 | `EXA_API_KEY` | Uses Exa as one more source (and for `npm run bench:search -- --exa`). |
 | `WEBCRAWL_CACHE_DIR` / `WEBCRAWL_CACHE_MAX` | Page cache folder (default `.cache/pages`, `off` for memory only) and size (default 5000). |
 | `WEBCRAWL_API_KEY` | Requires `x-api-key` or `Authorization: Bearer` on every API route. Set this before exposing the server. |
+| `WEBCRAWL_ALLOW_PRIVATE=on` | Lets scrape/crawl/images reach localhost and private networks. Off by default: every user-supplied URL and redirect is checked so the server can't be used to probe internal networks or cloud metadata. Your own LLM/Jev/SearXNG endpoints are never blocked. |
 
 ### MCP tools
 

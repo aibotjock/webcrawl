@@ -1,6 +1,7 @@
 // Page metadata (publish date, images) and image normalization for vision models.
 import { normalizeUrl } from '../core/fetch.js';
 import { config } from '../core/config.js';
+import { guardedFetch } from '../core/guard.js';
 
 const attr = (tag, name) => (tag.match(new RegExp(`\\b${name}\\s*=\\s*["']([^"']*)["']`, 'i')) || [])[1];
 const metaTags = (html) => html.match(/<meta\b[^>]*>/gi) || [];
@@ -74,7 +75,7 @@ export async function normalizeImage(buf, { maxSide = 1024 } = {}) {
 }
 
 // Accepts a data: URI, bare base64, or an http(s) URL. Returns a Buffer.
-export async function loadImage(src, { fetchImpl = globalThis.fetch, maxBytes = 12 * 1024 * 1024, timeoutMs = 12000 } = {}) {
+export async function loadImage(src, { fetchImpl = guardedFetch, maxBytes = 12 * 1024 * 1024, timeoutMs = 12000 } = {}) {
   const s = String(src || '').trim();
   if (/^data:image\//i.test(s)) return Buffer.from(s.slice(s.indexOf(',') + 1), 'base64');
   if (/^https?:\/\//i.test(s)) {

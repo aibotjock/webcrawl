@@ -18,71 +18,77 @@ async function getJson(fetchImpl, url, init = {}, timeoutMs = 10000) {
   return j;
 }
 
-export const PROVIDERS = {
-  duckduckgo: {
-    keyless: true,
-    enabled: () => true,
-    async search(query, { limit }) {
-      const { webSearch } = await import('../core/search.js');
-      const r = await webSearch(query, { limit: Math.min(limit, 20) });
-      if (r.error && !r.results.length) throw new Error(r.error);
-      return r.results;
+// Builds the provider set. `get(name)` supplies keys and URLs — env vars by default,
+// or an options object when the engine is embedded in an app (see src/index.js).
+export function createProviders(get = env) {
+  return {
+    duckduckgo: {
+      keyless: true,
+      enabled: () => true,
+      async search(query, { limit }) {
+        const { webSearch } = await import('../core/search.js');
+        const r = await webSearch(query, { limit: Math.min(limit, 20) });
+        if (r.error && !r.results.length) throw new Error(r.error);
+        return r.results;
+      },
     },
-  },
 
-  wikipedia: {
-    keyless: true,
-    enabled: () => true,
-    async search(query, { limit, fetchImpl }) {
-      const lang = env('WEBCRAWL_WIKI_LANG') || 'en';
-      const u = `https://${lang}.wikipedia.org/w/api.php?action=query&list=search&format=json&utf8=1&srlimit=${Math.min(limit, 10)}&srsearch=${encodeURIComponent(query)}`;
-      const j = await getJson(fetchImpl, u, { headers: { 'user-agent': 'webcrawl-search/0.2 (self-hosted)' } });
-      return (j.query?.search || []).map((h) => ({
-        title: h.title,
-        url: `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(h.title.replace(/ /g, '_'))}`,
-        description: clip(h.snippet),
-        publishedDate: h.timestamp || undefined,
-      }));
+    wikipedia: {
+      keyless: true,
+      enabled: () => true,
+      async search(query, { limit, fetchImpl }) {
+        const lang = get('WEBCRAWL_WIKI_LANG') || 'en';
+        const u = `https://${lang}.wikipedia.org/w/api.php?action=query&list=search&format=json&utf8=1&srlimit=${Math.min(limit, 10)}&srsearch=${encodeURIComponent(query)}`;
+        const j = await getJson(fetchImpl, u, { headers: { 'user-agent': 'webcrawl-search/0.2 (self-hosted)' } });
+        return (j.query?.search || []).map((h) => ({
+          title: h.title,
+          url: `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(h.title.replace(/ /g, '_'))}`,
+          description: clip(h.snippet),
+          publishedDate: h.timestamp || undefined,
+        }));
+      },
     },
-  },
 
-  // Self-hosted SearXNG with the JSON format enabled (search.formats: [html, json]).
-  searxng: {
-    enabled: () => Boolean(env('SEARXNG_URL')),
-    async search(query, { limit, fetchImpl }) {
-      const base = env('SEARXNG_URL').replace(/\/+$/, '');
-      const j = await getJson(fetchImpl, `${base}/search?format=json&q=${encodeURIComponent(query)}`);
-      return (j.results || []).slice(0, limit).map((r) => ({
-        title: clip(r.title, 200), url: r.url, description: clip(r.content), publishedDate: r.publishedDate || undefined,
-      }));
+    // Self-hosted SearXNG with the JSON format enabled (search.formats: [html, json]).
+    searxng: {
+      enabled: () => Boolean(get('SEARXNG_URL')),
+      async search(query, { limit, fetchImpl }) {
+        const base = get('SEARXNG_URL').replace(/\/+$/, '');
+        const j = await getJson(fetchImpl, `${base}/search?format=json&q=${encodeURIComponent(query)}`);
+        return (j.results || []).slice(0, limit).map((r) => ({
+          title: clip(r.title, 200), url: r.url, description: clip(r.content), publishedDate: r.publishedDate || undefined,
+        }));
+      },
     },
-  },
 
-  brave: {
-    enabled: () => Boolean(env('BRAVE_API_KEY')),
-    async search(query, { limit, fetchImpl }) {
-      const j = await getJson(fetchImpl,
-        `https://api.search.brave.com/res/v1/web/search?count=${Math.min(limit, 20)}&q=${encodeURIComponent(query)}`,
-        { headers: { accept: 'application/json', 'X-Subscription-Token': env('BRAVE_API_KEY') } });
-      return (j.web?.results || []).map((r) => ({
-        title: clip(r.title, 200), url: r.url, description: clip(r.description), publishedDate: r.page_age || undefined,
-      }));
+    brave: {
+      enabled: () => Boolean(get('BRAVE_API_KEY')),
+      async search(query, { limit, fetchImpl }) {
+        const j = await getJson(fetchImpl,
+          `https://api.search.brave.com/res/v1/web/search?count=${Math.min(limit, 20)}&q=${encodeURIComponent(query)}`,
+          { headers: { accept: 'application/json', 'X-Subscription-Token': get('BRAVE_API_KEY') } });
+        return (j.web?.results || []).map((r) => ({
+          title: clip(r.title, 200), url: r.url, description: clip(r.description), publishedDate: r.page_age || undefined,
+        }));
+      },
     },
-  },
 
-  // Exa as an optional upstream: its index finds pages the free sources miss.
-  exa: {
-    enabled: () => Boolean(env('EXA_API_KEY')),
-    async search(query, { limit, fetchImpl }) {
-      const j = await getJson(fetchImpl, 'https://api.exa.ai/search', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-api-key': env('EXA_API_KEY') },
-        body: JSON.stringify({ query, numResults: Math.min(limit, 25), type: 'auto' }),
-      }, 15000);
-      return (j.results || []).map((r) => ({ title: clip(r.title, 200) || r.url, url: r.url, description: '', publishedDate: r.publishedDate || undefined }));
+    // Exa as an optional upstream: its index finds pages the free sources miss.
+    exa: {
+      enabled: () => Boolean(get('EXA_API_KEY')),
+      async search(query, { limit, fetchImpl }) {
+        const j = await getJson(fetchImpl, 'https://api.exa.ai/search', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', 'x-api-key': get('EXA_API_KEY') },
+          body: JSON.stringify({ query, numResults: Math.min(limit, 25), type: 'auto' }),
+        }, 15000);
+        return (j.results || []).map((r) => ({ title: clip(r.title, 200) || r.url, url: r.url, description: '', publishedDate: r.publishedDate || undefined }));
+      },
     },
-  },
 };
+}
+
+export const PROVIDERS = createProviders();
 
 // Which providers run: the request's list, else WEBCRAWL_SEARCH_PROVIDERS, else every
 // enabled one. Unknown or unconfigured names are skipped and reported.

@@ -13,6 +13,7 @@ import { llmConfig, expandQuery, answerFrom, judgeSameItem, chat } from './llm.j
 import { createCache } from './cache.js';
 import { publishedDateOf, pageImages, loadImage, normalizeImage } from './media.js';
 import { normalizeUrl } from '../core/fetch.js';
+import { guardedFetch } from '../core/guard.js';
 
 export const LEVELS = ['instant', 'fast', 'standard', 'deep'];
 let sharedCache;
@@ -35,7 +36,8 @@ async function defaultScrape(url, { timeout }) {
 // deps are injectable for tests and for embedding the engine elsewhere.
 function resolveDeps(deps = {}) {
   return {
-    fetchImpl: deps.fetchImpl || globalThis.fetch,
+    fetchImpl: deps.fetchImpl || globalThis.fetch, // trusted: sources, Jev, LLM, embeddings
+    untrustedFetch: deps.untrustedFetch || deps.fetchImpl || guardedFetch, // user/page URLs: images
     scrapeFn: deps.scrapeFn || defaultScrape,
     screenshotFn: deps.screenshotFn,
     cache: deps.cache || defaultCache(),
@@ -43,6 +45,7 @@ function resolveDeps(deps = {}) {
     llm: deps.llm === undefined ? llmConfig() : deps.llm,
     embed: deps.embed === undefined ? embedConfig() : deps.embed,
     registry: deps.registry || undefined,
+    defaultProviders: deps.defaultProviders,
   };
 }
 
@@ -163,7 +166,7 @@ export async function search(query, opts = {}, deps = {}) {
   }
 
   // ---- candidates (deep fans out over LLM-written sub-queries)
-  const { use, skipped } = pickProviders(opts.providers, d.registry);
+  const { use, skipped } = pickProviders(opts.providers?.length ? opts.providers : d.defaultProviders, d.registry);
   if (skipped.length) notes.push(`skipped providers (unknown or not configured): ${skipped.join(', ')}`);
   if (!use.length) return finish({ results: [], level, requestedLevel, providers: [], meter, notes, t0, error: 'no search providers available' });
   const candidateCount = Math.max(numResults, Math.min(50, Number(opts.candidates) || (level === 'deep' ? 30 : level === 'standard' ? 20 : Math.max(10, numResults * 2))));
@@ -368,7 +371,7 @@ export async function findByImage(opts = {}, deps = {}) {
   const d = resolveDeps(deps);
   const notes = [];
   let photo;
-  try { photo = await normalizeImage(await loadImage(opts.image, { fetchImpl: d.fetchImpl })); }
+  try { photo = await normalizeImage(await loadImage(opts.image, { fetchImpl: d.untrustedFetch })); }
   catch (e) { return { results: [], error: `image: ${e.message}`, latencyMs: Date.now() - t0 }; }
 
   let query = String(opts.query || '').trim();
@@ -385,7 +388,7 @@ export async function findByImage(opts = {}, deps = {}) {
   const cands = [];
   await pool(pages, 6, async ({ r, page }) => {
     for (const src of (page?.images || []).slice(0, Number(opts.imagesPerPage) || 2)) {
-      try { cands.push({ id: `${r.url}\n${src}`, url: r.url, src, ...(await normalizeImage(await loadImage(src, { fetchImpl: d.fetchImpl }), { maxSide: 768 })) }); } catch {}
+      try { cands.push({ id: `${r.url}\n${src}`, url: r.url, src, ...(await normalizeImage(await loadImage(src, { fetchImpl: d.untrustedFetch }), { maxSide: 768 })) }); } catch {}
     }
   });
 

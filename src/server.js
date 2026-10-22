@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // webcrawl HTTP API + static WebUI. Firecrawl-parity shapes per notes/core-contract.md.
 // Core modules are imported lazily so the server boots even if some are missing.
 import express from 'express';
@@ -5,7 +6,7 @@ import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { config } from './core/config.js';
 import { searchRouter, apiKeyGuard } from './search/api.js';
 
@@ -155,5 +156,10 @@ app.use((req, res) => bad(res, 404, `no route: ${req.method} ${req.path}`));
 app.use((err, req, res, _next) =>
   bad(res, err?.type === 'entity.parse.failed' ? 400 : 500, err?.message || 'internal error'));
 
-app.listen(config.port, () =>
-  console.log(`webcrawl v${version} listening on http://localhost:${config.port} (API /v1/*, WebUI /)`));
+export { app };
+// Start only when run directly (node src/server.js / the `webcrawl` bin), not when imported.
+const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+if (isMain || process.env.WEBCRAWL_FORCE_LISTEN) {
+  app.listen(config.port, () =>
+    console.log(`webcrawl v${version} listening on http://localhost:${config.port} (API /v1/* and Exa-style /search, WebUI /)`));
+}
