@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { scrape } from '../src/core/scrape.js';
 import { closeBrowser } from '../src/core/browser.js';
 
-test('example.com converts to clean markdown', async () => {
+test('example.com converts to clean markdown', { skip: process.env.WEBCRAWL_LIVE_TESTS !== '1' }, async () => {
   const r = await scrape('https://example.com');
   assert.ok(r.markdown.includes('# Example Domain'), 'has h1');
   assert.ok(r.markdown.includes('[Learn more](https://iana.org/domains/example)'), 'absolutized link');
@@ -11,7 +11,7 @@ test('example.com converts to clean markdown', async () => {
   assert.equal(r.metadata.title, 'Example Domain');
 });
 
-test('quotes.toscrape.com/js renders via browser', async () => {
+test('quotes.toscrape.com/js renders via browser', { skip: process.env.WEBCRAWL_LIVE_TESTS !== '1' }, async () => {
   const r = await scrape('https://quotes.toscrape.com/js/', { waitFor: 300 });
   assert.ok(r.markdown.includes('Einstein'), 'JS-rendered quotes present');
   assert.equal(r.metadata.statusCode, 200);

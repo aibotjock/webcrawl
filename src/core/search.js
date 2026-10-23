@@ -1,5 +1,6 @@
 // Keyless web search: DuckDuckGo HTML endpoints, browser-render fallback. Never throws.
 import { fetchPage, normalizeUrl } from './fetch.js';
+import { safeFetch } from './safe-network.js';
 import { config } from './config.js';
 
 const ENT = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', mdash: '—', ndash: '–', hellip: '…', rsquo: '’', lsquo: '‘', ldquo: '“', rdquo: '”', copy: '©', reg: '®', trade: '™', bull: '•', middot: '·', deg: '°', pound: '£', euro: '€', plusmn: '±' };
@@ -49,7 +50,7 @@ function clean(rows, limit) {
 }
 
 async function ddgPost(url, q) {
-  const res = await fetch(`${url}?q=${encodeURIComponent(q)}`, {
+  const res = await safeFetch(`${url}?q=${encodeURIComponent(q)}`, {
     method: 'POST',
     headers: { 'user-agent': config.userAgent, accept: 'text/html', 'content-type': 'application/x-www-form-urlencoded', origin: 'https://duckduckgo.com', referer: 'https://duckduckgo.com/' },
     body: new URLSearchParams({ q }).toString(),
@@ -84,6 +85,8 @@ async function tryRender(q) {
 
 export async function webSearch(query, { limit = 8 } = {}) {
   const t0 = Date.now();
+  if (typeof query !== 'string' || !query.trim() || query.length > 2000) throw new Error('Search query must be 1 to 2000 characters');
+  limit = Math.min(25, Math.max(1, Math.trunc(Number(limit) || 8)));
   const attempts = [
     ['post', 'https://html.duckduckgo.com/html/'],
     ['get', 'https://html.duckduckgo.com/html/'],

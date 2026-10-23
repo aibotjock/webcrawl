@@ -1,14 +1,12 @@
 // Plain HTTP page fetch. Never throws — errors come back in-band.
 import { config } from './config.js';
+import { publicRequest } from './safe-network.js';
 
-export async function fetchPage(url, { timeoutMs = config.timeoutMs, headers = {} } = {}) {
+export async function fetchPage(url, { timeoutMs = config.timeoutMs, headers = {}, signal } = {}) {
   const t0 = Date.now();
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    const res = await fetch(url, {
-      redirect: 'follow',
-      signal: ctrl.signal,
+    const res = await publicRequest(url, {
+      timeoutMs, signal,
       headers: {
         'user-agent': config.userAgent,
         accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -16,9 +14,9 @@ export async function fetchPage(url, { timeoutMs = config.timeoutMs, headers = {
         ...headers,
       },
     });
-    const contentType = res.headers.get('content-type') || '';
+    const contentType = res.headers['content-type'] || '';
     const html = contentType.includes('html') || contentType.includes('xml') || contentType === ''
-      ? await res.text()
+      ? res.body.toString('utf8')
       : '';
     return {
       status: res.status,
@@ -29,8 +27,6 @@ export async function fetchPage(url, { timeoutMs = config.timeoutMs, headers = {
     };
   } catch (e) {
     return { status: 0, contentType: '', html: '', finalUrl: url, latencyMs: Date.now() - t0, error: String(e?.cause?.code || e?.message || e) };
-  } finally {
-    clearTimeout(timer);
   }
 }
 
