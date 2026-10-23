@@ -30,12 +30,14 @@ export async function scrape(url, opts = {}) {
     waitFor = 0,
     fullPage = false,
     viewport,
+    signal,
   } = opts;
   const t0 = Date.now();
+  if (signal?.aborted) return { metadata: { error: 'Scrape cancelled', url }, latencyMs: 0 };
   const want = (f) => formats.includes(f);
   const out = { metadata: { title: '', description: '', statusCode: 0, url } };
 
-  let res = await fetchPage(url, { timeoutMs: timeout });
+  let res = await fetchPage(url, { timeoutMs: timeout, signal });
   let html = res.html || '';
   let finalUrl = res.finalUrl || url;
   let conv = html ? htmlToMarkdown(html, { baseUrl: finalUrl }) : { markdown: '', title: '', description: '' };
@@ -43,7 +45,7 @@ export async function scrape(url, opts = {}) {
 
   // JS-shell heuristics -> re-render with the browser
   if (html.length < 1500 || mdChars < 200 || (JS_SHELL.test(html) && mdChars < 1000)) {
-    const r = await renderPage(url, { timeoutMs: timeout, waitFor, viewport });
+    const r = await renderPage(url, { timeoutMs: timeout, waitFor, viewport, signal });
     if (r.html) {
       html = r.html;
       finalUrl = r.finalUrl || finalUrl;
@@ -71,7 +73,7 @@ export async function scrape(url, opts = {}) {
   if (want('rawHtml')) out.rawHtml = html;
   if (want('links')) out.links = extractLinks(html, finalUrl);
   if (want('screenshot')) {
-    const shot = await screenshotPage(finalUrl, { fullPage, viewport, timeoutMs: timeout, waitFor });
+    const shot = await screenshotPage(finalUrl, { fullPage, viewport, timeoutMs: timeout, waitFor, signal });
     if (shot.screenshot) out.screenshot = shot.screenshot;
     if (shot.error) out.metadata.error = out.metadata.error || shot.error;
   }

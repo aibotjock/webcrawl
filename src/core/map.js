@@ -1,6 +1,7 @@
 // Fast URL discovery without full scrapes: /sitemap.xml (+ robots.txt Sitemap:
 // lines, sitemap indexes recursed) races a live same-origin link-graph BFS.
 // Merged under a hard time budget. Never throws.
+import { safeFetch } from './safe-network.js';
 import { config } from './config.js';
 import { fetchPage, extractHrefs, normalizeUrl } from './fetch.js';
 
@@ -11,7 +12,7 @@ async function getText(url, timeoutMs) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), Math.max(1, timeoutMs));
   try {
-    const res = await fetch(url, { signal: ctrl.signal, headers: { 'user-agent': config.userAgent } });
+    const res = await safeFetch(url, { timeoutMs, signal: ctrl.signal, headers: { 'user-agent': config.userAgent } });
     return res.ok ? await res.text() : '';
   } catch {
     return '';
@@ -25,7 +26,7 @@ async function sitemapStrategy(origin, deadline, found) {
   const robots = await getText(origin + '/robots.txt', Math.min(10000, deadline - Date.now()));
   for (const m of robots.matchAll(/^\s*sitemap:\s*(\S+)/gim)) queue.push(m[1]);
   const seen = new Set();
-  while (queue.length && Date.now() < deadline && found.size < 20000) {
+  while (queue.length && Date.now() < deadline && found.size < 2000 && seen.size < 100) {
     const batch = [];
     for (const raw of queue.splice(0, config.concurrency)) {
       const sm = normalizeUrl(raw, origin);
@@ -42,10 +43,10 @@ async function sitemapStrategy(origin, deadline, found) {
       })
     );
     for (const res of results.filter(Boolean)) {
-      if (res.index) queue.push(...res.locs);
+      if (res.index) queue.push(...res.locs.slice(0, Math.max(0, 100 - queue.length)));
       else for (const l of res.locs) {
         const u = normalizeUrl(l, origin);
-        if (u && isSame(u, origin)) found.add(u);
+        if (u && isSame(u, origin) && found.size < 2000) found.add(u);
       }
     }
   }
@@ -57,10 +58,10 @@ async function linkStrategy(start, origin, deadline, limit, found) {
   let active = 0;
   let fetched = 0;
   await new Promise(resolve => {
-    const done = () => !active && (!queue.length || fetched >= limit || Date.now() >= deadline);
+    const done = () => !active && (!queue.length || fetched >= limit || found.size >= 2000 || Date.now() >= deadline);
     const tick = () => {
       if (done()) return resolve();
-      while (queue.length && active < config.concurrency && fetched < limit && Date.now() < deadline) {
+      while (queue.length && active < config.concurrency && fetched < limit && found.size < 2000 && Date.now() < deadline) {
         const u = queue.shift();
         active++;
         fetched++;
@@ -70,8 +71,9 @@ async function linkStrategy(start, origin, deadline, limit, found) {
               for (const h of extractHrefs(r.html)) {
                 const v = normalizeUrl(h, r.finalUrl || u);
                 if (!v || !isSame(v, origin)) continue;
+                if (found.size >= 2000) break;
                 found.add(v); // collect even unexpanded URLs
-                if (!queued.has(v) && queued.size < 20000) {
+                if (!queued.has(v) && queued.size < 1000) {
                   queued.add(v);
                   queue.push(v);
                 }
@@ -95,14 +97,15 @@ export async function mapSite(url, { limit = 200, timeout = 15000 } = {}) {
     const start = normalizeUrl(url);
     if (!start) throw new Error('invalid url: ' + url);
     const origin = new URL(start).origin;
-    const deadline = t0 + timeout;
+    limit = Math.min(500, Math.max(1, Math.trunc(Number(limit) || 200)));
+    const deadline = t0 + Math.min(30000, Math.max(1000, Number(timeout) || 15000));
     const sm = new Set();
     const lk = new Set();
     await Promise.all([
       sitemapStrategy(origin, deadline, sm).catch(() => {}),
       linkStrategy(start, origin, deadline, limit, lk).catch(() => {}),
     ]);
-    const urls = [...new Set([...sm, ...lk])].sort();
+    const urls = [...new Set([...sm, ...lk])].sort().slice(0, 2000);
     return {
       urls,
       count: urls.length,

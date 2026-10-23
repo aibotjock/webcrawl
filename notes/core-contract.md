@@ -8,22 +8,30 @@ Config via env, read once in `src/core/config.js`:
 - `PORT` (default 8787) — HTTP API + WebUI port
 - `WEBCRAWL_LLM_BASE_URL` (default `http://127.0.0.1:1234/v1`) — OpenAI-compatible endpoint (LM Studio) for /extract
 - `WEBCRAWL_LLM_MODEL` (default `local-model`) — model name for /extract
-- `WEBCRAWL_CONCURRENCY` (default 8) — crawl/map fetch concurrency
-- `WEBCRAWL_TIMEOUT_MS` (default 30000) — per-page timeout
+- `WEBCRAWL_CONCURRENCY` (default 4, maximum 4) — crawl/map fetch concurrency
+- `WEBCRAWL_TIMEOUT_MS` (default 15000, maximum 30000) — per-page timeout
 
 ## src/core/fetch.js
 ```js
 fetchPage(url, { timeoutMs, headers }) -> { status, contentType, html, finalUrl, latencyMs, error? }
 ```
-Plain HTTP fetch with redirects, browser-like UA, gzip. Never throws — returns `error`.
+Public-only DNS-pinned HTTP fetch with bounded redirects, browser-like UA and
+bounded decoded bodies. Never throws — returns `error`.
 
 ## src/core/browser.js
 ```js
 withPage(url, fn, { timeoutMs, waitUntil, viewport }?) -> fn(page) result
 renderPage(url, { timeoutMs, waitUntil, viewport }?) -> { status, html, finalUrl, latencyMs, error? }
-screenshotPage(url, { fullPage, viewport, timeoutMs }?) -> { status, screenshotPath, finalUrl, latencyMs, error? }
+screenshotPage(url, { fullPage, viewport, timeoutMs }?) -> { status, screenshot, finalUrl, latencyMs, error? }
 ```
-Lazily-started shared chromium; hard timeout per page; close browser after idle (export `closeBrowser()`).
+
+`screenshot` is a PNG data URI bounded to a 5 MiB PNG. Screenshot captures do not
+write temporary files or return a `screenshotPath`; callers that need a file must
+explicitly save the returned bytes under their own retention policy. Screenshot
+dimensions use the bounded viewport even when `fullPage` is requested.
+Lazily-started shared Chromium with a required sandbox, denying fallback proxy
+and public-only request broker; hard timeout per page; close browser after idle
+(export `closeBrowser()`).
 
 ## src/core/markdown.js
 ```js
@@ -72,6 +80,7 @@ Scrape -> clean markdown -> if OpenAI-compatible LLM reachable, strict JSON-sche
 
 ## src/server.js (express)
 Firecrawl-parity REST + static webui:
+- POST /v1/login  { token } -> expiring HttpOnly operator session; POST /v1/logout revokes it
 - POST /v1/scrape  { url, formats, onlyMainContent, timeout, waitFor } 
 - POST /v1/map     { url, limit }
 - POST /v1/search  { query, limit }
@@ -80,6 +89,9 @@ Firecrawl-parity REST + static webui:
   (PLUS convenience sync mode: { url, wait: true } returns final result directly)
 - GET /v1/test  -> live self-check
 Serves webui/index.html at `/`.
+All other `/v1/` routes require an operator session or bearer token. The default
+HTTP listener binds loopback; remote binding requires an exact configured HTTPS
+origin. See README for request, crawl, network and browser resource limits.
 
 ## src/mcp.js (stdio MCP, @modelcontextprotocol/sdk)
 Tools (same semantics as core): `webcrawl_scrape`, `webcrawl_crawl`, `webcrawl_map`, `webcrawl_search`, `webcrawl_extract`, `webcrawl_screenshot`. Single object arg per tool. Text results, JSON-stringified payloads. Must handshake cleanly with `claude mcp add`, LM Studio mcp.json, and any stdio MCP client.

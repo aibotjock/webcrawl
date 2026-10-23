@@ -1,5 +1,6 @@
 // Structured extraction: scrape -> markdown -> LLM (OpenAI-compatible) or label/table heuristics.
 import { config } from './config.js';
+import { modelFetch } from './model-fetch.js';
 
 async function getMarkdown(url, _mdFn) {
   if (_mdFn) return _mdFn(url);
@@ -7,7 +8,7 @@ async function getMarkdown(url, _mdFn) {
   return scrape(url, { formats: ['markdown'] });
 }
 async function llmUp() {
-  try { return (await fetch(`${config.llmBaseUrl}/models`, { signal: AbortSignal.timeout(1500) })).ok; } catch { return false; }
+  try { return (await modelFetch('/models', { timeoutMs: 1500 })).ok; } catch { return false; }
 }
 
 function parseJson(text) {
@@ -56,9 +57,7 @@ function conform(v, s, path = '$', errs = []) {
 const validate = (data, schema) => { const errs = [], value = conform(data, schema, '$', errs); return { ok: !errs.length, value, errs }; };
 
 async function rawChat(body) {
-  const res = await fetch(`${config.llmBaseUrl}/chat/completions`, {
-    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(180000),
-  });
+  const res = await modelFetch('/chat/completions', { body: JSON.stringify(body), timeoutMs: 30000 });
   return { status: res.status, j: await res.json().catch(() => ({})) };
 }
 async function complete(messages, { maxTokens = 4096, jsonMode = true } = {}) {
