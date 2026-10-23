@@ -3,6 +3,75 @@ import assert from 'node:assert/strict';
 import http from 'node:http';
 import { createApp } from '../src/server.js';
 import { operatorConfig } from '../src/operator-security.js';
+import { setImmediate as nextTurn } from 'node:timers/promises';
+
+test('disconnected HTTP clients retain admission until deferred core work settles', { timeout: 10000 }, async () => {
+  const { createApp } = await import('../src/server.js');
+  const credential = 'synthetic-disconnect-test-operator-credential';
+  const held = [];
+  const clients = [];
+  const sockets = [];
+  let running = 0;
+  let probes = 0;
+  let allEntered;
+  const entered = new Promise(resolve => { allEntered = resolve; });
+  const app = createApp({ settings: operatorConfig({ WEBCRAWL_OPERATOR_TOKEN: credential }), coreLoader: async name => {
+    assert.equal(name, 'search');
+    return { async webSearch(query) {
+      if (query === 'hold') {
+        running++;
+        await new Promise(resolve => { held.push(resolve); if (held.length === 8) allEntered(); });
+        running--;
+      } else probes++;
+      return { results: [], latencyMs: 0 };
+    } };
+  } });
+  const server = app.listen(0, '127.0.0.1');
+  server.on('connection', socket => { sockets.push(new Promise(resolve => socket.once('close', resolve))); });
+  await new Promise(resolve => server.once('listening', resolve));
+  const port = String(server.address().port);
+  const previousPort = process.env.WEBCRAWL_TEST_HTTP_PORT;
+  process.env.WEBCRAWL_TEST_HTTP_PORT = port;
+  const send = () => http.request(`http://127.0.0.1:${port}/v1/search`, {
+    method: 'POST', agent: false,
+    headers: { host: '127.0.0.1:8787', authorization: `Bearer ${credential}`, 'content-type': 'application/json' },
+  });
+  const probe = () => new Promise((resolve, reject) => {
+    const request = send();
+    request.on('response', response => { response.resume(); response.on('end', () => resolve(response.statusCode)); });
+    request.on('error', reject); request.end(JSON.stringify({ query: 'probe' }));
+  });
+  let timer;
+  try {
+    for (let i = 0; i < 8; i++) {
+      const request = send(); clients.push(request);
+      request.on('error', () => {}); request.on('response', response => response.resume());
+      request.end(JSON.stringify({ query: 'hold' }));
+    }
+    await Promise.race([entered, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Deferred work did not start')), 5000); })]);
+    clearTimeout(timer);
+    assert.equal(running, 8);
+    const closed = sockets.slice(0, 8);
+    for (const client of clients) client.destroy();
+    await Promise.all(closed);
+    assert.equal(await probe(), 429, 'disconnecting cannot admit a ninth running operation');
+    assert.equal(probes, 0, 'rejected work never reaches the core');
+    held.shift()();
+    await nextTurn();
+    assert.equal(running, 7);
+    assert.equal(await probe(), 200, 'settled work releases its slot even after disconnect');
+    assert.equal(probes, 1);
+  } finally {
+    clearTimeout(timer);
+    for (const release of held) release();
+    for (const client of clients) client.destroy();
+    await nextTurn();
+    server.closeAllConnections();
+    await new Promise(resolve => server.close(resolve));
+    if (previousPort === undefined) delete process.env.WEBCRAWL_TEST_HTTP_PORT;
+    else process.env.WEBCRAWL_TEST_HTTP_PORT = previousPort;
+  }
+});
 
 const token = 'test-only-operator-credential-32-characters';
 async function fixture(run, loader = async () => ({})) {
@@ -10,6 +79,8 @@ async function fixture(run, loader = async () => ({})) {
   const server = createApp({ settings, coreLoader: loader }).listen(0, '127.0.0.1');
   await new Promise(resolve => server.once('listening', resolve));
   const address = `http://127.0.0.1:${server.address().port}`;
+  const previousPort = process.env.WEBCRAWL_TEST_HTTP_PORT;
+  process.env.WEBCRAWL_TEST_HTTP_PORT = String(server.address().port);
   const request = (path, options = {}) => new Promise((resolve, reject) => {
     const req = http.request(address + path, { method: options.method || 'GET', headers: { host: '127.0.0.1:8787', ...options.headers } }, res => {
       const chunks = []; res.on('data', chunk => chunks.push(chunk)); res.on('error', reject);
@@ -17,7 +88,11 @@ async function fixture(run, loader = async () => ({})) {
     });
     req.on('error', reject); req.end(options.body);
   });
-  try { await run(request); } finally { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); }
+  try { await run(request); } finally {
+    server.closeAllConnections(); await new Promise(resolve => server.close(resolve));
+    if (previousPort === undefined) delete process.env.WEBCRAWL_TEST_HTTP_PORT;
+    else process.env.WEBCRAWL_TEST_HTTP_PORT = previousPort;
+  }
 }
 
 test('actual HTTP routes require auth before parsing body or loading a core module', async () => {

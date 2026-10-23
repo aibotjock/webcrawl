@@ -36,6 +36,7 @@ export function operatorConfig(env = process.env) {
 export function createOperatorSecurity(settings, { now = Date.now } = {}) {
   const sessions = new Map();
   const buckets = new Map();
+  const requestWork = new WeakMap();
   let active = 0;
   function take(id, max, duration) {
     const t = now();
@@ -79,9 +80,29 @@ export function createOperatorSecurity(settings, { now = Date.now } = {}) {
     if (active >= 8) return error(res, 429, 'The workspace is busy');
     active++;
     let released = false;
-    const release = () => { if (!released) { released = true; active--; } };
-    res.once('finish', release); res.once('close', release);
+    let responseClosed = false;
+    let handlers = 0;
+    const release = () => {
+      if (responseClosed && handlers === 0 && !released) { released = true; active--; }
+    };
+    requestWork.set(res, {
+      start() { if (responseClosed || released) return false; handlers++; return true; },
+      settle() { handlers--; release(); },
+    });
+    const close = () => { responseClosed = true; release(); };
+    res.once('finish', close); res.once('close', close);
     next();
+  }
+  // A disconnected response does not mean its scraper/model operation stopped.
+  // Hold admission until both the response closes and the actual handler settles.
+  // A request disconnected before route entry must never start new work.
+  function track(handler) {
+    return async (req, res, next) => {
+      const work = requestWork.get(res);
+      if (work && !work.start()) return;
+      try { return await handler(req, res, next); }
+      finally { work?.settle(); }
+    };
   }
   function login(req, res) {
     const token = req.body?.token;
@@ -99,5 +120,5 @@ export function createOperatorSecurity(settings, { now = Date.now } = {}) {
     res.set('Set-Cookie', cookie('', 0));
     return res.json({ success: true });
   }
-  return { middleware, login, logout, authenticated };
+  return { middleware, track, login, logout, authenticated };
 }

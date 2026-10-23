@@ -24,8 +24,13 @@ app.enable('strict routing');
 const security = createOperatorSecurity(settings);
 app.use(security.middleware);
 app.use(express.json({ limit: '128kb' }));
-app.post('/v1/login', security.login);
-app.post('/v1/logout', security.logout);
+// Wrap every API handler so work admission outlives a disconnected HTTP response.
+const routes = {};
+for (const method of ['get', 'post', 'delete']) {
+  routes[method] = (route, handler) => app[method](route, security.track(handler));
+}
+routes.post('/v1/login', security.login);
+routes.post('/v1/logout', security.logout);
 
 const bad = (res, code, error) => res.status(code).json({ success: false, error });
 const fail = (res, e, what) =>
@@ -39,7 +44,7 @@ let activeCrawls = 0;
 const JOB_TTL = 30 * 60_000;
 const sweep = () => { for (const [id, j] of jobs) if (Date.now() - j.ts > JOB_TTL) jobs.delete(id); };
 
-app.post('/v1/scrape', async (req, res) => {
+routes.post('/v1/scrape', async (req, res) => {
   const { url, formats = ['markdown'], onlyMainContent = true, timeout, waitFor } = req.body || {};
   if (badUrl(url)) return bad(res, 400, 'valid http(s) "url" required');
   try {
@@ -49,7 +54,7 @@ app.post('/v1/scrape', async (req, res) => {
   } catch (e) { fail(res, e, 'scrape'); }
 });
 
-app.post('/v1/map', async (req, res) => {
+routes.post('/v1/map', async (req, res) => {
   const { url } = req.body || {};
   const limit = bounded(req.body?.limit, 200, 500);
   if (badUrl(url)) return bad(res, 400, 'valid http(s) "url" required');
@@ -59,7 +64,7 @@ app.post('/v1/map', async (req, res) => {
   } catch (e) { fail(res, e, 'map'); }
 });
 
-app.post('/v1/search', async (req, res) => {
+routes.post('/v1/search', async (req, res) => {
   const { query } = req.body || {};
   const limit = bounded(req.body?.limit, 8, 25);
   if (typeof query !== 'string' || !query.trim() || query.length > 2000) return bad(res, 400, '"query" required');
@@ -69,7 +74,7 @@ app.post('/v1/search', async (req, res) => {
   } catch (e) { fail(res, e, 'search'); }
 });
 
-app.post('/v1/extract', async (req, res) => {
+routes.post('/v1/extract', async (req, res) => {
   const { url, schema, prompt } = req.body || {};
   if (badUrl(url)) return bad(res, 400, 'valid http(s) "url" required');
   if (!schema || typeof schema !== 'object') return bad(res, 400, '"schema" (object) required');
@@ -80,7 +85,7 @@ app.post('/v1/extract', async (req, res) => {
   } catch (e) { fail(res, e, 'extract'); }
 });
 
-app.post('/v1/crawl', async (req, res) => {
+routes.post('/v1/crawl', async (req, res) => {
   const { url, includeGlobs = [], excludeGlobs = [], wait } = req.body || {};
   const limit = bounded(req.body?.limit, 50, 100);
   const maxDepth = bounded(req.body?.maxDepth, 3, 5);
@@ -117,7 +122,7 @@ app.post('/v1/crawl', async (req, res) => {
   res.json({ success: true, id: job.id });
 });
 
-app.get('/v1/crawl/:id', (req, res) => {
+routes.get('/v1/crawl/:id', (req, res) => {
   sweep();
   const j = jobs.get(req.params.id);
   if (!j) return bad(res, 404, `unknown or expired crawl job: ${req.params.id}`);
@@ -125,7 +130,7 @@ app.get('/v1/crawl/:id', (req, res) => {
 });
 
 // Cancels queued and active requests as well as the saved job.
-app.delete('/v1/crawl/:id', (req, res) => {
+routes.delete('/v1/crawl/:id', (req, res) => {
   const j = jobs.get(req.params.id);
   if (!j) return bad(res, 404, `unknown or expired crawl job: ${req.params.id}`);
   j.cancelled = true;
@@ -133,7 +138,7 @@ app.delete('/v1/crawl/:id', (req, res) => {
   res.json({ success: true, id: j.id, status: j.status, cancelled: true });
 });
 
-app.get('/v1/test', async (req, res) => {
+routes.get('/v1/test', async (req, res) => {
   const modules = {};
   await Promise.all(['scrape', 'map', 'crawl', 'search', 'extract', 'browser', 'fetch', 'markdown'].map(async (m) => {
     try { await coreLoader(m); modules[m] = true; } catch { modules[m] = false; }
